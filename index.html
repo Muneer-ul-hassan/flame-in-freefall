@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flame in Freefall — Spacecraft Fire-Safety Decisions from Real NASA Test Data</title>
+<meta name="description" content="A dashboard that turns NASA PSI combustion data into fire-safety decisions for spacecraft cabins: Prevention, Detection, Suppression. Real test rows only — no guesses.">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">🔥</div>
+      <div>
+        <div class="brand-name">Flame in Freefall</div>
+        <div class="brand-sub">NASA Space Apps 2026</div>
+      </div>
+    </div>
+    <nav id="nav">
+      <button data-sec="home" class="active">Home</button>
+      <div class="nav-group">PREVENTION</div>
+      <button data-sec="cabin">Cabin Check</button>
+      <button data-sec="screener">Inventory Screener</button>
+      <div class="nav-group">DETECTION</div>
+      <button data-sec="detection">Detection Panel</button>
+      <div class="nav-group">SUPPRESSION</div>
+      <button data-sec="suppression">Suppression View</button>
+      <button data-sec="predictor">Safe Predictor</button>
+      <div class="nav-group">EXPLORE</div>
+      <button data-sec="cards">Investigation Cards</button>
+      <button data-sec="refs">References &amp; Method</button>
+    </nav>
+    <div class="side-note">Every number on this site comes from a real NASA PSI test record. Where NASA never tested, this tool says so — it never guesses.</div>
+  </aside>
+
+  <main>
+    <!-- ============ HOME ============ -->
+    <section id="sec-home" class="sec active">
+      <h1>Fire in a spacecraft cabin: the data exists. <span class="accent">The decisions don't.</span></h1>
+      <p class="lede">NASA has run thousands of fire tests on the International Space Station and stored them in the PSI database — but nobody turned them into a simple decision tool. This dashboard does: pick a material and a cabin atmosphere, and it answers from <strong>real test rows</strong>, cites them, and honestly says <strong>“no test data”</strong> where NASA never tested.</p>
+
+      <div class="cards3">
+        <div class="stat card">
+          <div class="stat-num"><span class="counter" data-target="22.2" data-decimals="1">0</span><span class="unit">% O₂</span></div>
+          <p><strong>The highest oxygen level solid materials were ever tested at</strong> in the PSI backbone (<span data-fill="solids-o2-rows"></span> solid-fuel rows with a recorded O₂ level). The Moon cabin will run at <strong>34% O₂ / 8.2 psia</strong> — an evidence gap no test covers.</p>
+          <div class="src">Source: NASA PSI backbone, 2,012 rows — computed from the data, not quoted.</div>
+        </div>
+        <div class="stat card">
+          <div class="stat-num"><span class="counter" data-target="0.001" data-decimals="3">0</span><span class="unit">V</span></div>
+          <p><strong>How much the ISS smoke detector moved for Kapton and Teflon smoke</strong> (median obscuration drop) — versus <strong>0.30 V</strong> for Silicone. In <strong><span data-fill="no-response"></span> of <span data-fill="tests-analysed"></span></strong> analysed SAME-R tests the detector showed no response at all.</p>
+          <div class="src">Source: SAME-R / PSI-101 raw ISS telemetry, 68,699 readings.</div>
+        </div>
+        <div class="stat card">
+          <div class="stat-num"><span class="counter" data-target="14.17" data-decimals="2">0</span><span class="unit">vs 7.50</span></div>
+          <p><strong>Peak smoke concentration in microgravity vs on Earth</strong> (PSI-115 modelling grids, 8 cm case). In space, smoke does not rise and dilute — it hangs as a dense, distributed cloud.</p>
+          <div class="src">Source: PSI-115 smoke grids, 9,446,715 values parsed.</div>
+        </div>
+      </div>
+
+      <h2>One tool, three jobs</h2>
+      <div class="cards3">
+        <div class="card pillar p-prev">
+          <h3>🛡️ Prevention</h3>
+          <p><strong>Cabin Check</strong> — will this material burn in this cabin? Answered from matched real test rows, with the rows shown.</p>
+          <p><strong>Inventory Screener</strong> — paste a whole cabin material list, get one traffic-light risk table per atmosphere.</p>
+          <button class="goto" data-goto="cabin">Open Cabin Check →</button>
+        </div>
+        <div class="card pillar p-det">
+          <h3>👁️ Detection</h3>
+          <p>How smoke actually behaves in microgravity, and what the space station's own smoke detector really saw — including the smokes it barely sees at all.</p>
+          <button class="goto" data-goto="detection">Open Detection Panel →</button>
+        </div>
+        <div class="card pillar p-sup">
+          <h3>🧯 Suppression</h3>
+          <p>What actually put flames out in the tests — evidence matched from real extinction records, plus a predictor that <em>refuses</em> to answer outside tested data.</p>
+          <button class="goto" data-goto="suppression">Open Suppression View →</button>
+        </div>
+      </div>
+
+      <h2>Why this matters — it has already happened</h2>
+      <div class="cards3">
+        <div class="card story">
+          <div class="story-year">1967 · Apollo 1</div>
+          <h3>A spark in a pure-oxygen cabin</h3>
+          <p>During a launch-pad test, a fire swept the Apollo 1 capsule — filled with pure oxygen — and killed all three astronauts. It is the founding lesson of spacecraft fire safety: in an oxygen-rich cabin, materials burn far more readily than on Earth.</p>
+          <div class="src">Source: NASA / SMA Apollo 1 article (official challenge resource).</div>
+        </div>
+        <div class="card story">
+          <div class="story-year">1970 · Apollo 13</div>
+          <h3>An explosion, no fire — and a crew saved</h3>
+          <p>An oxygen tank exploded two days into the mission. There was no cabin fire, and the crew came home — the counterpoint story: atmosphere accidents in a sealed cabin leave almost no margin, fire or not.</p>
+          <div class="src">Source: NASA History, “Apollo 13: The Successful Failure” (official challenge resource).</div>
+        </div>
+        <div class="card story">
+          <div class="story-year">1997 · Mir</div>
+          <h3>A real fire on a space station</h3>
+          <p>An oxygen generator caught fire aboard the Mir station and burned for several minutes while the crew fought it with extinguishers. Proof that cabin fire in orbit is not theory — it has happened, and the crew had to suppress it by hand.</p>
+          <div class="src">Source: NASA History, “25 Years Ago: Fire Aboard Space Station Mir” (official challenge resource).</div>
+        </div>
+      </div>
+      <p class="foot-note">Built for the NASA Space Apps 2026 challenge <em>Flame in Freefall</em>. Data: NASA Physical Science Informatics (PSI). Method and full references in the <a href="#refs" data-goto="refs">References &amp; Method</a> section.</p>
+    </section>
+
+    <!-- ============ CABIN CHECK ============ -->
+    <section id="sec-cabin" class="sec">
+      <h1>Cabin Check <span class="tag tag-prev">Prevention</span></h1>
+      <p class="lede">Pick a material and a cabin atmosphere. The verdict comes only from real PSI test rows for that material at matching conditions — and the rows are shown. If nothing matches, the answer is <strong>NO TEST DATA</strong>, never a guess.</p>
+      <div class="panel">
+        <div class="form-grid">
+          <label>Material / fuel
+            <select id="cc-material"></select>
+          </label>
+          <label>Oxygen (O₂ %)
+            <input type="number" id="cc-o2" value="21" min="1" max="100" step="0.1">
+          </label>
+          <label>Pressure (psia) — optional
+            <input type="number" id="cc-p" value="14.7" min="1" max="60" step="0.1">
+          </label>
+          <label>Airflow (cm/s) — optional
+            <input type="number" id="cc-flow" placeholder="any" min="0" max="100" step="0.5">
+          </label>
+        </div>
+        <div class="preset-row">
+          <span>Presets:</span>
+          <button class="preset" data-o2="21" data-p="14.7">ISS cabin · 21% O₂ · 14.7 psia</button>
+          <button class="preset" data-o2="34" data-p="8.2">Moon exploration · 34% O₂ · 8.2 psia</button>
+          <button class="preset" data-o2="100" data-p="4.3">Spacesuit · 100% O₂ · 4.3 psia</button>
+        </div>
+        <button id="cc-run" class="run">Check against test data</button>
+        <div class="method-note">Matching method (open, not hidden): a row “matches” if its recorded O₂ is within ±2 points of yours (pressure within ±3 psia and airflow within ±5 cm/s when both sides record them). Rows within ±5 O₂ points count as “nearby”. Presets are scenario definitions from the challenge context, not measurements.</div>
+      </div>
+      <div id="cc-result"></div>
+    </section>
+
+    <!-- ============ SCREENER ============ -->
+    <section id="sec-screener" class="sec">
+      <h1>Inventory Screener <span class="tag tag-prev">Prevention</span></h1>
+      <p class="lede">Paste a cabin inventory — one material per line — and get one traffic-light verdict per atmosphere. Names must match materials in the PSI backbone (try: PMMA, SIBAL fabric, Nomex, Kapton, Teflon, Silicone, Pyrell, Lampwick, Wax candle, Methanol, Heptane, Ethylene, Propane).</p>
+      <div class="panel">
+        <textarea id="sc-input" rows="7">PMMA
+SIBAL fabric
+Nomex
+Kapton
+Teflon
+Silicone</textarea>
+        <button id="sc-run" class="run">Screen this inventory</button>
+        <div class="method-note">Verdict per atmosphere, from the material's real test rows: <span class="chip green">TESTED</span> a test row sits within ±1 O₂ point of the atmosphere · <span class="chip yellow">NEARBY ONLY</span> nearest test within ±4 points · <span class="chip red">GAP</span> never tested near this O₂ · <span class="chip grey">NOT IN PSI DATA</span> no test rows under this name. This is a coverage verdict (was it tested?), not a burn prediction.</div>
+      </div>
+      <div id="sc-result"></div>
+    </section>
+
+    <!-- ============ DETECTION ============ -->
+    <section id="sec-detection" class="sec">
+      <h1>Detection Panel <span class="tag tag-det">Detection</span></h1>
+      <p class="lede">Two independent data sources point the same way: in microgravity, smoke does not rise and clear — and the detector flying on the ISS barely responds to some of the most common cabin materials' smoke.</p>
+
+      <div class="card wide">
+        <h3>What the ISS smoke detector actually saw — SAME-R (PSI-101)</h3>
+        <p>Median drop of the station's obscuration detector when each material's smoke was generated (baseline ≈ 3.44 V; bigger drop = detector saw more smoke). Computed from 68,699 raw telemetry readings across 45 tests with raw files.</p>
+        <div id="det-chart"></div>
+        <div id="det-mat-table"></div>
+        <div class="src">Source: PSI-101 SAME-R raw HKP telemetry (44 files) + PSI-101 experimental table. Full method and caveats in References.</div>
+      </div>
+
+      <div class="cards2">
+        <div class="card finding">
+          <h3>⚠️ The three-channel lesson</h3>
+          <p>The obscuration beam is not the whole story. In Lampwick tests 80 and 82 the obscuration drop was only 0.06–0.08 V, yet the scatter channel median railed at <strong>−6.25 V</strong> (a saturation value — read it as “detector saturated”, not a concentration). Kapton test 62: obscuration barely moved (0.03 V) while scatter read −1.67 V and the ion channel 0.23 V. A detection panel must show all channels, not one.</p>
+          <div class="src">Source: SAME-R per-test analysis (samer_detection_by_test.csv).</div>
+        </div>
+        <div class="card finding">
+          <h3>🔬 The NIST finding</h3>
+          <p>Independent NIST work on spacecraft smoke detection found the same blind spot from the other side: the ISS photoelectric smoke detector responded poorly to Teflon and Kapton smoke — two materials all over a real cabin (wire insulation, films). Our count from the raw ISS data agrees: median response 0.001 V for both.</p>
+          <div class="src">Finding as reported in the challenge research from NIST spacecraft-fire-detection studies; detector numbers themselves are our count from PSI-101 raw files.</div>
+        </div>
+      </div>
+
+      <div class="card wide">
+        <h3>Smoke in space vs on Earth — PSI-115 modelling grids</h3>
+        <p>Same fire, two gravities. In microgravity the smoke covers fewer cells but concentrates: a dense, distributed cloud instead of a rising plume (peak ≈ 2× Earth in the 8 cm case).</p>
+        <div id="psi115-chart"></div>
+        <div id="psi115-table"></div>
+        <div class="src">Source: PSI-115 (SAME smoke modelling), 44 grid files, 9,446,715 values parsed. This is modelling data — labelled as such, never presented as flight measurements.</div>
+      </div>
+
+      <div class="card wide">
+        <h3>Every analysed SAME-R test (45)</h3>
+        <div id="det-test-table" class="scroll-table"></div>
+        <div class="src">Only 45 of the 109 SAME-R tests have raw telemetry files in PSI-101 (tests 58–108); the rest have no raw file in the repository. “No response” means the detector stayed at baseline while smoke was generated — these files contain no alarm threshold, so we do not claim an alarm failed.</div>
+      </div>
+    </section>
+
+    <!-- ============ SUPPRESSION ============ -->
+    <section id="sec-suppression" class="sec">
+      <h1>Suppression View <span class="tag tag-sup">Suppression</span></h1>
+      <p class="lede">What actually put flames out — from the test record, not from opinion. One honest limitation first: <strong>the PSI tables record no diluent type or fraction for any test</strong>, so no honest “which gas at what %” model exists in this data. What the data <em>does</em> support is below: matched real extinction evidence.</p>
+
+      <div class="panel">
+        <h3>Evidence-matched extinction lookup (FLEX droplet tests)</h3>
+        <div class="form-grid">
+          <label>Fuel
+            <select id="sup-fuel"><option>Methanol</option><option>Heptane</option></select>
+          </label>
+          <label>Oxygen (O₂ %)
+            <input type="number" id="sup-o2" value="21" min="1" max="100" step="0.1">
+          </label>
+          <label>Pressure (psia)
+            <input type="number" id="sup-p" value="14.7" min="1" max="60" step="0.1">
+          </label>
+        </div>
+        <button id="sup-run" class="run">Find matched test rows</button>
+        <div class="method-note">Matches FLEX (PSI-69) rows for the same fuel within ±3 O₂ points and ±5 psia, and reports how those real tests ended. This is an evidence lookup over <span data-fill="flex-n"></span> test rows — not a trained model.</div>
+      </div>
+      <div id="sup-result"></div>
+
+      <div class="card wide">
+        <h3>How often flames went out, by oxygen level (FLEX, PSI-69)</h3>
+        <p>Share of tests ending in Extinction at each O₂ band. The pattern is the suppression story in one chart: the more oxygen, the harder a flame is to kill.</p>
+        <div id="sup-chart"></div>
+        <div class="src">Source: PSI-69 FLEX experimental table — every bar is a count of real test rows (n shown).</div>
+      </div>
+
+      <div class="cards3">
+        <div class="card finding">
+          <h3>💨 A suppressant jet alone is not enough</h3>
+          <p>NASA's Researcher's Guide to ISS Combustion Science states a hard-won lesson from the BASS programme: local application of suppressant was <strong>not adequate</strong> to extinguish the flame — the jet entrains surrounding air and sustains the flame even with the ventilation turned off.</p>
+          <div class="src">Source: Researcher's Guide to ISS Combustion Science (official challenge resource, PDF).</div>
+        </div>
+        <div class="card finding">
+          <h3>🧱 Solids: what BASS can and cannot say</h3>
+          <p>The BASS / BASS-II tables (<span data-fill="bass-n"></span> rows: <span data-fill="bass-mats"></span>) record the conditions solids were burned at — O₂ <span data-fill="bass-o2"></span> — but the PSI tables contain <strong>no suppression-outcome column</strong>. So for solids we show coverage, not extinguishment claims.</p>
+          <div class="src">Source: PSI-25 / PSI-26 experimental tables, NASA PSI backbone.</div>
+        </div>
+        <div class="card finding">
+          <h3>📈 Oxygen makes flame spread explode</h3>
+          <p>In the SSCE thin-fuel tests (PSI-108), flame spread over a thin cellulosic fuel ran at <strong>0.092 cm/s at 35% O₂ / 1 atm</strong> — and <strong>0.547 cm/s at 50% O₂ / 2 atm</strong>, about 6× faster. Suppressing late in a high-O₂ cabin means chasing a much faster fire.</p>
+          <div class="src">Source: PSI-108 SSCE report text, extracted from the PSI study files.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SAFE PREDICTOR ============ -->
+    <section id="sec-predictor" class="sec">
+      <h1>Safe Predictor <span class="tag tag-sup">Suppression · Model</span></h1>
+      <p class="lede">A small decision tree, trained in Python on real FLEX droplet tests, that predicts whether a test flame went out — <strong>and refuses to answer outside the tested envelope</strong>. A model that guesses beyond its data is how you get dangerous wrong answers; this one abstains.</p>
+      <div class="panel">
+        <div class="form-grid">
+          <label>Fuel
+            <select id="pr-fuel"><option>Methanol</option><option>Heptane</option></select>
+          </label>
+          <label>Oxygen (O₂ %)
+            <input type="number" id="pr-o2" value="21" min="1" max="100" step="0.1">
+          </label>
+          <label>Pressure (psia)
+            <input type="number" id="pr-p" value="14.7" min="1" max="60" step="0.1">
+          </label>
+        </div>
+        <button id="pr-run" class="run">Predict — or abstain</button>
+        <div class="method-note">Tested envelope (from the training rows themselves): fuels Methanol &amp; Heptane only · O₂ <span data-fill="env-o2"></span> · pressure <span data-fill="env-p"></span> psia. Anything outside → the model refuses. Try O₂ 60% to see it abstain.</div>
+      </div>
+      <div id="pr-result"></div>
+      <div class="card wide">
+        <h3>Honest validation — how well does it actually do?</h3>
+        <div id="pr-validation"></div>
+        <div class="src">Trained with scikit-learn (decision tree, max depth 4) on PSI-69 FLEX rows; validation on a held-out 20% the model never saw. Cross-check against PSI-117 was attempted and is <em>not possible</em>: the PSI-117 table has no oxygen column and no extinction yes/no outcome (it records droplet diameter at extinction) — see References.</div>
+      </div>
+    </section>
+
+    <!-- ============ CARDS ============ -->
+    <section id="sec-cards" class="sec">
+      <h1>Investigation Cards <span class="tag">Explore</span></h1>
+      <p class="lede">The whole backbone, one card per investigation — all 19 PSI investigations behind this dashboard, with their real row counts, tested ranges and DOIs.</p>
+      <div class="panel">
+        <div class="form-grid">
+          <label>Search by name, accession or material
+            <input type="text" id="card-search" placeholder="e.g. BASS, PSI-69, smoke…">
+          </label>
+        </div>
+        <div class="preset-row" id="card-filters">
+          <button class="preset active" data-family="all">All 19</button>
+          <button class="preset" data-family="solids">Solids</button>
+          <button class="preset" data-family="droplets">Droplets</button>
+          <button class="preset" data-family="gas">Gas flames</button>
+          <button class="preset" data-family="smoke">Smoke &amp; detection</button>
+        </div>
+      </div>
+      <div id="cards-grid" class="cards-grid"></div>
+      <div id="cards-empty"></div>
+    </section>
+
+    <!-- ============ REFERENCES ============ -->
+    <section id="sec-refs" class="sec">
+      <h1>References &amp; Method</h1>
+      <p class="lede">Everything this dashboard uses, where it came from, and the rules it follows. Prepared for the Space Apps submission attestation: all external resources are listed here.</p>
+
+      <div class="card wide">
+        <h3>Datasets (NASA Physical Science Informatics — PSI)</h3>
+        <div id="refs-datasets" class="scroll-table"></div>
+        <p>Plus: <strong>PSI-115</strong> — SAME smoke modelling (DOI <a href="https://doi.org/10.60555/q0v5-1v28" target="_blank" rel="noopener">10.60555/q0v5-1v28</a>), 44 grid files / 9,446,715 values; <strong>PSI-117</strong> — cool-flame CFD/proceedings (DOI <a href="https://doi.org/10.60555/gz0q-b577" target="_blank" rel="noopener">10.60555/gz0q-b577</a>), 2,859 rows — <em>model/proceedings data, labelled as such wherever used</em>; <strong>PSI-108</strong> — STDCE-1 / SSCE thin-fuel flame-spread report. PSI-60 and PSI-62 were checked and contain no data files (metadata only). The 2,012-row backbone is the public cleaned compilation of the PSI experimental tables listed above (SPICA project file, NASA Space Apps 2026), re-verified row-by-row against direct PSI downloads (2,001 of 2,012 rows reproduced exactly from the 21 named tables; the backbone was kept as the more complete source).</p>
+      </div>
+
+      <div class="card wide">
+        <h3>The 10 official challenge resources</h3>
+        <ol class="refs-list">
+          <li>PSI Data Repository — <a href="https://psi.nasa.gov/physci/repo/search?q=combustion" target="_blank" rel="noopener">psi.nasa.gov/physci/repo/search?q=combustion</a></li>
+          <li>Combustion Science overview (NASA Glenn) — <a href="https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/" target="_blank" rel="noopener">nasa.gov/glenn/…/combustion-science</a></li>
+          <li>ScienceCasts video “Studying Fire in Space” — <a href="https://www.youtube.com/watch?v=B9NnT4Xz5mU" target="_blank" rel="noopener">youtube.com/watch?v=B9NnT4Xz5mU</a></li>
+          <li>Researcher's Guide to ISS Combustion Science (PDF) — <a href="https://www.nasa.gov/wp-content/uploads/2016/05/np-2015-10-034-jsc_combustion_in_reduced_gravity-iss-mini-book-011116-508.pdf" target="_blank" rel="noopener">nasa.gov (recovered official URL; the challenge-page link is dead)</a></li>
+          <li>Apollo 1 — <a href="https://sma.nasa.gov/sma-disciplines/accllp/apollo-1" target="_blank" rel="noopener">sma.nasa.gov/sma-disciplines/accllp/apollo-1</a></li>
+          <li>Apollo 13 — <a href="https://www.nasa.gov/history/apollo-13-the-successful-failure/" target="_blank" rel="noopener">nasa.gov/history/apollo-13-the-successful-failure</a></li>
+          <li>Mir fire — <a href="https://www.nasa.gov/history/25-years-ago-fire-aboard-space-station-mir/" target="_blank" rel="noopener">nasa.gov/history/25-years-ago-fire-aboard-space-station-mir</a></li>
+          <li>Spinoff: Fireman's Air Tanks — <a href="https://spinoff.nasa.gov/node/9582" target="_blank" rel="noopener">spinoff.nasa.gov/node/9582</a></li>
+          <li>Spinoff: Fire Detector — <a href="https://spinoff.nasa.gov/node/9407" target="_blank" rel="noopener">spinoff.nasa.gov/node/9407</a></li>
+          <li>Spinoff: Fire Attire — <a href="https://spinoff.nasa.gov/node/9918" target="_blank" rel="noopener">spinoff.nasa.gov/node/9918</a></li>
+        </ol>
+      </div>
+
+      <div class="card wide">
+        <h3>Method — the honesty rules</h3>
+        <ul class="refs-list">
+          <li><strong>No extrapolation.</strong> Verdicts come from matched test rows; the predictor refuses outside its tested envelope. “No test data” is a first-class answer, not an error.</li>
+          <li><strong>Every number traces to a file.</strong> Counts, ranges and chart values are computed from the downloaded PSI files listed above — an audit of every displayed number is in the project build report.</li>
+          <li><strong>Coverage ≠ outcome.</strong> Most PSI tables record test <em>conditions</em>, not burn outcomes. Where a table has no outcome column (e.g. BASS solids), the app says so and shows coverage only.</li>
+          <li><strong>PSI-117 is model/proceedings data</strong> (CFD + conference proceedings), never presented as ISS flight test rows.</li>
+          <li><strong>Detection caveats.</strong> SAME-R scatter −6.25 V is a saturation rail, not a concentration. “No detector response” means the signal stayed at baseline; the files hold no alarm threshold, so no alarm-failure claim is made. The 8 “STS det” configuration runs are included in per-test counts but the material ranking also holds on the 37 ISS-detector runs.</li>
+          <li><strong>What we did not build, and why:</strong> a diluent/suppression-gas model — the PSI tables record no diluent type or fraction for any test, so any such model would be invented. The Suppression View is an evidence lookup instead.</li>
+        </ul>
+      </div>
+
+      <div class="card wide">
+        <h3>Tools &amp; attestation</h3>
+        <p>Built as a static web app (HTML/CSS/JavaScript) with the GSAP animation library (CDN). Decision-tree model trained with scikit-learn in Python and exported to JSON for in-browser inference. <strong>AI tools were used in building this project</strong> (Muse / “Spark” assisted with data extraction, analysis code, model training and app development) — declared here for the Space Apps original-work attestation. All scientific data is NASA's, via the public PSI repository, cited per investigation above.</p>
+      </div>
+    </section>
+
+    <div id="selftest" style="display:none"></div>
+  </main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
