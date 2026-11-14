@@ -388,9 +388,16 @@ Silicone</textarea>
         <h3>🔥 Flame spread, simulated — Earth vs microgravity</h3>
         <p>A thin fuel surface runs along the bottom of each grid. It ignites in the middle and the burning front spreads outward at the rate set by the oxygen slider. Above the surface the two worlds part: on Earth a buoyant updraft stretches flame and smoke into a rising plume that disperses; in microgravity there is no bulk flow, so the flame stays round and the smoke accumulates around it instead of rising — the behaviour the PSI-115 modelling grids record (in microgravity smoke concentrates: <strong>peak ≈ 2× Earth's</strong> in the 8 cm case).</p>
 
+        <div class="fl-legend" aria-label="What is measured and what is simulated">
+          <p class="fl-legend-row"><span class="dchip dc-test">EXPERIMENTAL EVIDENCE</span><span class="fl-legend-text">NASA measurements used here: flame-spread rates (PSI-108) · detector response levels (SAME-R) · test outcomes (FLEX)</span></p>
+          <p class="fl-legend-row"><span class="dchip dc-modelling">SIMULATION</span><span class="fl-legend-text">The flame pictures are computed from those measurements — they are not recordings.</span></p>
+        </div>
+
         <div id="fl-moon" class="fl-moon" style="display:none">
           <p><strong>Moon cabin: 34% O₂, 8.2 psia.</strong> No solid material has ever been tested at this oxygen level — this picture is a model; the tested verdict is <strong>NO TEST DATA</strong>. <a href="#cabin" data-goto="cabin">Run the real Cabin Check →</a></p>
         </div>
+
+        <div class="fl-sim-strip">SIMULATED BEHAVIOUR — this is a visualisation, not a recording</div>
 
         <div class="flame-pair">
           <figure id="fl-fig-earth">
@@ -417,6 +424,7 @@ Silicone</textarea>
           <div class="fl-meter-row">
             <span class="fl-meter-label">ISS detector — simulated reading (from the microgravity smoke)</span>
             <div class="fl-meter"><div class="fl-meter-fill" id="fl-meter-fill"></div></div>
+            <span class="dchip dc-test fl-meter-tag">MEASURED LEVELS — SAME-R</span>
             <span class="fl-readout" id="fl-meter-val">0.000 V</span>
           </div>
           <p class="chart-note" id="fl-meter-note">Smoke is simulated; the response levels are the measured SAME-R medians.</p>
@@ -428,8 +436,8 @@ Silicone</textarea>
             <div class="replay-controls" style="margin-top:6px">
               <input type="range" id="fl-o2" min="21" max="50" step="1" value="35">
               <span class="replay-clock" id="fl-o2-val">35% O₂</span>
-              <span class="fl-readout" id="fl-rate">0.092 cm/s — measured (PSI-108)</span>
             </div>
+            <span class="fl-readout" id="fl-rate">0.092 cm/s — measured (PSI-108)</span>
             <p class="chart-note">Measured anchors (PSI-108): <strong>0.092 cm/s at 35% O₂ / 1 atm</strong> · <strong>0.547 cm/s at 50% O₂ / 2 atm</strong> — about 6× faster. Between the anchors the rate is interpolated linearly; below 35% it is held at the 35% anchor's rate — the lowest measured rate, not an extrapolation. Simulation scale: <strong>×40 real time · 1 cm = 8 px</strong>, so at the anchors the front crosses the fuel surface at exactly the measured speed. The run replays automatically when it burns out.</p>
           </div>
           <div class="preset-row">
