@@ -1011,7 +1011,17 @@ let flEarth = null, flUG = null, flReduced = false, flLast = 0;
    glow, the detached tip fragments are gone and Earth texture particles
    render only inside a flame body; the µg view draws ONE ball on the
    principal burning run with a calm gradient interior (particles are a
-   faint whisper inside that ball only) — still rendering only. */
+   faint whisper inside that ball only) — still rendering only.
+   Iteration 4 (same day): the µg rim stroke is GONE and the ball is no
+   longer a perfect circle — its envelope is a noise-deformed closed path
+   whose edge wobbles ±5% and evolves slowly, filled by the gradient's own
+   falloff, with 2–3 large soft glow masses drifting inside (clipped to
+   the envelope) so the sphere reads as a volume of burning gas, not a
+   solid planet; the Earth layers are feathered (extra expanded low-alpha
+   passes, wider inner layers) so they melt into one flame instead of
+   stacked leaf silhouettes, with stronger height-weighted edge noise;
+   the ground washes feather out at both ends — no rectangular blocks.
+   Still rendering only. */
 function flMakeSprite(stops) {
   const cv = document.createElement('canvas'); cv.width = cv.height = 128;
   const g = cv.getContext('2d');
@@ -1231,8 +1241,25 @@ function flDrawGround(s) {
     if (v === 3) { if (c < bMin) bMin = c; if (c > bMax) bMax = c; }
     else if (v === 4) { if (c < cMin) cMin = c; if (c > cMax) cMax = c; }
   }
-  if (bMax >= 0) { ctx.fillStyle = 'rgba(8,8,12,.52)'; ctx.fillRect(FL.ox + bMin * FL.cell, top, (bMax - bMin + 1) * FL.cell, bot - top); }
-  if (cMax >= 0) { ctx.fillStyle = 'rgba(125,180,250,.15)'; ctx.fillRect(FL.ox + cMin * FL.cell, top, (cMax - cMin + 1) * FL.cell, bot - top); }
+  /* burned / cool washes feather out at both ends — a horizontal gradient
+     over a span extended past the extent (clipped to the band), so no
+     straight vertical edge or rectangular block can appear */
+  const wash = (minC, maxC, rgb, alpha) => {
+    const fade = FL.cell * 3;
+    const wx0 = FL.ox + minC * FL.cell - fade, wx1 = FL.ox + (maxC + 1) * FL.cell + fade;
+    const wg = ctx.createLinearGradient(wx0, 0, wx1, 0);
+    const f = fade / (wx1 - wx0);
+    wg.addColorStop(0, `rgba(${rgb},0)`);
+    wg.addColorStop(f, `rgba(${rgb},${alpha})`);
+    wg.addColorStop(1 - f, `rgba(${rgb},${alpha})`);
+    wg.addColorStop(1, `rgba(${rgb},0)`);
+    ctx.fillStyle = wg; ctx.fillRect(wx0, top, wx1 - wx0, bot - top);
+  };
+  ctx.save();
+  ctx.beginPath(); ctx.rect(x0, top, x1 - x0, bot - top); ctx.clip();
+  if (bMax >= 0) wash(bMin, bMax, '8,8,12', .52);
+  if (cMax >= 0) wash(cMin, cMax, '125,180,250', .15);
+  ctx.restore();
   ctx.fillStyle = 'rgba(216,170,96,.5)'; ctx.fillRect(x0, top, x1 - x0, 2);
   /* warm ember glow hugging the surface under each burning run */
   const SPR = flSprites();
@@ -1251,7 +1278,7 @@ function flDrawGround(s) {
    edge carries its own uneven noise deformation — so the silhouette can
    never read as a mirrored, geometric shape or a round glow orb. */
 function flTeardropPath(ctx, cx, baseY, wBody, h, seed, t, sway) {
-  const N = 14;
+  const N = 16;
   const lean = Math.sin(seed * 7.31) * 11;
   const peakL = .34 + .07 * Math.sin(seed * 3.7);
   const peakR = .47 - .07 * Math.sin(seed * 3.7);
@@ -1262,11 +1289,14 @@ function flTeardropPath(ctx, cx, baseY, wBody, h, seed, t, sway) {
   const spine = u => cx + (lean + sway) * u * u + flNoise(seed + u * 3.1, t * .9) * 6 * u;
   const pts = [];
   for (let i = 0; i <= N; i++) {
-    const u = i / N, j = 1 + .21 * flNoise(seed * 2 + u * 6.7, t * 1.25);
+    /* edge noise grows with height — the base stays planted while the
+       edges and tip flicker organically — plus a fine high-frequency
+       term so the boundary never reads as a smooth geometric curve */
+    const u = i / N, j = 1 + (.12 + .19 * u) * flNoise(seed * 2 + u * 6.7, t * 1.25) + .06 * flNoise(seed * 3.3 + u * 13.0, t * 2.2);
     pts.push([spine(u) - half(u, peakL) * j, baseY - u * h]);
   }
   for (let i = N; i >= 0; i--) {
-    const u = i / N, j = 1 + .21 * flNoise(seed * 2 + 40 + u * 6.7, t * 1.25) + .10 * Math.sin(u * Math.PI);
+    const u = i / N, j = 1 + (.12 + .19 * u) * flNoise(seed * 2 + 40 + u * 6.7, t * 1.25) + .06 * flNoise(seed * 3.3 + 51 + u * 13.0, t * 2.2) + .10 * Math.sin(u * Math.PI);
     pts.push([spine(u) + half(u, peakR) * j, baseY - u * h]);
   }
   ctx.beginPath();
@@ -1305,48 +1335,109 @@ function flDrawEarthFlame(ctx, cl, surfY, t, ventDim) {
   ctx.globalCompositeOperation = 'lighter';
   /* faint wide atmospheric glow behind the body — atmosphere only, far
      too dim and broad to read as a blob */
-  const gw = wBody * 1.9, gh = h * 1.02;
-  ctx.globalAlpha = .15 * ventDim;
+  const gw = wBody * 2.2, gh = h * 1.02;
+  ctx.globalAlpha = .13 * ventDim;
   ctx.drawImage(flSprites().earth, cl.cx - gw / 2, baseY - gh * .88, gw, gh);
   /* low wide foot glow — blends the flame's base into the surface embers */
   const fw = wBody * 1.55;
   ctx.globalAlpha = .20 * ventDim;
   ctx.drawImage(flSprites().earth, cl.cx - fw / 2, surfY - 13, fw, 27);
-  /* each layer gets its own noise seed so the silhouettes deform
-     independently instead of nesting like contour lines */
-  flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed, t, sway, 1, 1,
-    [[0, 'rgba(255,122,20,.46)'], [.22, 'rgba(250,96,12,.40)'], [.48, 'rgba(238,74,6,.30)'], [.72, 'rgba(224,56,2,.16)'], [1, 'rgba(205,44,0,0)']], .88 * ventDim);
-  flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed + 3.7, t, sway, .74, .84,
-    [[0, 'rgba(255,176,44,.52)'], [.28, 'rgba(255,152,30,.42)'], [.55, 'rgba(255,128,22,.26)'], [.8, 'rgba(255,110,14,.10)'], [1, 'rgba(255,100,10,0)']], .62 * ventDim);
-  flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed + 7.4, t, sway, .50, .62,
-    [[0, 'rgba(255,220,102,.56)'], [.3, 'rgba(255,202,76,.44)'], [.6, 'rgba(255,182,64,.24)'], [.85, 'rgba(255,168,46,.08)'], [1, 'rgba(255,160,40,0)']], .58 * ventDim);
-  flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed + 11.1, t, sway, .27, .44,
-    [[0, 'rgba(255,250,220,.90)'], [.35, 'rgba(255,238,168,.62)'], [.65, 'rgba(255,226,130,.34)'], [.88, 'rgba(255,214,102,.12)'], [1, 'rgba(255,205,90,0)']], .76 * ventDim);
+  /* Each layer gets its own noise seed so the silhouettes deform
+     independently instead of nesting like contour lines. Iteration 4:
+     the layers are FEATHERED into each other — the outer silhouette is
+     drawn again slightly expanded at low alpha (and the amber layer
+     likewise), so its edge falls off softly instead of tracing a hard
+     contour, and the inner layers sit wider with gentler alphas, so the
+     four shapes melt into one flame with internal colour variation
+     rather than reading as stacked transparent leaves. */
+  const stopsOuter = [[0, 'rgba(255,122,20,.46)'], [.22, 'rgba(250,96,12,.40)'], [.48, 'rgba(238,74,6,.30)'], [.72, 'rgba(224,56,2,.16)'], [1, 'rgba(205,44,0,0)']];
+  const stopsAmber = [[0, 'rgba(255,176,44,.52)'], [.28, 'rgba(255,152,30,.42)'], [.55, 'rgba(255,128,22,.26)'], [.8, 'rgba(255,110,14,.10)'], [1, 'rgba(255,100,10,0)']];
+  const stopsYellow = [[0, 'rgba(255,220,102,.56)'], [.3, 'rgba(255,202,76,.44)'], [.6, 'rgba(255,182,64,.24)'], [.85, 'rgba(255,168,46,.08)'], [1, 'rgba(255,160,40,0)']];
+  flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed, t, sway, 1.10, 1.06, stopsOuter, .20 * ventDim);
+  flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed, t, sway, 1.05, 1.03, stopsOuter, .38 * ventDim);
+  flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed, t, sway, 1, 1, stopsOuter, .78 * ventDim);
+  flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed + 3.7, t, sway, .92, .97, stopsAmber, .16 * ventDim);
+  flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed + 3.7, t, sway, .86, .93, stopsAmber, .20 * ventDim);
+  flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed + 3.7, t, sway, .80, .88,
+    stopsAmber, .50 * ventDim);
+  flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed + 7.4, t, sway, .68, .78, stopsYellow, .16 * ventDim);
+  flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed + 7.4, t, sway, .60, .70, stopsYellow, .48 * ventDim);
+  flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed + 11.1, t, sway, .36, .52,
+    [[0, 'rgba(255,250,220,.90)'], [.35, 'rgba(255,238,168,.62)'], [.65, 'rgba(255,226,130,.34)'], [.88, 'rgba(255,214,102,.12)'], [1, 'rgba(255,205,90,0)']], .72 * ventDim);
   ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
 }
-/* Microgravity sphere: concentric radial layers with a defined boundary
-   falloff, drawn source-over so the centre can never blow out to white.
-   Uniform breathing (scale/alpha, a few percent) instead of blob noise.
-   The pale core and crisp rim are drawn after the particles (flDrawUGCore). */
+/* The microgravity envelope as a noise-deformed closed path: the radius
+   wobbles ±5% around the circle, the wobble field is built from sin/cos of
+   the angle so it is continuous around the full turn (no seam), and it
+   evolves slowly in time — the boundary is never a perfect circle and
+   never jagged. Rendering only. */
+function flUGBallPath(ctx, cx, cy, R, t) {
+  const N = 30, pts = [];
+  for (let i = 0; i < N; i++) {
+    const a = i / N * 6.2832;
+    const wob = flNoise(31.7 + 2.3 * Math.sin(a + 1.1) + 1.9 * Math.cos(a - .6), t * .4);
+    const r = R * (1 + .05 * wob);
+    pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]);
+  }
+  ctx.beginPath();
+  ctx.moveTo((pts[0][0] + pts[N - 1][0]) / 2, (pts[0][1] + pts[N - 1][1]) / 2);
+  for (let i = 0; i < N; i++) {
+    const p = pts[i], q = pts[(i + 1) % N];
+    ctx.quadraticCurveTo(p[0], p[1], (p[0] + q[0]) / 2, (p[1] + q[1]) / 2);
+  }
+  ctx.closePath();
+}
+/* Microgravity flame: a VOLUME of burning gas, not a solid ball. There is
+   deliberately NO rim stroke and NO perfect circle — the envelope path
+   wobbles gently, the fill is a radial gradient (white-blue luminous core
+   → cyan → deep blue) whose own falloff reaches transparency at the edge,
+   a soft halo spills beyond the envelope, and three LARGE, very soft glow
+   masses drift slowly inside (clipped to the envelope) so the luminosity
+   is organic at a big scale — never the small-spot mottling of iteration
+   2, never a flat planet surface. Drawn mostly source-over so the centre
+   cannot blow out. The soft pale core is added after the particles
+   (flDrawUGCore). */
 function flDrawUGBall(ctx, g, t, ventDim) {
   const SPR = flSprites();
   const breathe = 1 + .03 * flNoise(11.3, t * .55);
   const R = g.R * breathe, cx = g.cx, cy = g.cy;
-  const dh = R * 3.6;
+  /* soft radial halo extending well beyond the envelope, fading out */
   ctx.globalCompositeOperation = 'lighter';
-  ctx.globalAlpha = .07 * ventDim;
+  const dh = R * 4.4;
+  ctx.globalAlpha = .06 * ventDim;
   ctx.drawImage(SPR.ug, cx - dh / 2, cy - dh / 2, dh, dh);
+  const dh2 = R * 2.7;
+  ctx.globalAlpha = .05 * ventDim;
+  ctx.drawImage(SPR.ug, cx - dh2 / 2, cy - dh2 / 2, dh2, dh2);
   ctx.globalCompositeOperation = 'source-over';
+  /* the envelope itself */
+  flUGBallPath(ctx, cx, cy, R, t);
   const gr = ctx.createRadialGradient(cx, cy, 0, cx, cy, R);
-  gr.addColorStop(0, 'rgba(198,226,255,.80)');
-  gr.addColorStop(.30, 'rgba(142,192,255,.66)');
-  gr.addColorStop(.55, 'rgba(84,144,250,.58)');
-  gr.addColorStop(.78, 'rgba(50,100,228,.52)');
-  gr.addColorStop(.92, 'rgba(36,76,205,.30)');
-  gr.addColorStop(1, 'rgba(28,58,190,0)');
+  gr.addColorStop(0, 'rgba(200,228,255,.82)');
+  gr.addColorStop(.28, 'rgba(148,196,255,.68)');
+  gr.addColorStop(.52, 'rgba(92,152,252,.60)');
+  gr.addColorStop(.74, 'rgba(58,108,232,.52)');
+  gr.addColorStop(.88, 'rgba(42,82,212,.26)');
+  gr.addColorStop(1, 'rgba(30,60,195,0)');
   ctx.globalAlpha = (.95 + .05 * flNoise(4.2, t * .55)) * ventDim;
-  ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.2832); ctx.fillStyle = gr; ctx.fill();
+  ctx.fillStyle = gr; ctx.fill();
+  /* large soft glow masses drifting slowly inside the envelope */
+  ctx.save();
+  flUGBallPath(ctx, cx, cy, R, t);
+  ctx.clip();
+  ctx.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 3; i++) {
+    const sd = 5.1 + i * 7.7;
+    const ang = t * .06 * (1 + i * .6) + sd;
+    const dist = R * (.15 + .11 * (0.5 + 0.5 * flNoise(sd, t * .23)));
+    const mx = cx + Math.cos(ang) * dist * 1.35, my = cy + Math.sin(ang) * dist * .8;
+    const md = R * (1.05 + .3 * i);
+    ctx.globalAlpha = (.15 - .03 * i) * ventDim;
+    ctx.drawImage(SPR.ugSoft, mx - md / 2, my - md / 2, md, md);
+  }
+  ctx.restore();
   ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
   return { cx, cy, R };
 }
 function flDrawUGCore(ctx, ball, ventDim) {
@@ -1360,9 +1451,9 @@ function flDrawUGCore(ctx, ball, ventDim) {
   ctx.globalAlpha = .36 * ventDim;
   ctx.beginPath(); ctx.arc(cx, cy, cr, 0, 6.2832); ctx.fillStyle = cg; ctx.fill();
   ctx.globalCompositeOperation = 'source-over';
-  ctx.globalAlpha = .40 * ventDim;
-  ctx.beginPath(); ctx.arc(cx, cy, R * .965, 0, 6.2832);
-  ctx.strokeStyle = 'rgba(150,198,255,.85)'; ctx.lineWidth = 1.4; ctx.stroke();
+  /* NO rim stroke (removed in iteration 4): a hard circular outline is
+     what made the sphere read as a planet / glass ball — the spherical
+     read now comes only from the envelope's own glowing falloff */
   ctx.globalAlpha = 1;
 }
 function flDraw(s) {
