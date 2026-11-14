@@ -1,5 +1,5 @@
 # BUILD REPORT — Flame in Freefall web app
-**Built:** Sat Nov 14, 2026 (solo build; teammates unavailable) · **Status: complete, verified locally. NOT pushed, NOT deployed** (deployment is the parent agent's step after verification).
+**Built:** Sat Nov 14, 2026 (solo build; teammates unavailable) · **Status: DEPLOYED to GitHub Pages (https://muneer-ul-hassan.github.io/flame-in-freefall/) and hostile-audited (see Audit section); the Final build section at the end of this report describes the Nov-14 consolidated upgrade, applied locally and verified — its redeploy is the parent agent's next step.**
 
 ## Location & stack
 - App: `~/workspace/nasa-challenge/flame-app/` — `index.html`, `style.css`, `app.js`, `data/*.json`
@@ -112,3 +112,160 @@ Method: 30+ displayed numbers recomputed from the SOURCE files (cleaned.json, sa
 - `?selftest=1`: **10/10 PASS at root and under `/flame-in-freefall/`**, zero FAIL lines, no page JS errors (only Chrome-internal component messages).
 - Harness re-run: every previously broken case now returns the honest grey/abstain state; previously correct cases (PMMA@21% → 43 rows, Moon GAP, predictor boundaries, card filters 19/5/2/9/3) unchanged.
 - Fixes are LOCAL only — the live GitHub Pages copy still serves the pre-audit build until the changed files (index.html, app.js, data/backbone.json, data/investigations.json, prep_data.py, BUILD-REPORT.md) are re-uploaded.
+
+
+---
+
+# Final build — Nov 14, 2026 (consolidation pass)
+
+Everything from the hostile audit, the competitor gap analysis, the full-feature
+inventory (69 features), the data-ideas feasibility file and the winner-brainstorm
+red team was consolidated into this folder in one pass. New prep code:
+`prep_final.py` (alongside `prep_data.py`) — every new number below was computed
+by it from the source files in `~/workspace/nasa-challenge/data/`; a full re-run
+reproduces `data/extra.json` and `data/archive.json` byte-identically (73,735 B /
+1,158,274 B). Self-test extended from 10 to **26 assertions — 26/26 PASS at the
+server root AND under the `/flame-in-freefall/` subpath**, zero page JS errors
+(Chrome console shows only Chrome-internal component messages). Screenshots
+checked: Home, Cabin Check, Detection, Predictor, Archive at desktop width and
+Detection/Home at 400 px.
+
+## P0 — red-team fixes + identity
+- **DONE — "Tested-or-Silent" named in the app:** method banner directly under
+  the hero (name + the pack's definition verbatim) and a method card in
+  References. Also in the README.
+- **DONE — pre-run refusal card on Home:** computed at load by the real
+  `cabinCheck()` — PMMA has 180 test rows, tested up to 22.2% O₂, **0 matched
+  rows at 34% O₂ / 8.2 psia**. The "Run it yourself" button deep-links to Cabin
+  Check pre-filled (`#cabin` + state handoff; `?mat=&o2=&p=` URL params also
+  work) — verified in the rendered DOM and by self-test.
+- **DONE — 68,699 vs 63,397 clarified** in a note directly under the dataset
+  band (and the Detection source lines already carried it): downloaded corpus
+  vs samples inside the 45 analysed tests.
+- **DONE — "2,012 records" wording** wherever day-aggregate rows are in scope
+  (hero counters, dataset band, screener note, archive); BUILD-REPORT header
+  status corrected (deployed + audited).
+- **DONE — data-class trust chips:** TEST DATA / MODELLING / REPORT / MODEL
+  chips label every major output (Home stats, quiz, replay, pairing, wake-up,
+  distributions, PSI-117, PSD, frontier, scatter, predictor + map + burn,
+  archive, method card explains the system).
+
+## P1 — planned upgrades
+- **DONE — SAME-R telemetry replay:** three real HKP traces (test 66 Silicone,
+  62 Kapton, 82 Lampwick) from `data/replay.json` (downsampled ×2 for display,
+  readings unmodified), play/pause/scrub, per-channel min–max scaling with the
+  exact values under the cursor; labelled precisely as a replay of raw SAME-R
+  HKP telemetry with an explicit "no claim to be the first" line. Self-test
+  asserts Kapton's obscuration range (0.121 V) < Silicone's (1.433 V).
+- **DONE — real NASA imagery, downloaded (no hotlinks), credited on-page:**
+  Saffire-IV PMMA flame row (jsc2023e046631, og:image), Saffire-IV burning
+  fabric sample (jsc2023e046375, Detection), GRC candle 1-g vs microgravity
+  comparison (GRC-1998-C-00485, References). Two GRC "SAFFIRE" downloads whose
+  metadata did not match their actual content (electronics bench photos) were
+  rejected and deleted — no unverified caption ships.
+- **DONE — PSI-115 smoke stills + case switcher:** 8 cm and 10 cm pairs
+  rendered from the .dat grids (240×960, shared colour scale per pair, µg peak
+  ≈2× Earth), with the feasibility file's caveat text verbatim.
+- **DONE — 90-second judge tour:** five stops (Home gap → pre-run Moon refusal
+  → Kapton-62 replay → suppression 63/78 → predictor abstention at O₂ 60%),
+  caption bar with step counter, `?tour` deep link; the tour drives the real
+  tools (real Cabin Check run, real replay test, real predictor run).
+- **DONE — gap→experiment card:** every NO TEST DATA / GAP result (Cabin Check,
+  Screener gap list) now appends the experiment that would settle it, generated
+  from the user's own material/O₂/pressure inputs (Brainstorm Idea 4's five
+  evidence threads).
+- **DONE — full 2-D evidence-frontier MATRIX** (Cabin Check): fuel family × O₂
+  band counts computed live from the backbone, 1,214 non-design records with
+  O₂; ISS 21% / Moon 34% / Suit 100% band markers; the solids row is empty from
+  25% up — the gap as one picture.
+- **DONE — predictor decision/refusal map:** the exported tree evaluated over
+  the O₂×pressure plane (Methanol) — green/red answer regions, grey refusal
+  region; self-test probes an outside-envelope cell through the real predict().
+- **DONE — PSI-117 cool-flame section:** all 93 tidy rows charted, model (39)
+  and experiment (54) as separate series, never merged; the no-cross-check
+  finding stated on the card.
+
+## P2 — mining buildables (inventory order)
+1. **DONE — detector-pairing card:** per-material channel medians computed from
+   the HKP files (Kapton obscuration 0.0008 / Teflon 0.0006 → "the beam misses
+   it"; Silicone scatter median −6.248 V = railed at the floor).
+2. **DONE — predict-then-reveal quiz** ("Which smoke does the detector
+   miss?"), answers from the same computed medians.
+3. **DONE — investigation Compare:** any 3 cards side by side (tested ranges,
+   families, outcomes recorded-or-not), built from `investigations.json`.
+4. **DONE WITH DOCUMENTED SUBSTITUTION — condition scatter:** the brief's
+   O₂×flow plane is unsupported (only **19** backbone records record both O₂
+   and airflow — computed). The scatter ships as **O₂×pressure (989 records)**
+   by family, and the substitution + the 19-row fact are stated on the card.
+5. **DONE — in-app downloads:** the whole dataset release copied to
+   `data/downloads/` (7 data files + release README), linked from References.
+6. **DONE — Earth-applications panel:** the three verified NASA Spinoff nodes
+   (9582 / 9407 / 9918), framed as report content.
+7. **DONE — evidence-linked response sequence:** Detect → Ventilate? →
+   Suppress → Watch, each step citing only findings already in the app
+   (SAME-R medians, the Researcher's Guide ventilation finding, the 63/78
+   suppression result, the FLEX cool-flame record).
+8. **DONE — predictor nearest-training-rows:** the 273 training rows ship in
+   `extra.json`; every prediction lists its 5 nearest real tests (normalised
+   O₂/pressure distance, same fuel) with their recorded outcomes.
+9. **DONE — glossary tooltips:** six PSI terms dotted-underlined wherever they
+   appear in section intros (event-delegated, no markup rewriting).
+10. **DONE — ⌘K quick jump:** palette over all 9 sections (Ctrl/⌘+K, sidebar
+    button, filter + Enter).
+11. **DONE — burn-rate mini-view (verified usable):** `burn_time_s` exists on
+    268 PSI-69 FLEX rows with O₂ (Methanol 156, Heptane 112) — ships as a
+    recorded burn-time scatter + binned-median table. NO fitted curve: FLEX
+    rows record no droplet diameter in the backbone, so a burn *rate* constant
+    cannot be computed — stated on the card.
+
+## P3 — data-ideas buildables
+- **DONE — Open Archive:** all 2,012 records browsable/filterable (investigation,
+  class, material, search, O₂-overlap range, outcome-only), nulls shown as "not
+  recorded —", rows expand to the full record. `data/archive.json` (1.13 MB,
+  lazy-loaded only when the section opens).
+- **DONE — detector wake-up timing:** computed per the feasibility spec
+  (thresholds obsc −0.05 V / scatter −0.5 V / ion +0.05 V, 10-s rolling median
+  sustained 10 s, from elapsed 200 s); 37 tests (8 STS-configuration tests
+  excluded per spec); feasibility caveat text verbatim. Anchors reproduced:
+  test 66 obscuration wakes 62 s from window start; test 62 all channels 55 s.
+- **DONE — response distributions:** per-test peak obscuration drops (45 real
+  points), STS-configuration runs flagged ◆ in the legend and tooltip text.
+- **DONE — cross-investigation overlap:** recomputed in prep — 18 materials in
+  ≥2 investigations, 36 tested once, 54 distinct materials (matches the
+  feasibility file).
+- **DONE — particle-size curves:** number-PSD vs node diameter (nm, log–log),
+  Earth vs microgravity, 8 cm and 10 cm cases, 44 nodes per curve, from the
+  PSI-115 analysed grids; uncalibrated-units caveat on the card.
+- **DONE — archive honesty meter:** outcomes recorded on 546 / 2,012 records =
+  27.1% (recomputed), with the record-kind split (1,885 per-test / 119
+  day-aggregate / 8 design-range).
+- **DONE WITH CONSTRAINT — flow-field overlay:** shipped as **direction-only**
+  unit vectors over both case pairs (a magnitude-scaled quiver was rendered,
+  inspected and rejected as unreadable/misleading); the toggle is labelled
+  "flow direction". U/V ranges from the analysed files are printed on the card.
+- **SKIPPED per brief — knowledge timeline** (experiment-era version impossible
+  honestly; the "when data became public" strip was not trivially cheap from
+  verified fields, so it was not built rather than padded).
+
+## Hardening found during verification
+- Entrance animations changed from opacity-0 starts to **transform-only**: a
+  mid-animation screenshot during verification showed whole sections ghosted —
+  the exact P1 failure mode the brainstorm warned about. Content can no longer
+  be left invisible by an interrupted tween; counters remain baked static
+  values, GSAP is vendored locally (`vendor/gsap.min.js`, 72 KB — no CDN
+  dependency anywhere), and the page is fully correct with JS animation absent.
+
+## New/changed files (final build)
+- `prep_final.py` (new, 16.8 KB) — all new data prep; stills render with the
+  system python3 (matplotlib is not in flame-venv; the script skips that step
+  gracefully and says so).
+- `data/replay.json` 61,667 B · `data/wakeup.json` 3,823 B · `data/extra.json`
+  73,735 B · `data/archive.json` 1,158,274 B · `data/downloads/` 8 files,
+  96,085 B total.
+- `assets/` (new): candle-compare.jpg 96,416 B · saffire-flame.jpg 166,029 B ·
+  saffire-pmma.jpg 16,055 B · 8 smoke stills + overlays, 32–82 KB each.
+- `vendor/gsap.min.js` 72,214 B (GSAP 3.12.5, vendored).
+- `index.html` 61,408 B · `app.js` 65,046 B · `style.css` 16,683 B (rewritten /
+  extended in place; all pre-existing tool behaviour preserved — the original
+  10 self-test assertions still pass inside the 26).
+- Repo total: 37 files, 3,052,359 B (~3.0 MB) — sane for GitHub Pages.
