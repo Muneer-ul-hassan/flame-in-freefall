@@ -86,7 +86,10 @@ levels), and — for reference cabin atmospheres stored in the file — the near
 O₂, its distance in percentage points, and a coverage verdict. These are **coverage
 verdicts** (was this material tested near these conditions?), never burn/no-burn
 verdicts: several source PSI tables record no outcome column, and this file does not
-pretend otherwise.
+pretend otherwise. The 34 materials are exactly those with at least one per-test
+(non-design-range) backbone row recording an O₂ value; materials whose only rows are
+design-range summaries (the PSI-68 fuels) or that record no O₂ anywhere are not
+given verdicts.
 - **Source:** PSI combustion investigations PSI-10, 20, 21, 22, 23, 25, 26, 39, 47,
   68, 69, 98, 99, 100, 101, 102, 106, 107, 159 (per-investigation DOIs are listed in
   the app's References & Method section).
