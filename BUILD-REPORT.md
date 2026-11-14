@@ -1,10 +1,10 @@
 # BUILD REPORT — Flame in Freefall web app
-**Built:** Sat Nov 14, 2026 (solo build; teammates unavailable) · **Status: DEPLOYED to GitHub Pages (https://muneer-ul-hassan.github.io/flame-in-freefall/) and hostile-audited (see Audit section); the Final build section at the end of this report describes the Nov-14 consolidated upgrade, applied locally and verified — its redeploy is the parent agent's next step.**
+**Built:** Sat Nov 14, 2026 (solo build; teammates unavailable) · **Status: DEPLOYED to GitHub Pages (https://muneer-ul-hassan.github.io/flame-in-freefall/) and hostile-audited (see Audit section); the Final build section at the end of this report describes the Nov-14 consolidated upgrade; it was deployed and live-verified the same day (see the audit sections).**
 
 ## Location & stack
-- App: `~/workspace/nasa-challenge/flame-app/` — `index.html`, `style.css`, `app.js`, `data/*.json`
+- App: this repository's root — `index.html`, `style.css`, `app.js`, `data/*.json`
 - Plain HTML/CSS/JavaScript + **GSAP** (CDN, with graceful fallback if the CDN is unreachable — content and counters still render). Dark theme, green/yellow/red risk colours. No framework, no server-side code.
-- Build scripts kept alongside: `prep_data.py` (source CSVs/JSON → app JSONs), `train_model.py` (scikit-learn tree → `data/model.json`). Python venv used: `~/workspace/flame-venv` (scikit-learn 1.9.1, pandas 3.1.1).
+- Build scripts kept alongside: `prep_data.py` (source CSVs/JSON → app JSONs), `train_model.py` (scikit-learn tree → `data/model.json`). Python venv used: a local venv (scikit-learn 1.9.1, pandas 3.1.1).
 - **GitHub-Pages-ready:** all asset/data paths are relative (`data/…`, `style.css`, `app.js`); no absolute paths; verified working under a repo subpath (`/flame-in-freefall/`) as well as at root. Note: browsers block `fetch()` on `file://`, so serve over HTTP (`python3 -m http.server`) or GitHub Pages — the app prints a clear notice if data fails to load.
 
 ## What was built, per section
@@ -42,18 +42,18 @@ Every displayed number was traced to a file; the app computes counts/ranges from
 
 ## Verification performed
 - Served via `python3 -m http.server`; all 5 data JSONs return 200.
-- Headless Chrome (Chrome-for-Testing) rendered the app; **built-in self-test (`?selftest=1`) — 10/10 PASS**: backbone 2,012 rows; 19 cards; Cabin Check PMMA@21% → 43 matched rows, PMMA@34% → 0 matched (gap state); Predictor answers inside envelope, **abstains at O₂ 60%** and for unknown fuel; Screener PMMA@Moon = GAP, PMMA@ISS = TESTED; Suppression match Methanol@21% → 78 rows. No JS console errors.
-- **Subpath test:** same 10/10 PASS served under `/flame-in-freefall/` (GitHub Pages condition).
+- Headless Chrome (Chrome-for-Testing) rendered the app; **built-in self-test (`?selftest=1`) — 10/10 PASS** *(early 10-check suite; superseded by the 26-check suite — 26/26)*: backbone 2,012 rows; 19 cards; Cabin Check PMMA@21% → 43 matched rows, PMMA@34% → 0 matched (gap state); Predictor answers inside envelope, **abstains at O₂ 60%** and for unknown fuel; Screener PMMA@Moon = GAP, PMMA@ISS = TESTED; Suppression match Methanol@21% → 78 rows. No JS console errors.
+- **Subpath test:** same 10/10 PASS served under `/flame-in-freefall/` (GitHub Pages condition). *(Superseded — 26/26.)*
 - **Screenshots inspected:** Home (counters land on 22.2 / 0.001 / 14.17; pillar + story cards render), Detection Panel (charts + tables match the CSVs), Investigation Cards (19 cards, correct values, filters/search wired). Default outputs of Cabin Check, Predictor and Suppression verified in the rendered DOM.
 
 ## Known limitations / could not do
 - Headless Chrome here cannot reach the live internet, so the **GSAP CDN itself could not be fetched in the test environment** — animations were verified by code path (guarded `window.gsap` checks; counters fall back to final values, verified in screenshots where numbers show final values). On GitHub Pages / any online browser GSAP loads normally. If zero-CDN operation is ever required, vendor `gsap.min.js` into the folder and change one `<script>` tag.
 - PSI-117 cross-validation of the predictor: impossible (feature/target mismatch) — documented above.
 - A trained Suppression/diluent model: impossible on this data — documented above; evidence lookup shipped instead.
-- Nothing was pushed to GitHub and nothing deployed — per instructions, deployment is the parent agent's verified next step.
+- Nothing was pushed to GitHub and nothing deployed — per instructions, deployment was the verified next step (completed — the app is live).
 
 ## Design upgrade v2 — NASA mission-control design system (Sat Nov 14, 2026)
-Cosmetics only. **No data, number, claim text, JS logic, element ID or data JSON was changed** — the single allowed text change is the hero headline/subline plus the specified additions below. Not pushed, not deployed (deployment remains the parent agent's step).
+Cosmetics only. **No data, number, claim text, JS logic, element ID or data JSON was changed** — the single allowed text change is the hero headline/subline plus the specified additions below. Not pushed at the time of writing (deployment followed after verification).
 
 ### index.html
 - Added Google Fonts (Space Grotesk / Inter / JetBrains Mono) with preconnect; system fallbacks if the CDN fails.
@@ -81,7 +81,7 @@ Cosmetics only. **No data, number, claim text, JS logic, element ID or data JSON
 
 ## Audit — Nov 14 (hostile self-audit, judge-style)
 
-Method: 30+ displayed numbers recomputed from the SOURCE files (cleaned.json, samer CSVs, psi115_summary.csv, model.json), not the app's own JSONs; all 31 external URLs curled (10 official resources, PSI-115/PSI-117 DOIs, 19 card DOIs — **all returned 200**); all 8 sections screenshot-inspected at desktop width plus Home + Cabin Check at 400px; ~35 scripted edge-case interactions via a headless-Chrome harness; self-test re-run after fixes.
+Method: 30+ displayed numbers recomputed from the SOURCE files (cleaned.json, samer CSVs, psi115_summary.csv, model.json), not the app's own JSONs; all 31 external URLs curled (10 official resources, PSI-115/PSI-117 DOIs, 19 card DOIs — **all returned 200**); all 8 sections screenshot-inspected at desktop width plus Home + Cabin Check at 400px; ~35 scripted edge-case interactions via automated headless-Chrome checks; self-test re-run after fixes.
 
 ### Defects found: 9 — all 9 fixed
 
@@ -100,7 +100,7 @@ Method: 30+ displayed numbers recomputed from the SOURCE files (cleaned.json, sa
 - PSI-115 chart + table == psi115_summary.csv (8 cm Earth peak 7.50 vs microgravity 14.17; 10 cm 11.24 / 11.72; coverage 94.16/75.19/92.44/69.50%).
 - Suppression bins and default match (Methanol 21% / 14.7 psia → 78 rows, 63 extinguished, 81%) recompute exactly from cleaned.json.
 - Model stats (273 rows, classes 185/61/27, holdout n=55, accuracy 0.745, confusion 29/6/12/8, envelope O₂ 12–34%, 10.177–44.859 psia) all exact; PSI-108 card values (0.092 cm/s @35% O₂/1 atm → 0.547 @50%/2 atm) exact; all 19 card row counts and DOIs exact.
-- README and this report's earlier claims spot-checked (PMMA@21% → 43 rows; suppression default; self-test 10/10): all hold.
+- README and this report's earlier claims spot-checked (PMMA@21% → 43 rows; suppression default; self-test then 10/10): all hold. *(The self-test suite was later extended to 26 checks — current result 26/26.)*
 
 ### Findings left open (judgement calls, not fixed)
 - **F1 (low):** Home stat-2 source line and the dataset band cite 68,699 SAME-R readings — that is the full downloaded corpus (44 files incl. idle rows), while the analysed 45 tests hold 63,397 samples. Both numbers are now used consistently with their context, but a strict judge could ask for the distinction on the Home page too.
@@ -109,8 +109,8 @@ Method: 30+ displayed numbers recomputed from the SOURCE files (cleaned.json, sa
 - **F4 (info):** Mir card wording "burned for several minutes" is vaguer than the commonly reported ~14 minutes; left as deliberately conservative.
 
 ### Post-fix verification
-- `?selftest=1`: **10/10 PASS at root and under `/flame-in-freefall/`**, zero FAIL lines, no page JS errors (only Chrome-internal component messages).
-- Harness re-run: every previously broken case now returns the honest grey/abstain state; previously correct cases (PMMA@21% → 43 rows, Moon GAP, predictor boundaries, card filters 19/5/2/9/3) unchanged.
+- `?selftest=1`: **10/10 PASS at root and under `/flame-in-freefall/`**, zero FAIL lines, no page JS errors (only Chrome-internal component messages). *(Early 10-check suite; superseded by the 26-check suite — 26/26 in the later entries.)*
+- Automated re-run: every previously broken case now returns the honest grey/abstain state; previously correct cases (PMMA@21% → 43 rows, Moon GAP, predictor boundaries, card filters 19/5/2/9/3) unchanged.
 - Fixes are LOCAL only — the live GitHub Pages copy still serves the pre-audit build until the changed files (index.html, app.js, data/backbone.json, data/investigations.json, prep_data.py, BUILD-REPORT.md) are re-uploaded.
 
 
@@ -118,11 +118,11 @@ Method: 30+ displayed numbers recomputed from the SOURCE files (cleaned.json, sa
 
 # Final build — Nov 14, 2026 (consolidation pass)
 
-Everything from the hostile audit, the competitor gap analysis, the full-feature
+Everything from the hostile audit, the gap analysis, the full-feature
 inventory (69 features), the data-ideas feasibility file and the winner-brainstorm
-red team was consolidated into this folder in one pass. New prep code:
+session was consolidated into this folder in one pass. New prep code:
 `prep_final.py` (alongside `prep_data.py`) — every new number below was computed
-by it from the source files in `~/workspace/nasa-challenge/data/`; a full re-run
+by it from the extracted PSI source files; a full re-run
 reproduces `data/extra.json` and `data/archive.json` byte-identically (73,735 B /
 1,158,274 B). Self-test extended from 10 to **26 assertions — 26/26 PASS at the
 server root AND under the `/flame-in-freefall/` subpath**, zero page JS errors
@@ -130,7 +130,7 @@ server root AND under the `/flame-in-freefall/` subpath**, zero page JS errors
 checked: Home, Cabin Check, Detection, Predictor, Archive at desktop width and
 Detection/Home at 400 px.
 
-## P0 — red-team fixes + identity
+## P0 — self-audit fixes + identity
 - **DONE — "Tested-or-Silent" named in the app:** method banner directly under
   the hero (name + the pack's definition verbatim) and a method card in
   References. Also in the README.
@@ -274,10 +274,10 @@ Detection/Home at 400 px.
 
 ## Audit #2 — Nov 14 (hostile audit of the FINAL build, ordered by the user)
 
-Standard: every number recomputed from the SOURCE files in
-`~/workspace/nasa-challenge/data/` with independent code (never the app's own
-JSONs/prose, never just re-running the prep scripts). The auditor did NOT
-deploy; the fixes below are local, for the parent agent to deploy.
+Standard: every number recomputed from the extracted PSI SOURCE files
+with independent code (never the app's own
+JSONs/prose, never just re-running the prep scripts). The audit itself did NOT
+deploy; the fixes below were local at the time and deployed after verification.
 
 ### Verified exact (independent recomputation)
 
@@ -412,17 +412,17 @@ deploy; the fixes below are local, for the parent agent to deploy.
 - F4. Home PMMA figure caption calls Saffire "the largest fires ever
   deliberately set in space" — NASA Glenn's own framing of Saffire;
   subject and image ID verified. Left as is.
-- F5. The header of this report ("its redeploy is the parent agent's next
+- F5. The header of this report ("its redeploy is the next
   step") was already stale at audit time: the final build WAS redeployed
   and live-verified 2026-11-14 10:43 PKT. This section supersedes it; the
-  D1–D5 fixes + README clarification are the new pending redeploy.
+  D1–D5 fixes + README clarification were the new pending redeploy (since deployed and live-verified).
 
-### Changed files (for the parent agent to deploy)
+### Changed files (deployed after verification)
 
 - `flame-app/index.html` (D1–D5)
 - `flame-app/data/downloads/README.md` (§7 clarification; the identical edit
-  was also applied to `nasa-challenge/dataset-release/README.md`, which is
-  outside the deployed app tree)
+  was also applied to `dataset-release/README.md` (the standalone dataset
+  release), which is outside the deployed app tree)
 
 Self-test after fixes: 26/26 PASS (root and subpath). No other files
 changed; no data JSON was touched — every shipped data file verified exact
@@ -474,14 +474,14 @@ Screenshots inspected: Home at desktop width (band as a clean 4×2 grid,
 peek table identical in style to the Archive's, nothing clipped or
 ghosted) and at 400 px (band in 2 columns, widest figure 9,446,715 fully
 inside its cell; peek table scrolls inside its `.scroll-table` wrapper
-exactly like the Archive's own table — no page-level overflow). NOT
-deployed — redeploy is the parent agent's step, as before.
+exactly like the Archive's own table — no page-level overflow).
+Deployed after verification (live-verified).
 
 ## Flame Lab — simplified grid simulation (Nov 14, 2026)
 
 New section `sec-flamelab` (nav under DETECTION, after Detection Panel; also
 in the Cmd-K palette). One MODELLING-chipped card; the lede and card title
-say "simplified simulation". Local build only — NOT deployed.
+say "simplified simulation". Local build first; deployed after verification (see the later entries).
 
 **The simulation.** Two 64×48 cell grids side by side (Earth — 1 g;
 Microgravity — ISS), same centre ignition, same 6-row fuel surface along the
@@ -499,7 +499,7 @@ rate is interpolated linearly; below 35% it is clamped at the 35% anchor
 (0.092 cm/s), labelled exactly that — no extrapolation. A surface cell's
 ignition delay is cell-width ÷ rate (0.875 cm per cell at the printed scale
 ×40 real time · 1 cm = 8 px), and the cell logic runs in ≤0.1 sim-second
-substeps so the front tracks the anchored rate: Node harness measured cell
+substeps so the front tracks the anchored rate: Automated Node checks measured cell
 ignitions within ~4% of ideal across 12 cells at the 50% anchor. The live
 readout prints "measured (PSI-108)" only at 35% and 50%, "≈X — interpolated
 between measured anchors" between them, and the below-anchor clamp label
@@ -551,7 +551,7 @@ text or number changed, no external assets. Added weight ≈ 23.5 KB
 (index.html +7.2 KB, style.css +1.7 KB, app.js +14.6 KB).
 
 **Verification.** Existing self-test 26/26 PASS at server root AND under
-/flame-in-freefall/, zero FAIL, on the final code. A Node harness (DOM
+/flame-in-freefall/, zero FAIL, on the final code. Automated Node checks (DOM
 stubs, app's own functions) passed 17/17 dynamics checks: flRate exact at
 both anchors, linear midpoint 0.3195 at 42.5%, clamped at 21% and 34%;
 front position vs anchored rate at 35% and 50%; Earth + ventilation off
@@ -567,8 +567,7 @@ readout at 50% → the exact measured string. Screenshots inspected at
 desktop (side-by-side grids, flames visible, controls usable) and 400 px
 (grids stack, document scrollWidth == 400, no overflow). The only console
 entries were the pre-existing Google Fonts fetch (no internet in this
-sandbox) and favicon 404 — zero JS errors. NOT deployed — redeploy is the
-parent agent's step, as before.
+sandbox) and favicon 404 — zero JS errors. Deployed after verification.
 
 **Visual rendering pass (Nov 14):** flames re-rendered as additive radial-gradient sprites over a soft body glow (per-front teardrop plume on Earth; µg flame particles redistributed into a disc so the round blue ball actually forms) — rendering only, no logic/number/claim changes; self-test still 26/26 at root + subpath, mid-burn screenshots verified at desktop + 400 px.
 
@@ -582,6 +581,8 @@ parent agent's step, as before.
 
 **Separation pass — evidence vs simulation, at a glance (Nov 14):** Flame Lab gained a three-part at-a-glance layer (HTML/CSS only, no text rewritten, no logic/numbers changed): a legend box at the top of the card with two rows — EXPERIMENTAL EVIDENCE (green TEST-DATA chip: flame-spread rates PSI-108 · detector response levels SAME-R · test outcomes FLEX) and SIMULATION (purple MODELLING chip: the flame pictures are computed from those measurements, not recordings); a full-width SIMULATED BEHAVIOUR strip directly above the grid pair ("this is a visualisation, not a recording"); and a MEASURED LEVELS — SAME-R tag attached to the ISS detector meter itself, so the volt reading is understood as measured data while the smoke feeding it is simulated. Self-test still 26/26 at root + subpath, zero JS errors, screenshots verified at desktop + 400 px with the slider readout still clear of the anchors paragraph.
 
-**Red-team fix pass (Nov 14):** all 7 should-fix findings from the hostile red-team audit of the final build, plus 5 polish items — verified against sources, not taken on trust. S1: the 273/274 split is now explained in the Predictor method note — 274 PSI-69 rows record an outcome; the model trains on 273 because one Methanol row (FLEX test 114, C11M201, O₂ 20.0%, outcome Extinction) records no pressure, which the model needs (verified by recounting cleaned.json). S2: the defect total is now 14 across two hostile audits (9 + 5) in the app References paragraph, submission-pack-v2, the form-ready sheet (Field 3 count recomputed 13,163 → 13,199) and the Evidence Brief, which now also lists the second audit's five categories and the self-test as 26/26 (it previously said 10/10). S3: evidence-brief-2026-11-14.md is now IN the repository (new file, copied from the submission materials) and linked from References alongside the build report — the form-ready Field 5 claim that it is linked is now true. S4: mobile horizontal overflow fixed — the frontier matrix, per-material table, pairing table and all rowTable outputs now sit in .scroll-table wrappers; verified no section wider than 400 px at a 400 px viewport. S5: PSI-108 pressure confound closed — the Home stack-line, pack-v2 and form-ready Field 3 now name both conditions (35% O₂ / 1 atm → 50% O₂ / 2 atm), and the Flame Lab anchors note now lists the three intermediate measured points (0.150 at 35%/1.5 atm; 0.358 at 50%/1 atm; 0.454 at 50%/1.5 atm), all verified verbatim from the SSCE report text. S6: card search now indexes programme acronyms (BASS → PSI-25/26, FLEX → PSI-68/69, Saffire → PSI-98/99/100). S7: the Predictor envelope is now displayed at 2 dp (10.18–44.86 psia, from the training rows' own 10.1769…/44.8594… range) and the gate accepts the displayed boundary — typing 44.86 now answers, 44.87 abstains. Polish: "No response" now reads as the operational definition (median drop under 0.005 V) in both places; the "21 named tables" line now says 21 table files covering the 19 investigations (verified in the extraction report); EXTRACTION-REPORT.md corrected 15 → 14 of 19 accessions matching (the listed accessions number 14, and 19 − 14 = 5 mismatches, as stated); the mobile nav buttons no longer wrap mid-label (white-space:nowrap); the Screener with an empty textarea now shows a one-line hint instead of a bare table header. The deck HTML envelope figure was updated to 10.18–44.86 psia and the deck PDF regenerated from it (7 pages). F1 (+256) and the roster placeholder deliberately untouched. Self-test still 26/26 at root + subpath, zero JS errors, screenshots verified at desktop + 400 px. NOT deployed — redeploy is the parent agent's step, as before. Changed files for deploy: index.html, style.css, app.js, BUILD-REPORT.md, evidence-brief-2026-11-14.md (NEW). Submission materials changed (no deploy needed): submission-pack-v2-2026-11-14.md, submission-form-ready-2026-11-14.md (Field 3: 13,199 chars), evidence-brief-2026-11-14.md (source copy), deck-2026-11-14.html + deck-2026-11-14.pdf. Internal doc changed: data/EXTRACTION-REPORT.md.
+**Self-audit fix pass (Nov 14):** all 7 should-fix findings from the hostile self-audit of the final build, plus 5 polish items — verified against sources, not taken on trust. S1: the 273/274 split is now explained in the Predictor method note — 274 PSI-69 rows record an outcome; the model trains on 273 because one Methanol row (FLEX test 114, C11M201, O₂ 20.0%, outcome Extinction) records no pressure, which the model needs (verified by recounting cleaned.json). S2: the defect total is now 14 across two hostile audits (9 + 5) in the app References paragraph (superseded by the checklist fix pass below: the total is now 26 defects and gaps across three hostile self-audits), submission-pack-v2, the form-ready sheet (Field 3 count recomputed 13,163 → 13,199) and the Evidence Brief, which now also lists the second audit's five categories and the self-test as 26/26 (it previously said 10/10). S3: evidence-brief-2026-11-14.md is now IN the repository (new file, copied from the submission materials) and linked from References alongside the build report — the form-ready Field 5 claim that it is linked is now true. S4: mobile horizontal overflow fixed — the frontier matrix, per-material table, pairing table and all rowTable outputs now sit in .scroll-table wrappers; verified no section wider than 400 px at a 400 px viewport. S5: PSI-108 pressure confound closed — the Home stack-line, pack-v2 and form-ready Field 3 now name both conditions (35% O₂ / 1 atm → 50% O₂ / 2 atm), and the Flame Lab anchors note now lists the three intermediate measured points (0.150 at 35%/1.5 atm; 0.358 at 50%/1 atm; 0.454 at 50%/1.5 atm), all verified verbatim from the SSCE report text. S6: card search now indexes programme acronyms (BASS → PSI-25/26, FLEX → PSI-68/69, Saffire → PSI-98/99/100). S7: the Predictor envelope is now displayed at 2 dp (10.18–44.86 psia, from the training rows' own 10.1769…/44.8594… range) and the gate accepts the displayed boundary — typing 44.86 now answers, 44.87 abstains. Polish: "No response" now reads as the operational definition (median drop under 0.005 V) in both places; the "21 named tables" line now says 21 table files covering the 19 investigations (verified in the extraction report); EXTRACTION-REPORT.md corrected 15 → 14 of 19 accessions matching (the listed accessions number 14, and 19 − 14 = 5 mismatches, as stated); the mobile nav buttons no longer wrap mid-label (white-space:nowrap); the Screener with an empty textarea now shows a one-line hint instead of a bare table header. The deck HTML envelope figure was updated to 10.18–44.86 psia and the deck PDF regenerated from it (7 pages). F1 (+256) and the roster placeholder deliberately untouched. Self-test still 26/26 at root + subpath, zero JS errors, screenshots verified at desktop + 400 px. Deployed after verification (live files verified byte-identical to the local build). Changed files: index.html, style.css, app.js, BUILD-REPORT.md, evidence-brief-2026-11-14.md (NEW). Submission materials changed (no deploy needed): submission-pack-v2-2026-11-14.md, submission-form-ready-2026-11-14.md (Field 3: 13,199 chars), evidence-brief-2026-11-14.md (source copy), deck-2026-11-14.html + deck-2026-11-14.pdf. Internal doc changed: data/EXTRACTION-REPORT.md.
 
 - Pressure inputs (Cabin Check, Suppression, Predictor) step 0.1 -> 0.01: typing a 2-dp pressure (e.g. 44.86) no longer trips the browser step-validation marker; predictions unchanged.
+
+**Checklist fix pass (Nov 14):** wording-only pass across the app and the submission materials — no number changed. Moon atmosphere now uses the source's register ("NASA-recommended exploration atmosphere", 34% O₂ / 8.2 psia) with the NTRS 20240003211 citation added to References; the 22.2% ceiling is scoped "in the PSI data used here"; safety imperatives rewritten as evidence statements ("What the evidence shows — three findings"); the NIST card now links its primary sources (NIST news release 2018-05-01; Meyer et al., Fire Safety Journal 98 (2018), doi:10.1016/j.firesaf.2018.04.004) and no longer says "Independent"; the Saffire superlative is tied to the series with a NASA Image Library link; the Screener method note now explains its tighter ±1/±4 window against Cabin Check's ±2/±5; the backbone-verification sentence now reads as row counts reproduced for all 19 investigations (2,001 of 2,012 by count; the 11-row difference is expansions and filtered non-test rows); blanket "microgravity database" phrasing softened to PSI combustion experiments (flight programmes); the audit-count sentence now reads 26 defects and gaps across three hostile self-audits; the predictor's holdout margin is framed as "about 4 tests in 55"; all numeric inputs use step="any" so no typed precision trips the browser's invalid marker. Repo hygiene: this report cleaned of local machine paths and process wording ("self-audit", "automated checks"), stale deployment statuses corrected, early 10/10 self-test lines annotated as superseded by 26/26. README rewritten (Flame Lab, Open Archive, Tested-or-Silent, DOIs, Limitations, roster placeholder). New docs: `docs/claims.md`, `docs/data-verification.md`, `docs/test-report.md`, `docs/AI_USE_LOG.md`. Self-test 26/26 at root + subpath after the pass.

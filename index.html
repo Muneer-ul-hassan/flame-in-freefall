@@ -70,8 +70,8 @@
         <div class="stat card">
           <div class="dchip-row"><span class="dchip dc-test">TEST DATA</span></div>
           <div class="stat-num"><span class="counter" data-target="22.2" data-decimals="1">22.2</span><span class="unit">% O₂</span></div>
-          <p><strong>The highest oxygen level solid materials were ever tested at</strong> in the PSI backbone (<span data-fill="solids-o2-rows"></span> solid-fuel rows with a recorded O₂ level). The Moon cabin will run at <strong>34% O₂ / 8.2 psia</strong> — an evidence gap no test covers.</p>
-          <div class="src">Source: NASA PSI backbone, 2,012 records — computed from the data, not quoted.</div>
+          <p><strong>The highest oxygen level solid materials were ever tested at</strong> in the PSI backbone (<span data-fill="solids-o2-rows"></span> solid-fuel rows with a recorded O₂ level). The Moon cabin is planned around NASA's recommended exploration atmosphere — <strong>34% O₂ / 8.2 psia</strong> — an evidence gap no test covers.</p>
+          <div class="src">Source: NASA PSI backbone, 2,012 records — computed from the data, not quoted. Moon atmosphere: NTRS 20240003211.</div>
         </div>
         <div class="stat card">
           <div class="dchip-row"><span class="dchip dc-test">TEST DATA</span></div>
@@ -90,7 +90,7 @@
       <div class="verdict v-grey" id="home-refusal">
         <div class="dchip-row"><span class="dchip dc-test">TEST DATA</span><span class="chip grey">PRE-RUN VERDICT — computed by Cabin Check itself</span></div>
         <h3>⬜ NO TEST DATA — PMMA at 34% O₂ (the Moon cabin)</h3>
-        <p>PMMA — the acrylic in windows, panels and light covers — has <span data-fill="pmma-rows"></span> real test rows in the backbone, tested up to <span data-fill="pmma-max-o2"></span>% O₂. At the lunar cabin's 34% O₂ / 8.2 psia, the number of matching test rows is <strong><span data-fill="pmma-moon-matched"></span></strong>. Tested-or-Silent means the tool stops there — it will not guess what PMMA does in an atmosphere it was never tested in.</p>
+        <p>PMMA — the acrylic in windows, panels and light covers — has <span data-fill="pmma-rows"></span> real test rows in the backbone, tested up to <span data-fill="pmma-max-o2"></span>% O₂. At the recommended exploration atmosphere for lunar habitats (34% O₂ / 8.2 psia), the number of matching test rows is <strong><span data-fill="pmma-moon-matched"></span></strong>. Tested-or-Silent means the tool stops there — it will not guess what PMMA does in an atmosphere it was never tested in.</p>
         <button class="goto" id="refusal-run">Run it yourself in Cabin Check →</button>
       </div>
 
@@ -153,17 +153,17 @@
 
       <figure class="img-fig">
         <img src="assets/saffire-pmma.jpg" alt="Plexiglass burning inside NASA's Saffire-IV spacecraft fire experiment" loading="lazy">
-        <figcaption>Plexiglass burning inside NASA's <strong>Saffire-IV</strong> spacecraft fire experiment — the largest fires ever deliberately set in space, burned aboard uncrewed Cygnus vehicles so materials like the ones in this dashboard could be watched at full scale. Photo: NASA / JSC (jsc2023e046631), public domain.</figcaption>
+        <figcaption>Plexiglass burning inside NASA's <strong>Saffire-IV</strong> spacecraft fire experiment — the Saffire series set the largest fires ever deliberately burned in space (NASA), aboard uncrewed Cygnus vehicles so materials like the ones in this dashboard could be watched at full scale. Photo: NASA / JSC (<a href="https://images.nasa.gov/details/jsc2023e046631" target="_blank" rel="noopener">jsc2023e046631</a>), public domain.</figcaption>
       </figure>
 
       <div class="card wide changes">
         <h3>Three gaps that stack</h3>
-        <p class="stack-line">At lunar oxygen, fires spread <strong>faster</strong> (PSI-108 report: flame spread ≈6× faster from 35% O₂ / 1 atm → 50% O₂ / 2 atm) — <strong>and</strong> cabin solids have never been tested there (22.2% O₂ ceiling in the test record) — <strong>and</strong> the station detector barely sees two of the commonest cabin smokes (0.001 V median response for Kapton and Teflon). Each gap is survivable alone; together they are the lunar fire problem.</p>
-        <h3 style="margin-top:18px">What this changes — three decisions</h3>
+        <p class="stack-line">At lunar oxygen, fires spread <strong>faster</strong> (PSI-108 report: flame spread ≈6× faster from 35% O₂ / 1 atm → 50% O₂ / 2 atm) — <strong>and</strong> cabin solids have never been tested there (22.2% O₂ ceiling in the PSI data used here) — <strong>and</strong> the station detector barely sees two of the commonest cabin smokes (0.001 V median response for Kapton and Teflon). Each gap is survivable alone; together they are the lunar fire problem.</p>
+        <h3 style="margin-top:18px">What the evidence shows — three findings</h3>
         <ul class="refs-list">
-          <li><strong>Do not clear a cabin solid for 34% O₂ on existing tests.</strong> The evidence does not cover it — the honest answer for PMMA at lunar conditions today is NO TEST DATA.</li>
-          <li><strong>Do not call one obscuration channel “detection”.</strong> In the station's own telemetry it missed Kapton and Teflon smoke almost entirely; scatter and ion channels saw what it missed.</li>
-          <li><strong>Do not plan on a suppressant jet alone.</strong> NASA's Researcher's Guide records that a local jet entrained air and sustained the flame in BASS testing — plan suppression from the extinction evidence, not from a single device.</li>
+          <li><strong>The evidence does not cover clearing a cabin solid for 34% O₂</strong> — no test in this database reaches it. The honest answer for PMMA at lunar conditions today is NO TEST DATA.</li>
+          <li><strong>One obscuration channel alone does not cover detection.</strong> Kapton and Teflon smoke barely register on it — in the station's own telemetry it missed them almost entirely, while scatter and ion channels saw what it missed.</li>
+          <li><strong>NASA's guide records that a suppressant jet can entrain air and sustain a flame</strong>, so the evidence does not support relying on a jet alone (the finding comes from BASS testing) — suppression planning starts from the extinction evidence, not from a single device.</li>
         </ul>
       </div>
 
@@ -223,13 +223,13 @@
             <select id="cc-material"></select>
           </label>
           <label>Oxygen (O₂ %)
-            <input type="number" id="cc-o2" value="21" min="1" max="100" step="0.1">
+            <input type="number" id="cc-o2" value="21" min="1" max="100" step="any">
           </label>
           <label>Pressure (<span class="gloss" data-def="psia: pounds per square inch, absolute — pressure measured against a vacuum. Sea-level air is 14.7 psia; the planned lunar cabin is 8.2 psia; a spacesuit runs at 4.3 psia of pure oxygen.">psia</span>) — optional
-            <input type="number" id="cc-p" value="14.7" min="1" max="60" step="0.01">
+            <input type="number" id="cc-p" value="14.7" min="1" max="60" step="any">
           </label>
           <label>Airflow (cm/s) — optional
-            <input type="number" id="cc-flow" placeholder="any" min="0" max="100" step="0.5">
+            <input type="number" id="cc-flow" placeholder="any" min="0" max="100" step="any">
           </label>
         </div>
         <div class="preset-row">
@@ -239,7 +239,7 @@
           <button class="preset" data-o2="100" data-p="4.3">Spacesuit · 100% O₂ · 4.3 psia</button>
         </div>
         <button id="cc-run" class="run">Check against test data</button>
-        <div class="method-note">Matching method (open, not hidden): a row “matches” if its recorded O₂ is within ±2 points of yours (pressure within ±3 psia and airflow within ±5 cm/s when both sides record them). Rows within ±5 O₂ points count as “nearby”. Presets are scenario definitions from the challenge context, not measurements.</div>
+        <div class="method-note">Matching method (open, not hidden): a row “matches” if its recorded O₂ is within ±2 points of yours (pressure within ±3 psia and airflow within ±5 cm/s when both sides record them). Rows within ±5 O₂ points count as “nearby”. Presets are scenario definitions, not measurements; the Moon exploration preset is NASA's recommended exploration atmosphere for lunar habitats (34% O₂, 8.2 psia — NTRS 20240003211).</div>
       </div>
       <div id="cc-result"></div>
     </section>
@@ -256,7 +256,7 @@ Kapton
 Teflon
 Silicone</textarea>
         <button id="sc-run" class="run">Screen this inventory</button>
-        <div class="method-note">Verdict per atmosphere, from the material's real test rows: <span class="chip green">TESTED</span> a test row sits within ±1 O₂ point of the atmosphere · <span class="chip yellow">NEARBY ONLY</span> nearest test within ±4 points · <span class="chip red">GAP</span> never tested near this O₂ · <span class="chip grey">NO O₂ DATA</span> the material's test rows record no O₂ level · <span class="chip grey">NOT IN PSI DATA</span> no test rows under this name. This is a coverage verdict (was it tested?), not a burn prediction.</div>
+        <div class="method-note">Verdict per atmosphere, from the material's real test rows: <span class="chip green">TESTED</span> a test row sits within ±1 O₂ point of the atmosphere · <span class="chip yellow">NEARBY ONLY</span> nearest test within ±4 points · <span class="chip red">GAP</span> never tested near this O₂ · <span class="chip grey">NO O₂ DATA</span> the material's test rows record no O₂ level · <span class="chip grey">NOT IN PSI DATA</span> no test rows under this name. This is a coverage verdict (was it tested?), not a burn prediction. The Screener's window is deliberately tighter than Cabin Check's (±2/±5): the Screener answers “was THIS material tested near the cabin condition?” for a whole inventory at a glance, while Cabin Check casts a wider net for a single detailed look.</div>
       </div>
       <div id="sc-result"></div>
     </section>
@@ -333,8 +333,8 @@ Silicone</textarea>
         <div class="card finding">
           <div class="dchip-row"><span class="dchip dc-report">REPORT</span></div>
           <h3>🔬 The NIST finding</h3>
-          <p>Independent NIST work on spacecraft smoke detection found the same blind spot from the other side: the ISS photoelectric smoke detector responded poorly to Teflon and Kapton smoke — two materials all over a real cabin (wire insulation, films). Our count from the raw ISS data agrees: median response 0.001 V for both.</p>
-          <div class="src">Finding as reported in the challenge research from NIST spacecraft-fire-detection studies; detector numbers themselves are our count from PSI-101 raw files.</div>
+          <p>NIST's spacecraft smoke-detection work with NASA found the same blind spot from the other side: the ISS photoelectric smoke detector responded poorly to Teflon and Kapton smoke — two materials all over a real cabin (wire insulation, films). Our count from the raw ISS data agrees: median response 0.001 V for both.</p>
+          <div class="src">Sources: <a href="https://www.nist.gov/news-events/news/2018/05/nistnasa-study-shows-one-detector-doesnt-fit-all-smoke-spacecraft" target="_blank" rel="noopener">NIST news release, 1 May 2018</a>; Meyer et al., <em>Fire Safety Journal</em> 98 (2018), <a href="https://doi.org/10.1016/j.firesaf.2018.04.004" target="_blank" rel="noopener">doi:10.1016/j.firesaf.2018.04.004</a>. Detector numbers themselves are our count from PSI-101 raw files.</div>
         </div>
       </div>
 
@@ -394,7 +394,7 @@ Silicone</textarea>
         </div>
 
         <div id="fl-moon" class="fl-moon" style="display:none">
-          <p><strong>Moon cabin: 34% O₂, 8.2 psia.</strong> No solid material has ever been tested at this oxygen level — this picture is a model; the tested verdict is <strong>NO TEST DATA</strong>. <a href="#cabin" data-goto="cabin">Run the real Cabin Check →</a></p>
+          <p><strong>Moon cabin: the NASA-recommended exploration atmosphere (34% O₂, 8.2 psia).</strong> No solid material in the PSI data used here has been tested at this oxygen level — this picture is a model; the tested verdict is <strong>NO TEST DATA</strong>. <a href="#cabin" data-goto="cabin">Run the real Cabin Check →</a></p>
         </div>
 
         <div class="fl-sim-strip">SIMULATED BEHAVIOUR — this is a visualisation, not a recording</div>
@@ -471,10 +471,10 @@ Silicone</textarea>
             <select id="sup-fuel"><option>Methanol</option><option>Heptane</option></select>
           </label>
           <label>Oxygen (O₂ %)
-            <input type="number" id="sup-o2" value="21" min="1" max="100" step="0.1">
+            <input type="number" id="sup-o2" value="21" min="1" max="100" step="any">
           </label>
           <label>Pressure (psia)
-            <input type="number" id="sup-p" value="14.7" min="1" max="60" step="0.01">
+            <input type="number" id="sup-p" value="14.7" min="1" max="60" step="any">
           </label>
         </div>
         <button id="sup-run" class="run">Find matched test rows</button>
@@ -497,7 +497,7 @@ Silicone</textarea>
         <div class="seq-row">
           <div class="seq-step"><div class="seq-n">1 · DETECT</div><p>Trust more than one channel: the obscuration beam alone missed Kapton and Teflon smoke (0.001 V medians) that scatter and ion channels registered. <em>(Detection Panel)</em></p></div>
           <div class="seq-step"><div class="seq-n">2 · VENTILATE?</div><p>Turning ventilation off does not starve the flame: NASA's Guide records steady fires persisting in quiescent microgravity, and a suppressant jet entraining air and sustaining the flame. <em>(Researcher's Guide finding)</em></p></div>
-          <div class="seq-step"><div class="seq-n">3 · SUPPRESS</div><p>Work from the extinction evidence: at cabin conditions most matched FLEX flames went out (63 of 78); at high O₂ most did not — expect to fight, and fight early. <em>(Lookup above)</em></p></div>
+          <div class="seq-step"><div class="seq-n">3 · SUPPRESS</div><p>Work from the extinction evidence: at cabin conditions most matched FLEX flames went out (63 of 78); at high O₂, in these tests, most flames did not go out on their own. <em>(Lookup above)</em></p></div>
           <div class="seq-step"><div class="seq-n">4 · WATCH</div><p>A flame that looks out may not be out: PSI-117 records invisible cool flames continuing after visible extinction. Keep watching the spot. <em>(Cool-flame card, Detection)</em></p></div>
         </div>
       </div>
@@ -536,7 +536,7 @@ Silicone</textarea>
       <div class="verdict v-yellow" style="margin-top:0">
         <div class="dchip-row"><span class="dchip dc-model">MODEL</span></div>
         <h3>Validation, up front — before you run it</h3>
-        <p>Trained on <span data-fill="model-n"></span> real FLEX rows. On a held-out 20% it never saw (<span data-fill="holdout-n"></span> tests): accuracy <strong><span data-fill="holdout-acc"></span></strong> vs <strong><span data-fill="baseline-acc"></span></strong> for an “always say Extinction” baseline — modest, a ~7-point margin, and stated as such. The envelope gate abstained on <span data-fill="gate-abstain"></span> holdout tests (expected: the holdout comes from inside the same envelope; the gate exists for inputs beyond it, like O₂ 60%).</p>
+        <p>Trained on <span data-fill="model-n"></span> real FLEX rows. On a held-out 20% it never saw (<span data-fill="holdout-n"></span> tests): accuracy <strong><span data-fill="holdout-acc"></span></strong> vs <strong><span data-fill="baseline-acc"></span></strong> for an “always say Extinction” baseline — modest, a ~7-point margin (about 4 tests in 55), and stated as such. The envelope gate abstained on <span data-fill="gate-abstain"></span> holdout tests (expected: the holdout comes from inside the same envelope; the gate exists for inputs beyond it, like O₂ 60%).</p>
       </div>
       <div class="panel">
         <div class="form-grid">
@@ -544,10 +544,10 @@ Silicone</textarea>
             <select id="pr-fuel"><option>Methanol</option><option>Heptane</option></select>
           </label>
           <label>Oxygen (O₂ %)
-            <input type="number" id="pr-o2" value="21" min="1" max="100" step="0.1">
+            <input type="number" id="pr-o2" value="21" min="1" max="100" step="any">
           </label>
           <label>Pressure (psia)
-            <input type="number" id="pr-p" value="14.7" min="1" max="60" step="0.01">
+            <input type="number" id="pr-p" value="14.7" min="1" max="60" step="any">
           </label>
         </div>
         <button id="pr-run" class="run">Predict — or abstain</button>
@@ -643,10 +643,10 @@ Silicone</textarea>
             <input type="text" id="ar-q" placeholder="e.g. Test B1, SIBAL…">
           </label>
           <label>O₂ overlaps at least
-            <input type="number" id="ar-o2min" placeholder="any" min="0" max="100" step="0.5">
+            <input type="number" id="ar-o2min" placeholder="any" min="0" max="100" step="any">
           </label>
           <label>O₂ overlaps at most
-            <input type="number" id="ar-o2max" placeholder="any" min="0" max="100" step="0.5">
+            <input type="number" id="ar-o2max" placeholder="any" min="0" max="100" step="any">
           </label>
         </div>
         <label class="check-line"><input type="checkbox" id="ar-outcome"> Only records with a recorded outcome (546)</label>
@@ -671,7 +671,8 @@ Silicone</textarea>
       <div class="card wide">
         <h3>Datasets (NASA Physical Science Informatics — PSI)</h3>
         <div id="refs-datasets" class="scroll-table"></div>
-        <p>Plus: <strong>PSI-115</strong> — SAME smoke modelling (DOI <a href="https://doi.org/10.60555/q0v5-1v28" target="_blank" rel="noopener">10.60555/q0v5-1v28</a>), 44 grid files / 9,446,715 values; <strong>PSI-117</strong> — cool-flame CFD/proceedings (DOI <a href="https://doi.org/10.60555/gz0q-b577" target="_blank" rel="noopener">10.60555/gz0q-b577</a>), 2,859 rows — <em>model/proceedings data, labelled as such wherever used</em>; <strong>PSI-108</strong> — STDCE-1 / SSCE thin-fuel flame-spread report. PSI-60 and PSI-62 were checked and contain no data files (metadata only). The 2,012-record backbone is the public cleaned compilation of the PSI experimental tables listed above (SPICA project file, NASA Space Apps 2026), re-verified row-by-row against direct PSI downloads (2,001 of 2,012 rows reproduced exactly from the 21 named tables — 21 table files covering the 19 investigations; the backbone was kept as the more complete source).</p>
+        <p>Plus: <strong>PSI-115</strong> — SAME smoke modelling (DOI <a href="https://doi.org/10.60555/q0v5-1v28" target="_blank" rel="noopener">10.60555/q0v5-1v28</a>), 44 grid files / 9,446,715 values; <strong>PSI-117</strong> — cool-flame CFD/proceedings (DOI <a href="https://doi.org/10.60555/gz0q-b577" target="_blank" rel="noopener">10.60555/gz0q-b577</a>), 2,859 rows — <em>model/proceedings data, labelled as such wherever used</em>; <strong>PSI-108</strong> — STDCE-1 / SSCE thin-fuel flame-spread report. PSI-60 and PSI-62 were checked and contain no data files (metadata only). The 2,012-record backbone is the public cleaned compilation of the PSI experimental tables listed above (SPICA project file, NASA Space Apps 2026), re-verified against direct PSI downloads — row counts reproduced for all 19 investigations (2,001 of 2,012 rows by count; the 11-row difference is expansions and filtered non-test rows — see the build report), drawn from 21 table files covering the 19 investigations; the backbone was kept as the more complete source).</p>
+        <p><strong>Cabin scenario source:</strong> the Moon condition used across this site is NASA's recommended exploration atmosphere for lunar habitats — 8.2 psia, 34% O₂ (NTRS <a href="https://ntrs.nasa.gov/citations/20240003211" target="_blank" rel="noopener">20240003211</a>, “Moon to Mars: Exploration Atmosphere” — the EA recommendation “was revised to 8.2 psia and 34% O₂” for lunar habitats).</p>
       </div>
 
       <div class="card wide">
@@ -747,7 +748,7 @@ Silicone</textarea>
 
       <div class="card wide">
         <h3>How this was built — and audited</h3>
-        <p>Flame in Freefall was built by one developer with AI assistance, under the same rule the site applies to NASA's data: <strong>Tested-or-Silent, applied to our own work.</strong> Before submission, the project ran a hostile self-audit: every displayed number was recomputed from the PSI source files (not from the app's own JSON), every external link was fetched, and every tool was pushed through edge cases — empty inputs, boundary values, impossible atmospheres. Two hostile audits found 14 defects between them (a truncated range, a miscounted sample total, NaN-input verdicts among them); all 14 were fixed and re-verified. The audits are documented in the <a href="BUILD-REPORT.md">project build report</a>; a two-page summary is in the <a href="evidence-brief-2026-11-14.md">Evidence Brief</a>. If a claim on this site cannot survive that treatment, it does not ship.</p>
+        <p>Flame in Freefall was built by one developer with AI assistance, under the same rule the site applies to NASA's data: <strong>Tested-or-Silent, applied to our own work.</strong> Before submission, the project ran a hostile self-audit: every displayed number was recomputed from the PSI source files (not from the app's own JSON), every external link was fetched, and every tool was pushed through edge cases — empty inputs, boundary values, impossible atmospheres. Three hostile self-audits found 26 defects and gaps between them (a truncated range, a miscounted sample total, NaN-input verdicts among them); every one was fixed and re-verified. The audits are documented in the <a href="BUILD-REPORT.md">project build report</a>; a two-page summary is in the <a href="evidence-brief-2026-11-14.md">Evidence Brief</a>. If a claim on this site cannot survive that treatment, it does not ship.</p>
       </div>
 
       <div class="card wide">

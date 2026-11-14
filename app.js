@@ -883,7 +883,7 @@ function fillRefusal() {
 
 /* ---------- 90-second judge tour ---------- */
 const TOUR = [
-  { text: 'The gap in one number: solid cabin materials were never tested above 22.2% O₂. The Moon cabin will run at 34%.',
+  { text: 'The gap in one number: in the PSI data used here, solid cabin materials were never tested above 22.2% O₂. The recommended exploration atmosphere for the Moon cabin is 34%.',
     apply() { showSec('home'); }, target: () => $$('#sec-home .stat.card')[0] },
   { text: 'Tested-or-Silent, live: PMMA at the Moon cabin matches zero test rows — so the tool says NO TEST DATA, and proposes the experiment that would settle it instead of guessing.',
     apply() { prefillCabin('PMMA', 34, 8.2); }, target: () => $('#cc-result .verdict') || $('#cc-result') },
