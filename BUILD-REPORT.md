@@ -427,3 +427,52 @@ deploy; the fixes below are local, for the parent agent to deploy.
 Self-test after fixes: 26/26 PASS (root and subpath). No other files
 changed; no data JSON was touched — every shipped data file verified exact
 as-is.
+
+---
+
+## Depth-visibility pass — Nov 14, 2026 (Home only)
+
+The build's depth was real but sat behind nav clicks; this pass surfaces it
+on Home. Additions only — **no existing number, text, tool or data file was
+changed.**
+
+- **"Inside this app" inventory band** (Home, under the dataset band): eight
+  counted components, each a `data-goto` link to its section — 19 PSI
+  investigations (investigations.json length) · 2,012 Open Archive records
+  (archive.json rows) · 45 SAME-R tests analysed from raw telemetry
+  (detection.json `by_test`, = `headlines.samer_tests_analysed`) · 3 ISS
+  detector recordings replayed (replay.json tests 66/62/82) · 9,446,715
+  PSI-115 smoke-modelling values (psi115_summary n_values column sum, the
+  figure Audit #2 re-derived) · 273 real FLEX tests behind the predictor
+  (model.json `n_rows`) · 34 materials with an O₂-coverage verdict in the
+  released tables (coverage-verdicts.json, rule verified set-equal in
+  Audit #2) · 546 archive records that record an outcome (extra.json
+  honesty count, = the Archive's own assertion). Every count was re-counted
+  from the shipped data files during this pass, not copied from prose.
+- **Archive peek** (Home, directly under the band): a card rendering the
+  first five archive records (Test B1–B5, PSI-25) at runtime from
+  `data/archive.json` via the Archive's own `archRowHtml` renderer and
+  column set (`renderHomePeek()` in app.js, called from `initFinal`), plus
+  a runtime-computed "…and 2,007 more records" line (2,012 − 5) linking to
+  the full Archive. Peek rows are de-clicked via CSS (the Archive's row
+  expansion stays an Archive-only behaviour).
+- **Verification line** at the foot of Home: "Every number on this page was
+  recomputed from the source files in two independent audits." — linking to
+  References & Method. No defect counts printed (per brief).
+
+Files changed: `index.html` (band + peek card + verification line),
+`style.css` (`.inv-band/.inv-item/.inv-num/.inv-label`, peek de-click rules,
+`.verify-line`; band collapses 4→2 columns at ≤900 px), `app.js`
+(`renderHomePeek()` + one call in `initFinal`), this report. No data JSON
+touched.
+
+Verification: served locally; built-in `?selftest=1` — **26/26 PASS at the
+server root AND under the `/flame-in-freefall/` subpath**, zero FAIL lines.
+DOM check: peek renders exactly 5 `ar-row`s (Test B1–B5) and the "2,007"
+remainder; all 8 inventory items present; verification line present.
+Screenshots inspected: Home at desktop width (band as a clean 4×2 grid,
+peek table identical in style to the Archive's, nothing clipped or
+ghosted) and at 400 px (band in 2 columns, widest figure 9,446,715 fully
+inside its cell; peek table scrolls inside its `.scroll-table` wrapper
+exactly like the Archive's own table — no page-level overflow). NOT
+deployed — redeploy is the parent agent's step, as before.

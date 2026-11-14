@@ -110,6 +110,26 @@
       </div>
       <p class="chart-note">Two SAME-R numbers, kept distinct on purpose: 68,699 readings were downloaded across 44 telemetry files; 63,397 samples fall inside the 45 tests with raw files (the rest are idle rows between tests, plus repeated file headers). The Detection Panel's analysis uses the 63,397.</p>
 
+      <div class="band-label">Inside this app</div>
+      <div class="inv-band">
+        <button class="inv-item" data-goto="cards"><span class="inv-num">19</span><span class="inv-label">PSI investigations, one card each</span></button>
+        <button class="inv-item" data-goto="archive"><span class="inv-num">2,012</span><span class="inv-label">records in the Open Archive</span></button>
+        <button class="inv-item" data-goto="detection"><span class="inv-num">45</span><span class="inv-label">SAME-R detector tests analysed from raw telemetry</span></button>
+        <button class="inv-item" data-goto="detection"><span class="inv-num">3</span><span class="inv-label">ISS detector recordings, replayed</span></button>
+        <button class="inv-item" data-goto="detection"><span class="inv-num">9,446,715</span><span class="inv-label">PSI-115 smoke-modelling values</span></button>
+        <button class="inv-item" data-goto="predictor"><span class="inv-num">273</span><span class="inv-label">real FLEX tests behind the trained predictor</span></button>
+        <button class="inv-item" data-goto="refs"><span class="inv-num">34</span><span class="inv-label">materials with an O₂-coverage verdict in the released tables</span></button>
+        <button class="inv-item" data-goto="archive"><span class="inv-num">546</span><span class="inv-label">archive records that record an outcome</span></button>
+      </div>
+
+      <div class="card wide peek-card">
+        <div class="dchip-row"><span class="dchip dc-test">TEST DATA</span></div>
+        <h3>From the archive itself — the first five records</h3>
+        <p>The Open Archive is not a summary: it is every record, exactly as recorded. These are its first five rows, rendered from the same data file the archive itself uses:</p>
+        <div class="scroll-table" id="home-peek"></div>
+        <p class="chart-note">…and <span id="peek-more"></span> more records — <a href="#archive" data-goto="archive">open the full archive</a>.</p>
+      </div>
+
       <h2>One tool, three jobs</h2>
       <div class="cards3">
         <div class="card pillar p-prev">
@@ -176,6 +196,7 @@
         <figcaption>The same candle, on Earth (left) and in microgravity (right): with no buoyancy to pull it upward, the flame is round, blue and dome-shaped. Photo: NASA Glenn Research Center (GRC-1998-C-00485), public domain.</figcaption>
       </figure>
       <p class="foot-note">Built for the NASA Space Apps 2026 challenge <em>Flame in Freefall</em>. Data: NASA Physical Science Informatics (PSI). Method and full references in the <a href="#refs" data-goto="refs">References &amp; Method</a> section.</p>
+      <p class="foot-note verify-line">Every number on this page was recomputed from the source files in two independent audits. The sources and method behind every figure are documented in <a href="#refs" data-goto="refs">References &amp; Method</a>.</p>
     </section>
 
     <!-- ============ CABIN CHECK ============ -->

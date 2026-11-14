@@ -797,6 +797,15 @@ function initArchive() {
   renderArchive();
 }
 
+/* ---------- Home archive peek (depth-visibility pass) ---------- */
+function renderHomePeek() {
+  /* the archive's own header + row renderer over the same ARCH data —
+     the first five records, exactly as the Open Archive shows them */
+  $('#home-peek').innerHTML = '<table><tr><th>Row ref</th><th>PSI</th><th>Material (as recorded)</th><th>O₂ %</th><th>Pressure (psia)</th><th>Flow (cm/s)</th><th>Outcome</th><th>Burn (s)</th></tr>' +
+    ARCH.rows.slice(0, 5).map(archRowHtml).join('') + '</table>';
+  $('#peek-more').textContent = (ARCH.rows.length - 5).toLocaleString('en-US');
+}
+
 /* ---------- glossary tooltips ---------- */
 function wireGlossary() {
   const tip = $('#gloss-tip');
@@ -909,7 +918,7 @@ function wireTour() {
 function initFinal() {
   fillRefusal();
   renderFrontier(); renderQuiz(); renderReplay(); renderPairing(); renderWake(); renderDist();
-  renderPsi117(); renderPsd(); renderBurn(); renderOverlap(); initArchive();
+  renderPsi117(); renderPsd(); renderBurn(); renderOverlap(); initArchive(); renderHomePeek();
   renderPmap();
   $$('.pmap-fuel').forEach(b => b.addEventListener('click', () => {
     $$('.pmap-fuel').forEach(x => x.classList.remove('active')); b.classList.add('active');

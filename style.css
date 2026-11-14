@@ -243,3 +243,26 @@ th{color:var(--muted);font-weight:700}
   .replay-controls{flex-wrap:wrap}
   .replay-clock{white-space:normal}
 }
+
+/* ================= Depth-visibility pass — Nov 14, 2026 ================= */
+/* "Inside this app" inventory band: the app's contents, counted, on Home */
+.inv-band{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 8px;
+  border:1px solid var(--line);border-radius:var(--radius);padding:16px;
+  background:linear-gradient(155deg,rgba(125,211,252,.08),rgba(125,211,252,0) 55%),var(--panel)}
+.inv-item{display:block;text-align:left;background:transparent;border:1px solid transparent;border-radius:12px;
+  padding:10px 12px;cursor:pointer;font-family:var(--font-body);color:var(--text);width:100%;
+  transition:background .18s ease,border-color .18s ease,box-shadow .18s ease}
+.inv-item:hover,.inv-item:focus-visible{background:var(--panel2);border-color:rgba(125,211,252,.35);
+  box-shadow:0 0 14px rgba(56,189,248,.20);outline:none}
+.inv-num{display:block;font-family:var(--font-mono);font-size:24px;font-weight:800;color:var(--sky);line-height:1.15}
+.inv-label{display:block;color:var(--muted);font-size:12.5px;margin-top:3px;line-height:1.4}
+/* archive peek on Home: same rows as the Archive table, not clickable */
+.peek-card{margin-top:18px}
+#home-peek .ar-row{cursor:default}
+#home-peek .ar-row:hover td{background:transparent}
+/* verification line at the foot of Home */
+.verify-line{border-top:1px dashed var(--line);padding-top:12px}
+@media (max-width:900px){
+  .inv-band{grid-template-columns:repeat(2,1fr)}
+  .inv-num{font-size:21px}
+}
