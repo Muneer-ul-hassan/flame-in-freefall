@@ -476,3 +476,96 @@ ghosted) and at 400 px (band in 2 columns, widest figure 9,446,715 fully
 inside its cell; peek table scrolls inside its `.scroll-table` wrapper
 exactly like the Archive's own table — no page-level overflow). NOT
 deployed — redeploy is the parent agent's step, as before.
+
+## Flame Lab — simplified grid simulation (Nov 14, 2026)
+
+New section `sec-flamelab` (nav under DETECTION, after Detection Panel; also
+in the Cmd-K palette). One MODELLING-chipped card; the lede and card title
+say "simplified simulation". Local build only — NOT deployed.
+
+**The simulation.** Two 64×48 cell grids side by side (Earth — 1 g;
+Microgravity — ISS), same centre ignition, same 6-row fuel surface along the
+bottom. Cells ignite → burn → burn out by preheat rules; nothing is a
+hand-drawn flame shape. Flame and smoke are particles moved by each world's
+flow rule: Earth gets a buoyant updraft (plume stretches up, smoke rises and
+disperses), microgravity gets diffusion only (flame stays a round blue blob,
+smoke accumulates around it — captioned to the PSI-115 finding already in
+the app: µg smoke concentrates, peak ≈ 2× Earth's in the 8 cm case).
+
+**Spread rate — anchored, not tuned.** The O₂ slider (21–50%) sets the
+surface front speed from the two measured PSI-108 values only: 0.092 cm/s
+at 35% O₂ / 1 atm and 0.547 cm/s at 50% O₂ / 2 atm. Between the anchors the
+rate is interpolated linearly; below 35% it is clamped at the 35% anchor
+(0.092 cm/s), labelled exactly that — no extrapolation. A surface cell's
+ignition delay is cell-width ÷ rate (0.875 cm per cell at the printed scale
+×40 real time · 1 cm = 8 px), and the cell logic runs in ≤0.1 sim-second
+substeps so the front tracks the anchored rate: Node harness measured cell
+ignitions within ~4% of ideal across 12 cells at the 50% anchor. The live
+readout prints "measured (PSI-108)" only at 35% and 50%, "≈X — interpolated
+between measured anchors" between them, and the below-anchor clamp label
+under 35%. NOTE: backbone.json contains no PSI-108 rows (the values come
+from the PSI-108 SSCE report text, as the Suppression card already
+credits), so per the no-guessing rule the anchors are labelled "PSI-108"
+only — no material name attached.
+
+**Toggles.** Ventilation off: Earth's front stops, its burning cells die
+down ~2.6× faster and the plume collapses; the µg sim is untouched and
+persists (caption quotes the Researcher's Guide behaviour). Cool flame
+(PSI-117): ~40% of cells that burn out while it is on pass through a faint
+pale-blue state before going dark (caption: cool flames can keep burning
+invisibly after visible extinction). Fuel (Methanol/Heptane) swaps ONLY the
+printed stats and the burn-out tendency parameter: stats are the stored
+suppression.json values — Methanol shows the Suppression View's own
+cabin-conditions figure (63 of 78 at 21% O₂ / 14.7 psia, recomputed live
+through the same supMatch() so it cannot drift) plus its stored 20–24% O₂
+bin (60 rows, 46 extinguished, 76.7%); Heptane shows only its stored bin
+(43 rows, 23 extinguished, 53.5%) and an explicit "no figure stored, so
+none is printed" for cabin conditions. Each fuel's bin share sets its
+self-extinguish probability in the sim — the honesty box calls this a
+teaching-model mapping of a droplet-test outcome, not a measured spread
+property, and states the PSI-108 anchors do not change with fuel.
+
+**The detector's eye.** A smoke-material selector (Silicone / Lampwick /
+Pyrell / Kapton / Teflon) and an ISS-detector meter fed by the µg sim's
+accumulated smoke. The reading rises toward the material's measured SAME-R
+obscuration median, read at runtime from data/detection.json
+(by_material[].obsc_drop_med_V: Silicone 0.2997, Pyrell 0.06895,
+Lampwick 0.0202, Kapton 0.00075, Teflon 0.0006 — displayed rounded to
+0.300 / 0.069 / 0.020 / 0.001 / 0.001 V, matching the app's existing
+prints). Label on the card: "Smoke is simulated; the response levels are
+the measured SAME-R medians." For Kapton/Teflon the meter stays at the
+floor while the smoke visibly piles up — the miss, demonstrated.
+
+**Moon cabin preset.** Button sets the O₂ slider to 34%, outlines the µg
+grid, and shows the banner verbatim: "Moon cabin: 34% O₂, 8.2 psia. No
+solid material has ever been tested at this oxygen level — this picture is
+a model; the tested verdict is NO TEST DATA." with a data-goto link to
+Cabin Check. At 34% the readout shows the below-anchor clamp label.
+Touching the slider manually exits the preset.
+
+**Housekeeping.** Reset/replay button + automatic replay ~4 s after a run
+fully burns out. The rAF loop no-ops while the section is hidden or the tab
+is hidden. prefers-reduced-motion: one static frame (ignition patch lit)
+plus a "simulation paused" note, no loop. No data JSON touched, no existing
+text or number changed, no external assets. Added weight ≈ 23.5 KB
+(index.html +7.2 KB, style.css +1.7 KB, app.js +14.6 KB).
+
+**Verification.** Existing self-test 26/26 PASS at server root AND under
+/flame-in-freefall/, zero FAIL, on the final code. A Node harness (DOM
+stubs, app's own functions) passed 17/17 dynamics checks: flRate exact at
+both anchors, linear midpoint 0.3195 at 42.5%, clamped at 21% and 34%;
+front position vs anchored rate at 35% and 50%; Earth + ventilation off
+touches exactly 1 surface cell while µg front reaches 12; cool state
+appears after burnouts; detector saturates at 0.0007 V for Kapton vs
+0.300 V for Silicone under identical smoke; both fuels' stats print exactly
+the stored figures. Puppeteer (real-time) checks: 5 s at 35% → both fronts
+spread, µg smoke accumulating, meter at 0.166 V rising toward the Silicone
+target; Kapton selected → meter decays to the 0.001 V floor with the
+"detector miss" note; Moon preset → slider 34, banner shown, µg outlined,
+below-anchor readout; cool on → 13 cool-state cells per grid at 6 s;
+readout at 50% → the exact measured string. Screenshots inspected at
+desktop (side-by-side grids, flames visible, controls usable) and 400 px
+(grids stack, document scrollWidth == 400, no overflow). The only console
+entries were the pre-existing Google Fonts fetch (no internet in this
+sandbox) and favicon 404 — zero JS errors. NOT deployed — redeploy is the
+parent agent's step, as before.

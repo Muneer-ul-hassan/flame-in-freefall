@@ -34,6 +34,7 @@
       <button data-sec="screener">Inventory Screener</button>
       <div class="nav-group">DETECTION</div>
       <button data-sec="detection">Detection Panel</button>
+      <button data-sec="flamelab">Flame Lab</button>
       <div class="nav-group">SUPPRESSION</div>
       <button data-sec="suppression">Suppression View</button>
       <button data-sec="predictor">Safe Predictor</button>
@@ -374,6 +375,78 @@ Silicone</textarea>
         <h3>Every analysed SAME-R test (45)</h3>
         <div id="det-test-table" class="scroll-table"></div>
         <div class="src">Only 45 of the 109 SAME-R tests have raw telemetry files in PSI-101 (tests 58–108); the rest have no raw file in the repository. “No response” means the detector stayed at baseline while smoke was generated — these files contain no alarm threshold, so we do not claim an alarm failed.</div>
+      </div>
+    </section>
+
+    <!-- ============ FLAME LAB ============ -->
+    <section id="sec-flamelab" class="sec">
+      <h1>Flame Lab <span class="tag tag-det">Detection</span></h1>
+      <p class="lede">A <strong>simplified simulation</strong> of flame spread — the same ignition, the same fuel surface, run under two gravities at once. Nothing is hand-drawn: flame and smoke emerge from simple flow rules, the spread speed is set by two measured PSI-108 anchors, and the station detector reads against measured SAME-R medians.</p>
+
+      <div class="card wide">
+        <div class="dchip-row"><span class="dchip dc-modelling">MODELLING</span></div>
+        <h3>🔥 Flame spread, simulated — Earth vs microgravity</h3>
+        <p>A thin fuel surface runs along the bottom of each grid. It ignites in the middle and the burning front spreads outward at the rate set by the oxygen slider. Above the surface the two worlds part: on Earth a buoyant updraft stretches flame and smoke into a rising plume that disperses; in microgravity there is no bulk flow, so the flame stays round and the smoke accumulates around it instead of rising — the behaviour the PSI-115 modelling grids record (in microgravity smoke concentrates: <strong>peak ≈ 2× Earth's</strong> in the 8 cm case).</p>
+
+        <div id="fl-moon" class="fl-moon" style="display:none">
+          <p><strong>Moon cabin: 34% O₂, 8.2 psia.</strong> No solid material has ever been tested at this oxygen level — this picture is a model; the tested verdict is <strong>NO TEST DATA</strong>. <a href="#cabin" data-goto="cabin">Run the real Cabin Check →</a></p>
+        </div>
+
+        <div class="flame-pair">
+          <figure id="fl-fig-earth">
+            <canvas id="fl-earth" width="470" height="400" class="chart-canvas"></canvas>
+            <figcaption>Earth — 1 g · buoyant plume: flame stretches, smoke rises and disperses</figcaption>
+          </figure>
+          <figure id="fl-fig-ug">
+            <canvas id="fl-ug" width="470" height="400" class="chart-canvas"></canvas>
+            <figcaption>Microgravity — ISS · round flame: smoke accumulates around it</figcaption>
+          </figure>
+        </div>
+        <p class="chart-note" id="fl-caption">Ventilation on: moving air feeds both flames.</p>
+        <p class="chart-note" id="fl-rm-note" style="display:none">Reduced-motion setting detected — the simulation is paused on a still frame.</p>
+
+        <div class="fl-det">
+          <div class="preset-row" id="fl-smoke-row" style="margin-top:0">
+            <span class="chart-note" style="margin:0">Smoke material:</span>
+            <button class="preset fl-smoke active" data-mat="Silicone">Silicone</button>
+            <button class="preset fl-smoke" data-mat="Lampwick">Lampwick</button>
+            <button class="preset fl-smoke" data-mat="Pyrell">Pyrell</button>
+            <button class="preset fl-smoke" data-mat="Kapton">Kapton</button>
+            <button class="preset fl-smoke" data-mat="Teflon">Teflon</button>
+          </div>
+          <div class="fl-meter-row">
+            <span class="fl-meter-label">ISS detector — simulated reading (from the microgravity smoke)</span>
+            <div class="fl-meter"><div class="fl-meter-fill" id="fl-meter-fill"></div></div>
+            <span class="fl-readout" id="fl-meter-val">0.000 V</span>
+          </div>
+          <p class="chart-note" id="fl-meter-note">Smoke is simulated; the response levels are the measured SAME-R medians.</p>
+        </div>
+
+        <div class="fl-controls">
+          <div class="fl-slider-row">
+            <label for="fl-o2">Oxygen (sets the surface spread rate in both grids)</label>
+            <div class="replay-controls" style="margin-top:6px">
+              <input type="range" id="fl-o2" min="21" max="50" step="1" value="35">
+              <span class="replay-clock" id="fl-o2-val">35% O₂</span>
+              <span class="fl-readout" id="fl-rate">0.092 cm/s — measured (PSI-108)</span>
+            </div>
+            <p class="chart-note">Measured anchors (PSI-108): <strong>0.092 cm/s at 35% O₂ / 1 atm</strong> · <strong>0.547 cm/s at 50% O₂ / 2 atm</strong> — about 6× faster. Between the anchors the rate is interpolated linearly; below 35% it is held at the 35% anchor's rate — the lowest measured rate, not an extrapolation. Simulation scale: <strong>×40 real time · 1 cm = 8 px</strong>, so at the anchors the front crosses the fuel surface at exactly the measured speed. The run replays automatically when it burns out.</p>
+          </div>
+          <div class="preset-row">
+            <button class="preset" id="fl-vent">Stop ventilation</button>
+            <button class="preset" id="fl-cool">Cool flame (PSI-117)</button>
+            <button class="preset" id="fl-moon-btn">Moon cabin preset</button>
+            <button class="preset" id="fl-reset">↺ Reset / replay</button>
+          </div>
+          <div class="preset-row" id="fl-fuel-row">
+            <span class="chart-note" style="margin:0">FLEX fuel:</span>
+            <button class="preset fl-fuel active" data-fuel="Methanol">Methanol</button>
+            <button class="preset fl-fuel" data-fuel="Heptane">Heptane</button>
+          </div>
+          <div id="fl-fuel-stats" class="fl-stats"></div>
+        </div>
+
+        <div class="src"><strong>What is real here:</strong> the spread-speed anchors are measured PSI-108 values (0.092 cm/s at 35% O₂ / 1 atm; 0.547 cm/s at 50% O₂ / 2 atm), interpolated linearly between the anchors and held at the 35% rate below them — the anchors themselves are exact PSI-108 values, and they do not change with fuel. The per-fuel outcomes are measured FLEX results stored in data/suppression.json: Methanol's cabin-conditions figure (63 of 78 extinguished at 21% O₂ / 14.7 psia) is the Suppression View's own number, and the stored 20–24% O₂ bin shares (Methanol 46/60, Heptane 23/43) also set each fuel's burn-out tendency in this simulation — a teaching-model mapping of a droplet-test outcome onto a surface, not a measured spread property. The microgravity smoke behaviour follows PSI-115 (smoke concentrates around the source instead of rising; peak ≈ 2× Earth's in the 8 cm case). The ventilation behaviour follows NASA's Researcher's Guide to ISS Combustion Science (an Earth flame gutters without airflow; a microgravity flame does not self-extinguish when ventilation stops). The cool-flame state follows PSI-117 and the Guide (cool flames can keep burning invisibly after visible extinction). The detector's response levels are the measured SAME-R obscuration medians in data/detection.json — only the smoke feeding it is simulated. <strong>What is simplified:</strong> the grid physics is a teaching model, not CFD — cells ignite, burn and burn out by simple rules, flame appearance emerges from those rules, and the ×40 clock and 1 cm = 8 px scale are presentation choices. Flame geometry is computed, not recorded — NASA's database holds conditions and outcomes, not flame-shape recordings; every measured number driving this simulation is a real value from the shipped data.</div>
       </div>
     </section>
 

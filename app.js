@@ -825,7 +825,7 @@ function wireGlossary() {
 /* ---------- command palette (Cmd/Ctrl-K) ---------- */
 function cmdkEntries() {
   const secs = [['Home — Tested-or-Silent', 'home'], ['Cabin Check', 'cabin'], ['Inventory Screener', 'screener'],
-    ['Detection Panel', 'detection'], ['Suppression View', 'suppression'], ['Safe Predictor', 'predictor'],
+    ['Detection Panel', 'detection'], ['Flame Lab', 'flamelab'], ['Suppression View', 'suppression'], ['Safe Predictor', 'predictor'],
     ['Investigation Cards', 'cards'], ['Open Archive', 'archive'], ['References & Method', 'refs']]
     .map(([label, sec]) => ({ label, run: () => showSec(sec) }));
   const acts = [{ label: '▶ Start the 90-second tour', run: () => startTour() }];
@@ -919,6 +919,7 @@ function initFinal() {
   fillRefusal();
   renderFrontier(); renderQuiz(); renderReplay(); renderPairing(); renderWake(); renderDist();
   renderPsi117(); renderPsd(); renderBurn(); renderOverlap(); initArchive(); renderHomePeek();
+  initFlameLab();
   renderPmap();
   $$('.pmap-fuel').forEach(b => b.addEventListener('click', () => {
     $$('.pmap-fuel').forEach(x => x.classList.remove('active')); b.classList.add('active');
@@ -973,6 +974,276 @@ function selfTestFinal(out, t) {
     experimentCard('PMMA', 34, 8.2, null, BB.rows.filter(r => r.mat === 'PMMA')).includes('PMMA at 34% O₂'), '');
   t('Nearest-rows grounding renders', nearestRows('Methanol', 21, 14.7).includes('Nearest real training rows'), '');
   t('Home refusal card computed 0 matched', cabinCheck('PMMA', 34, 8.2, null).matched.length === 0, '');
+}
+
+/* ---------- Flame Lab — simplified grid simulation (Nov 14, 2026) ----------
+   Two 64x48 grids, same ignition, same fuel surface. Cells ignite, burn and
+   burn out by simple rules; flame and smoke are particles moved by each
+   world's flow rule (Earth: buoyant updraft; microgravity: diffusion only,
+   so smoke accumulates). The surface spread rate comes only from the two
+   measured PSI-108 anchors. Detector levels are measured SAME-R medians. */
+const FL = { cols: 64, rows: 48, cell: 7, ox: 11, oy: 46, fuelTop: 42, timeScale: 40, pxPerCm: 8 };
+FL.cellCm = FL.cell / FL.pxPerCm;
+const FL_ANCHORS = [[35, 0.092], [50, 0.547]];
+function flRate(o2) {
+  if (o2 <= FL_ANCHORS[0][0]) return FL_ANCHORS[0][1];
+  if (o2 >= FL_ANCHORS[1][0]) return FL_ANCHORS[1][1];
+  return FL_ANCHORS[0][1] + (o2 - FL_ANCHORS[0][0]) * (FL_ANCHORS[1][1] - FL_ANCHORS[0][1]) / (FL_ANCHORS[1][0] - FL_ANCHORS[0][0]);
+}
+const flHash = (c, r) => { const x = Math.sin(c * 127.1 + r * 311.7) * 43758.5453; return x - Math.floor(x); };
+const flState = { o2: 35, vent: false, cool: false, moon: false, fuel: 'Methanol', smokeMat: 'Silicone', pExt: 0.767, ventK: 0, det: 0, doneT: 0 };
+let flEarth = null, flUG = null, flReduced = false, flLast = 0;
+
+function flBin(fuel) { return SUP.flex_extinction_by_o2.find(b => b.fuel === fuel && b.o2_bin === '20\u201324'); }
+function flIgnite(s, i) { s.state[i] = 2; s.burn[i] = 0; }
+function flBurnDur(s, i) { return s.selfExt[i] ? 15 : 46; }
+function flResetSim(s) {
+  s.state.fill(0); s.burn.fill(0); s.pre.fill(0); s.cool.fill(0); s.early.fill(0); s.parts.length = 0;
+  for (let r = FL.fuelTop; r < FL.rows; r++) for (let c = 0; c < FL.cols; c++) {
+    const i = r * FL.cols + c; s.state[i] = 1; s.selfExt[i] = flHash(c, r) < flState.pExt ? 1 : 0;
+  }
+  flIgnite(s, FL.fuelTop * FL.cols + (FL.cols >> 1));
+}
+function flNewSim(ug, canvas) {
+  const s = { ug, ctx: canvas.getContext('2d'), state: new Uint8Array(FL.cols * FL.rows),
+    burn: new Float32Array(FL.cols * FL.rows), pre: new Float32Array(FL.cols * FL.rows),
+    cool: new Float32Array(FL.cols * FL.rows), early: new Uint8Array(FL.cols * FL.rows),
+    selfExt: new Uint8Array(FL.cols * FL.rows), parts: [] };
+  flResetSim(s); return s;
+}
+function flStep(s, dt) {
+  /* cell logic runs in <=0.1 sim-second substeps so the front crosses each
+     surface cell in almost exactly cellCm/rate — the measured spread time. */
+  const total = dt * FL.timeScale;
+  const n = Math.max(1, Math.ceil(total / 0.1)), h = total / n;
+  let any = false;
+  for (let k = 0; k < n; k++) any = flStepCells(s, h) || any;
+  flParticles(s, dt);
+  return any;
+}
+function flStepCells(s, dtS) {
+  const delaySurf = FL.cellCm / flRate(flState.o2);
+  const C = FL.cols, R = FL.rows, st = s.state;
+  const canSpread = s.ug || !flState.vent;
+  if (canSpread) for (let r = FL.fuelTop; r < R; r++) for (let c = 0; c < C; c++) {
+    const i = r * C + c; if (st[i] !== 1) continue;
+    const hot = (c > 0 && st[i - 1] === 2) || (c < C - 1 && st[i + 1] === 2) ||
+      (r > FL.fuelTop && st[i - C] === 2) || (r < R - 1 && st[i + C] === 2);
+    if (!hot) continue;
+    s.pre[i] += dtS;
+    if (s.pre[i] >= (r === FL.fuelTop ? delaySurf : delaySurf * 2.5)) flIgnite(s, i);
+  }
+  let anyActive = false;
+  for (let i = 0; i < st.length; i++) {
+    if (st[i] === 2) {
+      anyActive = true;
+      s.burn[i] += dtS * (!s.ug && flState.vent ? 2.6 : 1);
+      if (s.burn[i] >= flBurnDur(s, i)) {
+        if (flState.cool && flHash(i % C, (i / C) | 0) < 0.4) { st[i] = 4; s.cool[i] = 26; }
+        else { st[i] = 3; if (s.selfExt[i]) s.early[i] = 1; }
+      }
+    } else if (st[i] === 4) {
+      anyActive = true; s.cool[i] -= dtS;
+      if (s.cool[i] <= 0) { st[i] = 3; if (s.selfExt[i]) s.early[i] = 1; }
+    }
+  }
+  return anyActive;
+}
+function flMkPart(s, kind, x, y, inten) {
+  const R = Math.random;
+  if (kind === 'flame') return s.ug
+    ? { kind, x: x + (R() - .5) * 6, y: y - 2, vx: (R() - .5) * 16, vy: -(4 + R() * 10), age: 0, life: .8 + R() * .7, size: 5 + R() * 6, seed: R() * 9, inten }
+    : { kind, x: x + (R() - .5) * 5, y: y - 2, vx: (R() - .5) * 8, vy: -(26 + R() * 30), age: 0, life: .65 + R() * .5, size: 4.5 + R() * 4.5, seed: R() * 9, inten };
+  if (kind === 'smoke') return s.ug
+    ? { kind, x, y: y - 4, vx: (R() - .5) * 5, vy: (R() - .5) * 4, age: 0, life: 13 + R() * 10, size: 4 + R() * 4, seed: R() * 9, inten: 1 }
+    : { kind, x, y: y - 4, vx: (R() - .5) * 7, vy: -(22 + R() * 20), age: 0, life: 2.4 + R() * 1.4, size: 3.5 + R() * 3, seed: R() * 9, inten: 1 };
+  return { kind, x, y: y - 2, vx: (R() - .5) * 3, vy: s.ug ? -1 : -7, age: 0, life: 1.6 + R() * 1.2, size: 3 + R() * 3, seed: R() * 9, inten: .6 };
+}
+function flParticles(s, dt) {
+  const C = FL.cols, st = s.state;
+  const flameP = s.ug ? .55 : .55 * (1 - .75 * flState.ventK);
+  for (let r = FL.fuelTop; r < FL.rows; r++) for (let c = 0; c < C; c++) {
+    const i = r * C + c; if (st[i] !== 2) continue;
+    const inten = Math.sin(Math.PI * Math.min(1, s.burn[i] / flBurnDur(s, i)));
+    const x = FL.ox + c * FL.cell + FL.cell / 2, y = FL.oy + r * FL.cell;
+    if (Math.random() < flameP) s.parts.push(flMkPart(s, 'flame', x, y, inten));
+    if (Math.random() < .20) s.parts.push(flMkPart(s, 'smoke', x, y, inten));
+  }
+  if (flState.cool) for (let i = 0; i < st.length; i++)
+    if (st[i] === 4 && Math.random() < .05) s.parts.push(flMkPart(s, 'cool', FL.ox + (i % C) * FL.cell + 3, FL.oy + ((i / C) | 0) * FL.cell, .5));
+  if (s.parts.length > 480) s.parts.splice(0, s.parts.length - 480);
+  const ventK = s.ug ? 0 : flState.ventK;
+  for (let k = s.parts.length - 1; k >= 0; k--) {
+    const p = s.parts[k]; p.age += dt;
+    if (p.age >= p.life) { s.parts.splice(k, 1); continue; }
+    if (s.ug) {
+      p.vx += (Math.random() - .5) * 22 * dt; p.vy += (Math.random() - .5) * 22 * dt;
+      p.vx *= .982; p.vy *= .982;
+    } else if (p.kind === 'flame') {
+      const tgt = -185 * (1 - ventK) - 8;
+      p.vy += (tgt - p.vy) * Math.min(1, dt * 3.2);
+      p.x += Math.sin(p.age * 7 + p.seed) * 13 * dt;
+    } else if (p.kind === 'smoke') {
+      const tgt = -64 * (1 - ventK) - 4;
+      p.vy += (tgt - p.vy) * Math.min(1, dt * 2.2);
+    }
+    p.x += p.vx * dt; p.y += p.vy * dt;
+    if (p.y < 4 || p.x < 2 || p.x > 468) s.parts.splice(k, 1);
+  }
+}
+function flDraw(s) {
+  const ctx = s.ctx, C = FL.cols;
+  ctx.clearRect(0, 0, 470, 400);
+  for (let r = 0; r < FL.rows; r++) for (let c = 0; c < C; c++) {
+    const i = r * C + c, st = s.state[i]; if (!st) continue;
+    const x = FL.ox + c * FL.cell, y = FL.oy + r * FL.cell;
+    if (st === 1) ctx.fillStyle = r === FL.fuelTop ? '#8a5a27' : '#6e451d';
+    else if (st === 2) {
+      const inten = Math.sin(Math.PI * Math.min(1, s.burn[i] / flBurnDur(s, i)));
+      const dim = !s.ug && flState.vent ? 1 - .5 * flState.ventK : 1;
+      ctx.fillStyle = s.ug
+        ? `hsl(205,95%,${8 + (38 + 22 * inten) * dim}%)`
+        : `hsl(${16 + 26 * inten},100%,${6 + (42 + 18 * inten) * dim}%)`;
+    }
+    else if (st === 4) ctx.fillStyle = `rgba(147,197,253,${.26 + .12 * Math.sin(performance.now() / 480 + flHash(c, r) * 6)})`;
+    else ctx.fillStyle = s.early[i] ? '#4d4034' : '#22262d';
+    ctx.fillRect(x, y, FL.cell - .5, FL.cell - .5);
+  }
+  for (const p of s.parts) {
+    const f = p.age / p.life, fade = f < .15 ? f / .15 : 1 - (f - .15) / .85;
+    if (p.kind === 'flame') {
+      const ventDim = s.ug ? 1 : 1 - .8 * flState.ventK;
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = s.ug
+        ? `rgba(80,160,245,${.42 * fade * ventDim})`
+        : `rgba(255,${140 + (p.inten * 80) | 0},40,${.55 * fade * ventDim})`;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.size * (s.ug ? 1 : .8 + f * .5), 0, 6.2832); ctx.fill();
+      ctx.globalCompositeOperation = 'source-over';
+    } else if (p.kind === 'smoke') {
+      ctx.fillStyle = `rgba(148,163,184,${.30 * (f < .2 ? f / .2 : 1 - Math.max(0, f - .55) / .45)})`;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.size + f * 8, 0, 6.2832); ctx.fill();
+    } else {
+      ctx.fillStyle = `rgba(191,219,254,${.4 * fade})`;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, 6.2832); ctx.fill();
+    }
+  }
+}
+/* detector's eye — levels are measured SAME-R medians from data/detection.json */
+function flDetMedian(mat) { const m = (DET.by_material || []).find(b => b.material === mat); return m ? m.obsc_drop_med_V : 0; }
+function flFmtV(v) { return (Math.round(v * 1000) / 1000).toFixed(3); }
+function flDetUpdate(dt) {
+  const smoke = flUG.parts.reduce((a, p) => a + (p.kind === 'smoke' ? 1 : 0), 0);
+  const target = flDetMedian(flState.smokeMat) * Math.min(1, smoke / 240);
+  flState.det += (target - flState.det) * Math.min(1, dt * 1.6);
+  const full = flDetMedian('Silicone') || 0.3;
+  const fill = $('#fl-meter-fill'), val = $('#fl-meter-val');
+  if (fill) fill.style.width = Math.min(100, flState.det / full * 100) + '%';
+  if (val) val.textContent = flFmtV(flState.det) + ' V';
+}
+function flDetNote() {
+  const v = flDetMedian(flState.smokeMat), full = flDetMedian('Silicone');
+  let txt = `Smoke is simulated; the response levels are the measured SAME-R medians. ${flState.smokeMat} median: ${flFmtV(v)} V (data/detection.json) · meter full scale ${flFmtV(full)} V (Silicone, the strongest responder).`;
+  if (flState.smokeMat === 'Kapton' || flState.smokeMat === 'Teflon')
+    txt += ' Watch the microgravity smoke pile up while the needle stays at the floor — the detector miss, demonstrated.';
+  $('#fl-meter-note').textContent = txt;
+}
+function flRateText(o2) {
+  if (o2 === 35) return '0.092 cm/s — measured (PSI-108)';
+  if (o2 === 50) return '0.547 cm/s — measured (PSI-108)';
+  if (o2 < 35) return '0.092 cm/s — at/below the lowest measured anchor (35%), shown at the 35% measured rate';
+  return `\u2248${flRate(o2).toFixed(3)} cm/s — interpolated between measured anchors`;
+}
+function flCaption() {
+  const parts = [];
+  if (flState.vent) parts.push('Ventilation stopped: on Earth the flame gutters and dies down without its airflow. In microgravity the flame persists — NASA\u2019s Guide records that a \u00b5g flame does not self-extinguish when ventilation stops.');
+  if (flState.cool) parts.push('Cool flame on: some burned-out cells drop into a faint pale state — PSI-117 records cool flames still burning invisibly after visible extinction.');
+  $('#fl-caption').textContent = parts.length ? parts.join(' ') : 'Ventilation on: moving air feeds both flames.';
+}
+function flFuelStats() {
+  const f = flState.fuel, bin = flBin(f);
+  let h = '';
+  if (f === 'Methanol') {
+    const m = supMatch('Methanol', 21, 14.7), ext = m.filter(r => r.out === 'Extinction').length;
+    h += `<p><strong>Methanol — cabin conditions (21% O\u2082 \u00b7 14.7 psia):</strong> ${ext} of ${m.length} matched FLEX flames extinguished — the Suppression View figure, from the same matched rows.</p>`;
+  } else {
+    h += `<p><strong>Heptane — cabin conditions (21% O\u2082 \u00b7 14.7 psia):</strong> no figure stored in the shipped suppression data, so none is printed.</p>`;
+  }
+  if (bin) h += `<p><strong>${f} — stored FLEX record, 20\u201324% O\u2082 bin</strong> (data/suppression.json): ${bin.n} rows \u00b7 ${bin.extinguished} extinguished (${(bin.share * 100).toFixed(1)}%). This bin\u2019s share sets ${f}\u2019s burn-out tendency in the simulation.</p>`;
+  h += `<p class="chart-note">Full per-bin record: Suppression View. The PSI-108 spread anchors do not change with fuel.</p>`;
+  $('#fl-fuel-stats').innerHTML = h;
+}
+function flSetFuel(f) {
+  flState.fuel = f;
+  const bin = flBin(f); if (bin) flState.pExt = bin.share;
+  [flEarth, flUG].forEach(s => {
+    if (!s) return;
+    for (let i = 0; i < s.state.length; i++)
+      if (s.state[i] === 1) s.selfExt[i] = flHash(i % FL.cols, (i / FL.cols) | 0) < flState.pExt ? 1 : 0;
+  });
+  flFuelStats();
+}
+function flMoon(on) {
+  flState.moon = on;
+  $('#fl-moon').style.display = on ? 'block' : 'none';
+  $('#fl-moon-btn').classList.toggle('active', on);
+  $('#fl-fig-ug').classList.toggle('fl-emph', on);
+  if (on) { const s = $('#fl-o2'); s.value = 34; s.dispatchEvent(new Event('input')); }
+}
+function flTick(ts) {
+  requestAnimationFrame(flTick);
+  const dt = Math.min(.05, flLast ? (ts - flLast) / 1000 : .016); flLast = ts;
+  const sec = $('#sec-flamelab');
+  if (!sec || !sec.classList.contains('active') || document.hidden) return;
+  flState.ventK += ((flState.vent ? 1 : 0) - flState.ventK) * Math.min(1, dt * 1.8);
+  const a = flStep(flEarth, dt), b = flStep(flUG, dt);
+  flDraw(flEarth); flDraw(flUG); flDetUpdate(dt);
+  if (!a && !b) { flState.doneT += dt; if (flState.doneT > 4) { flResetSim(flEarth); flResetSim(flUG); flState.det = 0; flState.doneT = 0; } }
+  else flState.doneT = 0;
+}
+function initFlameLab() {
+  const ec = $('#fl-earth'), uc = $('#fl-ug'); if (!ec || !uc || !SUP || !DET) return;
+  const binM = flBin('Methanol'); if (binM) flState.pExt = binM.share;
+  flEarth = flNewSim(false, ec); flUG = flNewSim(true, uc);
+  flReduced = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  flFuelStats(); flDetNote(); flCaption();
+  const slider = $('#fl-o2');
+  slider.addEventListener('input', () => {
+    flState.o2 = parseFloat(slider.value);
+    $('#fl-o2-val').textContent = slider.value + '% O\u2082';
+    $('#fl-rate').textContent = flRateText(flState.o2);
+    if (flState.moon && flState.o2 !== 34) flMoon(false);
+  });
+  flState.o2 = parseFloat(slider.value);
+  $('#fl-rate').textContent = flRateText(flState.o2);
+  $('#fl-vent').addEventListener('click', e => {
+    flState.vent = !flState.vent;
+    e.currentTarget.classList.toggle('active', flState.vent);
+    e.currentTarget.textContent = flState.vent ? 'Restart ventilation' : 'Stop ventilation';
+    flCaption();
+  });
+  $('#fl-cool').addEventListener('click', e => {
+    flState.cool = !flState.cool;
+    e.currentTarget.classList.toggle('active', flState.cool);
+    flCaption();
+  });
+  $('#fl-reset').addEventListener('click', () => { flResetSim(flEarth); flResetSim(flUG); flState.det = 0; flState.doneT = 0; });
+  $('#fl-moon-btn').addEventListener('click', () => flMoon(!flState.moon));
+  $$('.fl-fuel').forEach(b => b.addEventListener('click', () => {
+    $$('.fl-fuel').forEach(x => x.classList.remove('active')); b.classList.add('active'); flSetFuel(b.dataset.fuel);
+  }));
+  $$('.fl-smoke').forEach(b => b.addEventListener('click', () => {
+    $$('.fl-smoke').forEach(x => x.classList.remove('active')); b.classList.add('active');
+    flState.smokeMat = b.dataset.mat; flDetNote();
+  }));
+  if (flReduced) {
+    const mid = FL.fuelTop * FL.cols + (FL.cols >> 1);
+    [flEarth, flUG].forEach(s => { [-2, -1, 1, 2].forEach(d => flIgnite(s, mid + d)); });
+    flDraw(flEarth); flDraw(flUG);
+    $('#fl-rm-note').style.display = 'block';
+    return;
+  }
+  flDraw(flEarth); flDraw(flUG);
+  requestAnimationFrame(flTick);
 }
 
 init().catch(e => { document.body.insertAdjacentHTML('afterbegin', '<div style="padding:14px;background:#5b1a1a;color:#fff">Failed to load data files: ' + e.message + ' — serve this folder over HTTP (e.g. python3 -m http.server) rather than file://.</div>'); });
