@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Flame in Freefall — Spacecraft Fire-Safety Decisions from Real NASA Test Data</title>
 <meta name="description" content="A dashboard that turns NASA PSI combustion data into fire-safety decisions for spacecraft cabins: Prevention, Detection, Suppression. Real test rows only — no guesses.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 </head>
@@ -38,8 +41,12 @@
   <main>
     <!-- ============ HOME ============ -->
     <section id="sec-home" class="sec active">
-      <h1>Fire in a spacecraft cabin: the data exists. <span class="accent">The decisions don't.</span></h1>
-      <p class="lede">NASA has run thousands of fire tests on the International Space Station and stored them in the PSI database — but nobody turned them into a simple decision tool. This dashboard does: pick a material and a cabin atmosphere, and it answers from <strong>real test rows</strong>, cites them, and honestly says <strong>“no test data”</strong> where NASA never tested.</p>
+      <h1>Understanding Fire Safety <span class="accent">Beyond Earth.</span></h1>
+      <p class="lede">From the International Space Station to deep-space missions, fire safety in space requires evidence, not assumptions.</p>
+      <div class="cta-row">
+        <button class="cta cta-primary" data-goto="cabin">Start Cabin Check</button>
+        <button class="cta cta-ghost" data-goto="predictor">Open Safe Predictor</button>
+      </div>
 
       <div class="cards3">
         <div class="stat card">
@@ -56,6 +63,22 @@
           <div class="stat-num"><span class="counter" data-target="14.17" data-decimals="2">0</span><span class="unit">vs 7.50</span></div>
           <p><strong>Peak smoke concentration in microgravity vs on Earth</strong> (PSI-115 modelling grids, 8 cm case). In space, smoke does not rise and dilute — it hangs as a dense, distributed cloud.</p>
           <div class="src">Source: PSI-115 smoke grids, 9,446,715 values parsed.</div>
+        </div>
+      </div>
+
+      <div class="band-label">Research Dataset Stats</div>
+      <div class="dataset-band">
+        <div class="ds-item">
+          <div class="ds-num">2,012</div>
+          <div class="ds-label">PSI test records</div>
+        </div>
+        <div class="ds-item">
+          <div class="ds-num">68,699</div>
+          <div class="ds-label">ISS detector readings (SAME-R)</div>
+        </div>
+        <div class="ds-item">
+          <div class="ds-num">9,446,715</div>
+          <div class="ds-label">Smoke-modelling values (PSI-115)</div>
         </div>
       </div>
 
@@ -334,6 +357,8 @@ Silicone</textarea>
         <p>Built as a static web app (HTML/CSS/JavaScript) with the GSAP animation library (CDN). Decision-tree model trained with scikit-learn in Python and exported to JSON for in-browser inference. <strong>AI tools were used in building this project</strong> (Muse / “Spark” assisted with data extraction, analysis code, model training and app development) — declared here for the Space Apps original-work attestation. All scientific data is NASA's, via the public PSI repository, cited per investigation above.</p>
       </div>
     </section>
+
+    <footer class="cite-strip">Data: NASA Physical Sciences Informatics (psi.nasa.gov) — 19 combustion investigations · SAME-R detector recordings (PSI-101) · PSI-115 (DOI 10.60555/q0v5-1v28) · PSI-117 (DOI 10.60555/gz0q-b577). Every number on this page traces to these sources — see <a href="#refs" data-goto="refs">References</a>.</footer>
 
     <div id="selftest" style="display:none"></div>
   </main>

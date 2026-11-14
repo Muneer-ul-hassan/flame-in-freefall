@@ -15,7 +15,7 @@ function showSec(id) {
   const sec = $('#sec-' + id);
   if (window.gsap && sec) {
     gsap.fromTo(sec.querySelectorAll('.card,.panel,.verdict,.inv-card'),
-      { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: .45, stagger: .05, overwrite: true, clearProps: 'all' });
+      { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: .8, ease: 'power2.out', stagger: .05, overwrite: true, clearProps: 'all' });
   }
   window.scrollTo({ top: 0 });
 }
@@ -275,7 +275,7 @@ function renderCards() {
     <div class="src">DOI: <a href="https://doi.org/${c.doi}" target="_blank" rel="noopener">${c.doi}</a> · via NASA PSI</div>
   </div>`).join('');
   $('#cards-empty').innerHTML = list.length ? '' : '<div class="empty-note">No investigation matches that search/filter.</div>';
-  if (window.gsap) gsap.fromTo('#cards-grid .inv-card', { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: .35, stagger: .03, overwrite: true, clearProps: 'all' });
+  if (window.gsap) gsap.fromTo('#cards-grid .inv-card', { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: .6, ease: 'power2.out', stagger: .03, overwrite: true, clearProps: 'all' });
 }
 $$('#card-filters .preset').forEach(b => b.addEventListener('click', () => {
   $$('#card-filters .preset').forEach(x => x.classList.remove('active'));
@@ -295,7 +295,7 @@ function runCounters() {
     const target = parseFloat(el.dataset.target), dec = parseInt(el.dataset.decimals || '0');
     if (window.gsap) {
       const obj = { v: 0 };
-      gsap.to(obj, { v: target, duration: 1.6, ease: 'power2.out', onUpdate: () => el.textContent = obj.v.toFixed(dec) });
+      gsap.to(obj, { v: target, duration: 1.15, ease: 'power2.out', onUpdate: () => el.textContent = obj.v.toFixed(dec) });
     } else el.textContent = target.toFixed(dec);
   });
 }

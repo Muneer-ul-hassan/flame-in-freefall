@@ -51,3 +51,30 @@ Every displayed number was traced to a file; the app computes counts/ranges from
 - PSI-117 cross-validation of the predictor: impossible (feature/target mismatch) — documented above.
 - A trained Suppression/diluent model: impossible on this data — documented above; evidence lookup shipped instead.
 - Nothing was pushed to GitHub and nothing deployed — per instructions, deployment is the parent agent's verified next step.
+
+## Design upgrade v2 — NASA mission-control design system (Sat Nov 14, 2026)
+Cosmetics only. **No data, number, claim text, JS logic, element ID or data JSON was changed** — the single allowed text change is the hero headline/subline plus the specified additions below. Not pushed, not deployed (deployment remains the parent agent's step).
+
+### index.html
+- Added Google Fonts (Space Grotesk / Inter / JetBrains Mono) with preconnect; system fallbacks if the CDN fails.
+- Hero headline → **"Understanding Fire Safety Beyond Earth."** and subline → *"From the International Space Station to deep-space missions, fire safety in space requires evidence, not assumptions."* (approved design direction; replaces the previous hero h1/lede).
+- Added two hero CTAs wired through the existing `data-goto` routing: **Start Cabin Check** (→ Cabin Check) and **Open Safe Predictor** (→ Safe Predictor).
+- Added a **Research Dataset Stats** band under the headline stat cards: **2,012** PSI test records · **68,699** ISS detector readings (SAME-R) · **9,446,715** smoke-modelling values (PSI-115) — dataset-inventory figures already used elsewhere in the app, labels kept precise.
+- Added a footer citation strip (visible under every section): *"Data: NASA Physical Sciences Informatics (psi.nasa.gov) — 19 combustion investigations · SAME-R detector recordings (PSI-101) · PSI-115 (DOI 10.60555/q0v5-1v28) · PSI-117 (DOI 10.60555/gz0q-b577). Every number on this page traces to these sources — see References."* ("References" routes to the References section via the existing mechanism.)
+
+### style.css (full restyle)
+- Palette: background **#050B14** with a faint 44px grid-line texture (#5B7A99 at ~5% opacity); panels **#0A1626**; cards **#0E2233** with a `rgba(125,211,252,.08)` gradient overlay; sidebar/inputs **#0B1220**; secondary **#12233A**; borders 1px white at ~5.5% opacity; accents sky **#7DD3FC / #38BDF8** (the old orange accent is retired); risk colours restated exactly: danger **#FF3B30**, warning **#FFB020**, safe **#2ECC71**; text **#E5E7EB**, muted **#94A3B8**.
+- Type: Space Grotesk headings, Inter body, JetBrains Mono for data values (stat numbers, dataset band, chart values, validation figures, PSI accession badges, decision path).
+- Cards/panels/verdicts: radius 18px, 24px padding (investigation cards 20px); subtle sky glow on primary buttons, active nav, preset/goto hovers and investigation-card hovers; sky focus rings on form fields.
+- New component styles: `.cta-row/.cta` (gradient primary + ghost), `.dataset-band`, `.cite-strip`. Responsive breakpoints unchanged, with the dataset band stacking to one column ≤900px.
+
+### app.js (animation timing only — no logic changes)
+- Section card entrances: 0.45s → **0.8s** with `power2.out` ease.
+- Investigation-card grid entrances: 0.35s → **0.6s** `power2.out`.
+- Home counters: 1.6s → **1.15s**. No-GSAP fallback path untouched (counters/values land on final values, as verified in screenshots).
+
+### Verification (design v2)
+- Served locally over HTTP; built-in `?selftest=1` — **10/10 PASS at root and under the `/flame-in-freefall/` subpath** (identical results to v1, incl. PMMA@21% → 43 rows, PMMA@Moon → GAP, predictor abstains at O₂ 60%).
+- **Zero JavaScript console errors** in headless Chrome on both paths.
+- Screenshots inspected: Home (new hero, CTAs, stat cards, dataset band, footer strip), Cabin Check (default verdict + rows render, citation strip under the section), Home at 400px width (nav wraps, CTAs and band stack cleanly).
+- Caveat carried over from v1: the sandbox's headless Chrome cannot reach the internet, so the Google Fonts and GSAP CDNs cannot load *in the test environment* — screenshots render with the font/animation fallbacks. On GitHub Pages / any online browser both CDNs load normally. No sample/mock content was adopted — no invented ratings, labels or charts were added.
