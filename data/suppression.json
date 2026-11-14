@@ -1,0 +1,91 @@
+{
+ "flex_extinction_by_o2": [
+  {
+   "fuel": "Methanol",
+   "o2_bin": "12\u201316",
+   "n": 37,
+   "extinguished": 37,
+   "share": 1.0
+  },
+  {
+   "fuel": "Methanol",
+   "o2_bin": "16\u201320",
+   "n": 39,
+   "extinguished": 38,
+   "share": 0.974
+  },
+  {
+   "fuel": "Methanol",
+   "o2_bin": "20\u201324",
+   "n": 60,
+   "extinguished": 46,
+   "share": 0.767
+  },
+  {
+   "fuel": "Methanol",
+   "o2_bin": "24\u201328",
+   "n": 8,
+   "extinguished": 3,
+   "share": 0.375
+  },
+  {
+   "fuel": "Methanol",
+   "o2_bin": "28\u201334",
+   "n": 13,
+   "extinguished": 2,
+   "share": 0.154
+  },
+  {
+   "fuel": "Heptane",
+   "o2_bin": "12\u201316",
+   "n": 11,
+   "extinguished": 8,
+   "share": 0.727
+  },
+  {
+   "fuel": "Heptane",
+   "o2_bin": "16\u201320",
+   "n": 35,
+   "extinguished": 25,
+   "share": 0.714
+  },
+  {
+   "fuel": "Heptane",
+   "o2_bin": "20\u201324",
+   "n": 43,
+   "extinguished": 23,
+   "share": 0.535
+  },
+  {
+   "fuel": "Heptane",
+   "o2_bin": "24\u201328",
+   "n": 17,
+   "extinguished": 4,
+   "share": 0.235
+  },
+  {
+   "fuel": "Heptane",
+   "o2_bin": "28\u201334",
+   "n": 11,
+   "extinguished": 0,
+   "share": 0.0
+  }
+ ],
+ "flex_total_rows_with_outcome": 274,
+ "bass": {
+  "n_rows": 251,
+  "materials": [
+   "Nomex",
+   "PMMA",
+   "SIBAL fabric",
+   "SOOT cleaning (not a fuel)",
+   "Ultem sheet",
+   "Wax candle"
+  ],
+  "o2_range": [
+   13.6,
+   22.2
+  ],
+  "outcome_recorded": false
+ }
+}

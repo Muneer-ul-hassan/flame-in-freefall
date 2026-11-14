@@ -1,0 +1,419 @@
+[
+ {
+  "accession": "PSI-10",
+  "name": "Advanced Combustion via Microgravity Experiments / Flame Design",
+  "doi": "10.60555/w4zy-bt45",
+  "family": "gas",
+  "family_label": "Gas flames",
+  "n_rows": 327,
+  "tables": [
+   "PSI-10_Experimental table_Flame Design_Inverse Flame.csv",
+   "PSI-10_Experimental table_Flame Design_Normal Flame.csv"
+  ],
+  "o2_range": [
+   19.804819300000002,
+   84.9977932
+  ],
+  "pressure_range_psi": [
+   6.3,
+   44.4
+  ],
+  "outcomes": null,
+  "materials": [
+   "Ethylene",
+   "Flame Design inverse flame (fuel not stated per-row in PSI table)",
+   "Propane"
+  ]
+ },
+ {
+  "accession": "PSI-20",
+  "name": "Advanced Combustion via Microgravity Experiments - Burning Rate Emulator",
+  "doi": "10.60555/vb93-3y72",
+  "family": "gas",
+  "family_label": "Gas flames",
+  "n_rows": 43,
+  "tables": [
+   "PSI-20_Experimental table_ACME BRE.csv"
+  ],
+  "o2_range": [
+   21.0,
+   40.0
+  ],
+  "pressure_range_psi": null,
+  "outcomes": null,
+  "materials": [
+   "Ethylene (100% bottle)",
+   "Ethylene (50% bottle)",
+   "Methane (100% bottle)"
+  ]
+ },
+ {
+  "accession": "PSI-21",
+  "name": "Advanced Combustion via Microgravity Experiments / Coflow Laminar Diffusion Flame",
+  "doi": "10.60555/23e1-9950",
+  "family": "gas",
+  "family_label": "Gas flames",
+  "n_rows": 32,
+  "tables": [
+   "PSI-21_Experimental table_CLD Flame.csv"
+  ],
+  "o2_range": null,
+  "pressure_range_psi": null,
+  "outcomes": null,
+  "materials": [
+   "Methane (40% bottle)",
+   "Ethylene (100% bottle)",
+   "Ethylene (50% bottle)",
+   "Methane (100% bottle)"
+  ]
+ },
+ {
+  "accession": "PSI-22",
+  "name": "Advanced Combustion via Microgravity Experiments Electric-Field Effects on Laminar Diffusion Flames",
+  "doi": "10.60555/se5a-8c73",
+  "family": "gas",
+  "family_label": "Gas flames",
+  "n_rows": 21,
+  "tables": [
+   "PSI-22_Experimental table_ACME E-FIELD Flames.csv"
+  ],
+  "o2_range": null,
+  "pressure_range_psi": null,
+  "outcomes": null,
+  "materials": [
+   "Methane (100% bottle)",
+   "Ethylene (100% bottle)",
+   "Methane (40% bottle)",
+   "Ethylene (30% bottle)"
+  ]
+ },
+ {
+  "accession": "PSI-23",
+  "name": "Advanced Combustion via Microgravity Experiments-Structure and Response of Spherical Diffusion Flames",
+  "doi": "10.60555/k57n-p030",
+  "family": "gas",
+  "family_label": "Gas flames",
+  "n_rows": 23,
+  "tables": [
+   "PSI-23_Experimental table_ACME s-Flame.csv"
+  ],
+  "o2_range": [
+   21.0,
+   30.0
+  ],
+  "pressure_range_psi": null,
+  "outcomes": null,
+  "materials": [
+   "Ethylene (50% bottle) [with N2]",
+   "Hydrogen (100% bottle)",
+   "Hydrogen (45% bottle) [with He]",
+   "Methane (45% bottle) [with He]"
+  ]
+ },
+ {
+  "accession": "PSI-25",
+  "name": "Burning and Suppression of Solids - II",
+  "doi": "10.60555/4qc4-de67",
+  "family": "solids",
+  "family_label": "Solid fuels / material flammability",
+  "n_rows": 129,
+  "tables": [
+   "PSI-25_Experimental table_BASS-II.csv"
+  ],
+  "o2_range": [
+   13.6,
+   22.2
+  ],
+  "pressure_range_psi": null,
+  "outcomes": null,
+  "materials": [
+   "PMMA",
+   "SIBAL fabric",
+   "Nomex",
+   "Wax candle"
+  ]
+ },
+ {
+  "accession": "PSI-26",
+  "name": "Burning and Suppression of Solids",
+  "doi": "10.60555/58h4-dy80",
+  "family": "solids",
+  "family_label": "Solid fuels / material flammability",
+  "n_rows": 122,
+  "tables": [
+   "PSI-26_Experimental table_BASS.csv"
+  ],
+  "o2_range": null,
+  "pressure_range_psi": null,
+  "outcomes": null,
+  "materials": [
+   "PMMA",
+   "Wax candle",
+   "SIBAL fabric",
+   "Nomex"
+  ]
+ },
+ {
+  "accession": "PSI-39",
+  "name": "Cool Flames Investigation",
+  "doi": "10.60555/m6pj-a914",
+  "family": "gas",
+  "family_label": "Gas flames",
+  "n_rows": 87,
+  "tables": [
+   "PSI-39_Experimental table_CFI.csv"
+  ],
+  "o2_range": [
+   17.0,
+   21.0
+  ],
+  "pressure_range_psi": [
+   7.3,
+   73.5
+  ],
+  "outcomes": null,
+  "materials": [
+   "Dodecane / iso-dodecane blend",
+   "n-Dodecane (C12H26)"
+  ]
+ },
+ {
+  "accession": "PSI-47",
+  "name": "Dust and Aerosol Measurement Feasibility Test / Dust and Aerosol Measurement Feasibility Test-2",
+  "doi": "10.60555/ztgj-d202",
+  "family": "smoke",
+  "family_label": "Smoke & aerosol detection",
+  "n_rows": 2,
+  "tables": [
+   "PSI-47_Experimental table_DAFT.csv"
+  ],
+  "o2_range": null,
+  "pressure_range_psi": null,
+  "outcomes": null,
+  "materials": [
+   "Arizona Road Dust (ARD Fine)"
+  ]
+ },
+ {
+  "accession": "PSI-68",
+  "name": "Flame Extinguishment Experiment - 2",
+  "doi": "10.60555/byp8-h018",
+  "family": "droplets",
+  "family_label": "Droplet combustion",
+  "n_rows": 8,
+  "tables": [
+   "PSI-68_Experimental table_Flex2.csv"
+  ],
+  "o2_range": [
+   17.0,
+   17.0
+  ],
+  "pressure_range_psi": [
+   7.3,
+   7.3
+  ],
+  "outcomes": null,
+  "materials": [
+   "IsoOctane",
+   "n-Octane",
+   "Heptane",
+   "Decane"
+  ]
+ },
+ {
+  "accession": "PSI-69",
+  "name": "Flame Extinguishment Experiment",
+  "doi": "10.60555/mbq8-0451",
+  "family": "droplets",
+  "family_label": "Droplet combustion",
+  "n_rows": 274,
+  "tables": [
+   "PSI-69_Experimental table_FLEX.csv"
+  ],
+  "o2_range": [
+   12.0,
+   34.0
+  ],
+  "pressure_range_psi": [
+   10.2,
+   44.9
+  ],
+  "outcomes": {
+   "Disruption": 61,
+   "Extinction": 186,
+   "Completion": 27
+  },
+  "materials": [
+   "Methanol",
+   "Heptane"
+  ]
+ },
+ {
+  "accession": "PSI-98",
+  "name": "Spacecraft Fire Safety Experiment-I",
+  "doi": "10.60555/0t15-1z43",
+  "family": "solids",
+  "family_label": "Solid fuels / material flammability",
+  "n_rows": 2,
+  "tables": [
+   "PSI-98_Experimental table_SAFFIRE-1.csv"
+  ],
+  "o2_range": [
+   21.5,
+   21.5
+  ],
+  "pressure_range_psi": null,
+  "outcomes": null,
+  "materials": [
+   "SIBAL fabric"
+  ]
+ },
+ {
+  "accession": "PSI-99",
+  "name": "Spacecraft Fire Experiment-II",
+  "doi": "10.60555/2chp-m469",
+  "family": "solids",
+  "family_label": "Solid fuels / material flammability",
+  "n_rows": 9,
+  "tables": [
+   "PSI-99_Experimental table_SAFFIRE-2.csv"
+  ],
+  "o2_range": [
+   21.5,
+   22.1
+  ],
+  "pressure_range_psi": null,
+  "outcomes": null,
+  "materials": [
+   "Silicone",
+   "SIBAL fabric",
+   "PMMA + Nomex (mixed sample)",
+   "PMMA"
+  ]
+ },
+ {
+  "accession": "PSI-100",
+  "name": "Spacecraft Fire Experiment-III",
+  "doi": "10.60555/040q-4h36",
+  "family": "solids",
+  "family_label": "Solid fuels / material flammability",
+  "n_rows": 2,
+  "tables": [
+   "PSI-100_Experimental table_SAFFIRE-3.csv"
+  ],
+  "o2_range": null,
+  "pressure_range_psi": null,
+  "outcomes": null,
+  "materials": [
+   "SIBAL fabric"
+  ]
+ },
+ {
+  "accession": "PSI-101",
+  "name": "Smoke Aerosol Measurement Experiment-Reflight",
+  "doi": "10.60555/2np7-jv14",
+  "family": "smoke",
+  "family_label": "Smoke & aerosol detection",
+  "n_rows": 109,
+  "tables": [
+   "PSI-101_Experimental table_SAME-R.csv"
+  ],
+  "o2_range": null,
+  "pressure_range_psi": null,
+  "outcomes": null,
+  "materials": [
+   "Kapton",
+   "Silicone",
+   "Lampwick",
+   "Pyrell"
+  ]
+ },
+ {
+  "accession": "PSI-102",
+  "name": "Smoke and Aerosol Measurement Experiment",
+  "doi": "10.60555/gd4k-8h62",
+  "family": "smoke",
+  "family_label": "Smoke & aerosol detection",
+  "n_rows": 8,
+  "tables": [
+   "PSI-102_Experimental table_SAME.csv"
+  ],
+  "o2_range": null,
+  "pressure_range_psi": null,
+  "outcomes": null,
+  "materials": [
+   "Teflon",
+   "Kapton",
+   "Silicone Rubber",
+   "Lampwick"
+  ]
+ },
+ {
+  "accession": "PSI-106",
+  "name": "Structure and Liftoff In Combustion Experiment",
+  "doi": "10.60555/pm12-rg61",
+  "family": "gas",
+  "family_label": "Gas flames",
+  "n_rows": 12,
+  "tables": [
+   "PSI-106_Experimental table_Slice.csv"
+  ],
+  "o2_range": null,
+  "pressure_range_psi": null,
+  "outcomes": null,
+  "materials": [
+   "Methane",
+   "Ethylene",
+   "Ethane"
+  ]
+ },
+ {
+  "accession": "PSI-107",
+  "name": "Smoke Point In Co-flow Experiment",
+  "doi": "10.60555/9kbh-e962",
+  "family": "gas",
+  "family_label": "Gas flames",
+  "n_rows": 469,
+  "tables": [
+   "PSI-107_Experimental table_Spice.csv"
+  ],
+  "o2_range": null,
+  "pressure_range_psi": null,
+  "outcomes": null,
+  "materials": [
+   "Propylene",
+   "Propane",
+   "Ethylene",
+   "Methane"
+  ]
+ },
+ {
+  "accession": "PSI-159",
+  "name": "Advanced Combustion via Microgravity Experiments / Cool Flames Investigation with Gases",
+  "doi": "10.60555/cyt1-kh64",
+  "family": "gas",
+  "family_label": "Gas flames",
+  "n_rows": 333,
+  "tables": [
+   "PSI-159_Experimental table_CFI-G_Inverse Flames.csv",
+   "PSI-159_Experimental table_CFI-G_Normal Flames.csv"
+  ],
+  "o2_range": [
+   12.0,
+   85.0
+  ],
+  "pressure_range_psi": [
+   7.2,
+   48.0
+  ],
+  "outcomes": {
+   "SE": 183,
+   "FT": 89
+  },
+  "materials": [
+   "Butane",
+   "Propane",
+   "Ethane"
+  ]
+ }
+]
