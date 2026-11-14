@@ -569,3 +569,5 @@ desktop (side-by-side grids, flames visible, controls usable) and 400 px
 entries were the pre-existing Google Fonts fetch (no internet in this
 sandbox) and favicon 404 — zero JS errors. NOT deployed — redeploy is the
 parent agent's step, as before.
+
+**Visual rendering pass (Nov 14):** flames re-rendered as additive radial-gradient sprites over a soft body glow (per-front teardrop plume on Earth; µg flame particles redistributed into a disc so the round blue ball actually forms) — rendering only, no logic/number/claim changes; self-test still 26/26 at root + subpath, mid-burn screenshots verified at desktop + 400 px.

@@ -994,6 +994,73 @@ const flHash = (c, r) => { const x = Math.sin(c * 127.1 + r * 311.7) * 43758.545
 const flState = { o2: 35, vent: false, cool: false, moon: false, fuel: 'Methanol', smokeMat: 'Silicone', pExt: 0.767, ventK: 0, det: 0, doneT: 0 };
 let flEarth = null, flUG = null, flReduced = false, flLast = 0;
 
+/* ---------- Flame Lab rendering — soft sprite flames (visual pass, Nov 14) ----------
+   Rendering only: the cell simulation, spread rates, spawn probabilities,
+   particle lifetimes and the detector feed are unchanged. Flames are drawn
+   as additive radial-gradient sprites over a soft body glow, so a still
+   frame reads as fire — Earth a teardrop plume, microgravity a round blue
+   ball centred on the burn zone. */
+function flMakeSprite(stops) {
+  const cv = document.createElement('canvas'); cv.width = cv.height = 128;
+  const g = cv.getContext('2d');
+  const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  for (const [o, col] of stops) gr.addColorStop(o, col);
+  g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+  return cv;
+}
+/* Smooth pseudo-random variation in [-1,1] — layered sines per seed, so
+   flame edges shimmer unevenly instead of the whole flame pulsing in
+   unison. Rendering only. */
+function flNoise(seed, t) {
+  return Math.sin(t * 1.7 + seed) * .5 + Math.sin(t * 2.9 + seed * 1.7) * .3 + Math.sin(t * 5.3 + seed * .6) * .2;
+}
+let FL_SPR = null;
+function flSprites() {
+  if (FL_SPR) return FL_SPR;
+  FL_SPR = {
+    earth: flMakeSprite([[0, 'rgba(255,252,235,1)'], [.22, 'rgba(255,224,130,.95)'], [.5, 'rgba(255,146,32,.72)'], [.78, 'rgba(226,64,8,.30)'], [1, 'rgba(200,40,0,0)']]),
+    ug: flMakeSprite([[0, 'rgba(240,248,255,1)'], [.28, 'rgba(165,205,255,.95)'], [.58, 'rgba(70,130,250,.68)'], [.82, 'rgba(40,80,220,.26)'], [1, 'rgba(30,60,200,0)']]),
+    core: flMakeSprite([[0, 'rgba(255,255,255,1)'], [.45, 'rgba(255,240,200,.85)'], [1, 'rgba(255,200,80,0)']]),
+    smoke: flMakeSprite([[0, 'rgba(168,178,194,.50)'], [.55, 'rgba(150,160,178,.26)'], [1, 'rgba(150,160,178,0)']]),
+    cool: flMakeSprite([[0, 'rgba(214,232,255,.9)'], [.55, 'rgba(150,195,250,.42)'], [1, 'rgba(150,195,250,0)']])
+  };
+  return FL_SPR;
+}
+/* Geometry of the active burn zone on the fuel surface — where the flame
+   body sits, and (microgravity) the radius of the round flame ball. */
+function flBurnGeom(s) {
+  let minC = -1, maxC = -1;
+  for (let c = 0; c < FL.cols; c++) if (s.state[FL.fuelTop * FL.cols + c] === 2) { if (minC < 0) minC = c; maxC = c; }
+  if (maxC < 0) for (let i = 0; i < s.state.length; i++) if (s.state[i] === 2) { const c = i % FL.cols; if (minC < 0 || c < minC) minC = c; if (c > maxC) maxC = c; }
+  if (maxC < 0) return null;
+  const cx = FL.ox + (minC + maxC + 1) / 2 * FL.cell;
+  const wPx = (maxC - minC + 1) * FL.cell;
+  const surfY = FL.oy + FL.fuelTop * FL.cell;
+  const R = Math.max(20, Math.min(70, wPx * .62));
+  return { cx, surfY, wPx, R, cy: surfY - R * .55 };
+}
+/* Contiguous runs of burning surface cells — the Earth plume is drawn per
+   run, so the glow sits on the actual flame fronts, not between them. */
+function flBurnClusters(s) {
+  const runs = [];
+  let start = -1;
+  for (let c = 0; c <= FL.cols; c++) {
+    const on = c < FL.cols && s.state[FL.fuelTop * FL.cols + c] === 2;
+    if (on && start < 0) start = c;
+    if (!on && start >= 0) { runs.push([start, c - 1]); start = -1; }
+  }
+  const merged = [];
+  for (const [a, b] of runs) {
+    const last = merged[merged.length - 1];
+    if (last && a - last[1] <= 4) last[1] = b; else merged.push([a, b]);
+  }
+  if (!merged.length || merged.length > 3) {
+    const g = flBurnGeom(s);
+    return g ? [{ cx: g.cx, wPx: g.wPx }] : [];
+  }
+  return merged.map(([a, b]) => ({ cx: FL.ox + (a + b + 1) / 2 * FL.cell, wPx: (b - a + 1) * FL.cell }));
+}
+
 function flBin(fuel) { return SUP.flex_extinction_by_o2.find(b => b.fuel === fuel && b.o2_bin === '20\u201324'); }
 function flIgnite(s, i) { s.state[i] = 2; s.burn[i] = 0; }
 function flBurnDur(s, i) { return s.selfExt[i] ? 15 : 46; }
@@ -1052,8 +1119,8 @@ function flStepCells(s, dtS) {
 function flMkPart(s, kind, x, y, inten) {
   const R = Math.random;
   if (kind === 'flame') return s.ug
-    ? { kind, x: x + (R() - .5) * 6, y: y - 2, vx: (R() - .5) * 16, vy: -(4 + R() * 10), age: 0, life: .8 + R() * .7, size: 5 + R() * 6, seed: R() * 9, inten }
-    : { kind, x: x + (R() - .5) * 5, y: y - 2, vx: (R() - .5) * 8, vy: -(26 + R() * 30), age: 0, life: .65 + R() * .5, size: 4.5 + R() * 4.5, seed: R() * 9, inten };
+    ? { kind, x, y, vx: 0, vy: 0, age: 0, life: .9 + R() * .8, size: 13 + R() * 13, seed: R() * 9, inten }
+    : { kind, x: x + (R() - .5) * 5, y: y - 2, vx: (R() - .5) * 9, vy: -(42 + R() * 48), age: 0, life: .8 + R() * .6, size: 12 + R() * 11, seed: R() * 9, inten };
   if (kind === 'smoke') return s.ug
     ? { kind, x, y: y - 4, vx: (R() - .5) * 5, vy: (R() - .5) * 4, age: 0, life: 13 + R() * 10, size: 4 + R() * 4, seed: R() * 9, inten: 1 }
     : { kind, x, y: y - 4, vx: (R() - .5) * 7, vy: -(22 + R() * 20), age: 0, life: 2.4 + R() * 1.4, size: 3.5 + R() * 3, seed: R() * 9, inten: 1 };
@@ -1061,12 +1128,22 @@ function flMkPart(s, kind, x, y, inten) {
 }
 function flParticles(s, dt) {
   const C = FL.cols, st = s.state;
+  s.geom = flBurnGeom(s);
   const flameP = s.ug ? .55 : .55 * (1 - .75 * flState.ventK);
   for (let r = FL.fuelTop; r < FL.rows; r++) for (let c = 0; c < C; c++) {
     const i = r * C + c; if (st[i] !== 2) continue;
     const inten = Math.sin(Math.PI * Math.min(1, s.burn[i] / flBurnDur(s, i)));
     const x = FL.ox + c * FL.cell + FL.cell / 2, y = FL.oy + r * FL.cell;
-    if (Math.random() < flameP) s.parts.push(flMkPart(s, 'flame', x, y, inten));
+    if (Math.random() < flameP) {
+      const p = flMkPart(s, 'flame', x, y, inten);
+      if (s.ug && s.geom) {
+        /* microgravity flame particles fill a disc around the burn centre —
+           no upward drift, so the flame reads as a round ball */
+        const a = Math.random() * 6.2832, rr = s.geom.R * Math.sqrt(Math.random()) * .95;
+        p.x = s.geom.cx + Math.cos(a) * rr; p.y = s.geom.cy + Math.sin(a) * rr;
+      }
+      s.parts.push(p);
+    }
     if (Math.random() < .20) s.parts.push(flMkPart(s, 'smoke', x, y, inten));
   }
   if (flState.cool) for (let i = 0; i < st.length; i++)
@@ -1076,7 +1153,12 @@ function flParticles(s, dt) {
   for (let k = s.parts.length - 1; k >= 0; k--) {
     const p = s.parts[k]; p.age += dt;
     if (p.age >= p.life) { s.parts.splice(k, 1); continue; }
-    if (s.ug) {
+    if (s.ug && p.kind === 'flame') {
+      /* held in the disc by a gentle pull to the centre + radial jitter */
+      const g = s.geom;
+      if (g) { p.vx += (g.cx - p.x) * 2.2 * dt + (Math.random() - .5) * 30 * dt; p.vy += (g.cy - p.y) * 2.2 * dt + (Math.random() - .5) * 30 * dt; }
+      const damp = Math.exp(-5 * dt); p.vx *= damp; p.vy *= damp;
+    } else if (s.ug) {
       p.vx += (Math.random() - .5) * 22 * dt; p.vy += (Math.random() - .5) * 22 * dt;
       p.vx *= .982; p.vy *= .982;
     } else if (p.kind === 'flame') {
@@ -1092,39 +1174,83 @@ function flParticles(s, dt) {
   }
 }
 function flDraw(s) {
-  const ctx = s.ctx, C = FL.cols;
+  const ctx = s.ctx, C = FL.cols, SPR = flSprites();
+  const t = performance.now() / 1000;
   ctx.clearRect(0, 0, 470, 400);
-  for (let r = 0; r < FL.rows; r++) for (let c = 0; c < C; c++) {
+  /* fuel surface only, kept subtle — the flame itself is sprite-drawn, so
+     no square cells show through the flame area */
+  for (let r = FL.fuelTop; r < FL.rows; r++) for (let c = 0; c < C; c++) {
     const i = r * C + c, st = s.state[i]; if (!st) continue;
     const x = FL.ox + c * FL.cell, y = FL.oy + r * FL.cell;
-    if (st === 1) ctx.fillStyle = r === FL.fuelTop ? '#8a5a27' : '#6e451d';
-    else if (st === 2) {
-      const inten = Math.sin(Math.PI * Math.min(1, s.burn[i] / flBurnDur(s, i)));
-      const dim = !s.ug && flState.vent ? 1 - .5 * flState.ventK : 1;
-      ctx.fillStyle = s.ug
-        ? `hsl(205,95%,${8 + (38 + 22 * inten) * dim}%)`
-        : `hsl(${16 + 26 * inten},100%,${6 + (42 + 18 * inten) * dim}%)`;
+    if (st === 1) ctx.fillStyle = r === FL.fuelTop ? '#7c5223' : '#5f3c16';
+    else if (st === 2) ctx.fillStyle = s.ug ? '#152740' : '#38220e';
+    else if (st === 4) ctx.fillStyle = `rgba(147,197,253,${.30 + .12 * Math.sin(t * 2.1 + flHash(c, r) * 6)})`;
+    else ctx.fillStyle = s.early[i] ? '#463a2d' : '#20242b';
+    ctx.fillRect(x, y, FL.cell, FL.cell);
+  }
+  const g = s.geom || flBurnGeom(s);
+  const ventDim = s.ug ? 1 : 1 - .8 * flState.ventK;
+  if (g) {
+    /* body glow — guarantees the silhouette in a still frame: a round blue
+       ball in microgravity; on Earth, a teardrop plume per flame front,
+       drawn with its bright core low so it sits on the fuel surface */
+    ctx.globalCompositeOperation = 'lighter';
+    if (s.ug) {
+      const flick = 1 + .06 * flNoise(3.1, t);
+      const dh2 = g.R * 3.4 * flick;
+      ctx.globalAlpha = .10 * ventDim;
+      ctx.drawImage(SPR.ug, g.cx - dh2 / 2, g.cy - dh2 / 2, dh2, dh2);
+      const d = g.R * 2.3 * flick;
+      ctx.globalAlpha = .55 * (1 + .1 * flNoise(7.7, t)) * ventDim;
+      ctx.drawImage(SPR.ug, g.cx - d / 2, g.cy - d / 2, d, d);
+      const dc = g.R * .95 * flick;
+      ctx.globalAlpha = .72 * ventDim;
+      ctx.drawImage(SPR.core, g.cx - dc / 2, g.cy - dc / 2, dc, dc);
+    } else {
+      for (const cl of flBurnClusters(s)) {
+        const flick = 1 + .07 * flNoise(cl.cx * .13, t);
+        const w = Math.max(54, Math.min(150, cl.wPx * 1.4));
+        const h = Math.max(150, Math.min(320, w * 2.6)) * flick;
+        ctx.globalAlpha = .55 * (1 + .12 * flNoise(cl.cx * .29 + 40, t)) * ventDim;
+        ctx.drawImage(SPR.earth, cl.cx - w / 2, g.surfY - h * .66, w, h);
+        const wc = w * .55, hc = h * .38;
+        ctx.globalAlpha = .8 * ventDim;
+        ctx.drawImage(SPR.core, cl.cx - wc / 2, g.surfY - hc * .72, wc, hc);
+      }
     }
-    else if (st === 4) ctx.fillStyle = `rgba(147,197,253,${.26 + .12 * Math.sin(performance.now() / 480 + flHash(c, r) * 6)})`;
-    else ctx.fillStyle = s.early[i] ? '#4d4034' : '#22262d';
-    ctx.fillRect(x, y, FL.cell - .5, FL.cell - .5);
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
   }
   for (const p of s.parts) {
     const f = p.age / p.life, fade = f < .15 ? f / .15 : 1 - (f - .15) / .85;
     if (p.kind === 'flame') {
-      const ventDim = s.ug ? 1 : 1 - .8 * flState.ventK;
+      /* per-particle pseudo-noise: size and brightness shimmer unevenly,
+         so the flame boundary is never a uniform pulse */
+      const nz = flNoise(p.seed * 3.7, t * 1.4), na = 1 + .18 * flNoise(p.seed * 5.3 + 9, t * 1.4);
       ctx.globalCompositeOperation = 'lighter';
-      ctx.fillStyle = s.ug
-        ? `rgba(80,160,245,${.42 * fade * ventDim})`
-        : `rgba(255,${140 + (p.inten * 80) | 0},40,${.55 * fade * ventDim})`;
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.size * (s.ug ? 1 : .8 + f * .5), 0, 6.2832); ctx.fill();
+      if (s.ug) {
+        const d = p.size * (1.3 + .4 * Math.sin(Math.PI * f)) * (1 + .16 * nz);
+        ctx.globalAlpha = Math.max(0, .42 * fade * (.45 + .55 * p.inten) * ventDim * na);
+        ctx.drawImage(SPR.ug, p.x - d / 2, p.y - d / 2, d, d);
+      } else {
+        /* drawn stretched vertically — a rising flame tongue, not a blob */
+        const d = p.size * (1.35 + .85 * Math.sin(Math.PI * Math.min(1, f * 1.12))) * (1 + .16 * nz);
+        const dh = d * 2.2;
+        ctx.globalAlpha = Math.max(0, .5 * fade * (.45 + .55 * p.inten) * ventDim * na);
+        ctx.drawImage(SPR.earth, p.x - d / 2, p.y - dh / 2, d, dh);
+      }
+      ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = 'source-over';
     } else if (p.kind === 'smoke') {
-      ctx.fillStyle = `rgba(148,163,184,${.30 * (f < .2 ? f / .2 : 1 - Math.max(0, f - .55) / .45)})`;
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.size + f * 8, 0, 6.2832); ctx.fill();
+      const d = (p.size + f * 9) * 3.4;
+      ctx.globalAlpha = .5 * (f < .2 ? f / .2 : 1 - Math.max(0, f - .55) / .45);
+      ctx.drawImage(SPR.smoke, p.x - d / 2, p.y - d / 2, d, d);
+      ctx.globalAlpha = 1;
     } else {
-      ctx.fillStyle = `rgba(191,219,254,${.4 * fade})`;
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, 6.2832); ctx.fill();
+      const d = p.size * 2.6;
+      ctx.globalAlpha = .5 * fade;
+      ctx.drawImage(SPR.cool, p.x - d / 2, p.y - d / 2, d, d);
+      ctx.globalAlpha = 1;
     }
   }
 }
