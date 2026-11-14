@@ -18,6 +18,7 @@
    6.3,
    44.4
   ],
+  "note": null,
   "outcomes": null,
   "materials": [
    "Ethylene",
@@ -40,6 +41,7 @@
    40.0
   ],
   "pressure_range_psi": null,
+  "note": null,
   "outcomes": null,
   "materials": [
    "Ethylene (100% bottle)",
@@ -59,6 +61,7 @@
   ],
   "o2_range": null,
   "pressure_range_psi": null,
+  "note": null,
   "outcomes": null,
   "materials": [
    "Methane (40% bottle)",
@@ -79,6 +82,7 @@
   ],
   "o2_range": null,
   "pressure_range_psi": null,
+  "note": null,
   "outcomes": null,
   "materials": [
    "Methane (100% bottle)",
@@ -102,6 +106,7 @@
    30.0
   ],
   "pressure_range_psi": null,
+  "note": null,
   "outcomes": null,
   "materials": [
    "Ethylene (50% bottle) [with N2]",
@@ -125,6 +130,7 @@
    22.2
   ],
   "pressure_range_psi": null,
+  "note": null,
   "outcomes": null,
   "materials": [
    "PMMA",
@@ -145,6 +151,7 @@
   ],
   "o2_range": null,
   "pressure_range_psi": null,
+  "note": null,
   "outcomes": null,
   "materials": [
    "PMMA",
@@ -171,6 +178,7 @@
    7.3,
    73.5
   ],
+  "note": null,
   "outcomes": null,
   "materials": [
    "Dodecane / iso-dodecane blend",
@@ -189,6 +197,7 @@
   ],
   "o2_range": null,
   "pressure_range_psi": null,
+  "note": null,
   "outcomes": null,
   "materials": [
    "Arizona Road Dust (ARD Fine)"
@@ -206,12 +215,13 @@
   ],
   "o2_range": [
    17.0,
-   17.0
+   30.0
   ],
   "pressure_range_psi": [
    7.3,
-   7.3
+   44.1
   ],
+  "note": "Rows are the planned test-matrix summary (design ranges), not per-test records \u2014 the tools on this site do not count them as tests.",
   "outcomes": null,
   "materials": [
    "IsoOctane",
@@ -238,6 +248,7 @@
    10.2,
    44.9
   ],
+  "note": null,
   "outcomes": {
    "Disruption": 61,
    "Extinction": 186,
@@ -260,9 +271,10 @@
   ],
   "o2_range": [
    21.5,
-   21.5
+   21.7
   ],
   "pressure_range_psi": null,
+  "note": null,
   "outcomes": null,
   "materials": [
    "SIBAL fabric"
@@ -283,6 +295,7 @@
    22.1
   ],
   "pressure_range_psi": null,
+  "note": null,
   "outcomes": null,
   "materials": [
    "Silicone",
@@ -303,6 +316,7 @@
   ],
   "o2_range": null,
   "pressure_range_psi": null,
+  "note": null,
   "outcomes": null,
   "materials": [
    "SIBAL fabric"
@@ -320,6 +334,7 @@
   ],
   "o2_range": null,
   "pressure_range_psi": null,
+  "note": null,
   "outcomes": null,
   "materials": [
    "Kapton",
@@ -340,6 +355,7 @@
   ],
   "o2_range": null,
   "pressure_range_psi": null,
+  "note": null,
   "outcomes": null,
   "materials": [
    "Teflon",
@@ -360,6 +376,7 @@
   ],
   "o2_range": null,
   "pressure_range_psi": null,
+  "note": null,
   "outcomes": null,
   "materials": [
    "Methane",
@@ -379,6 +396,7 @@
   ],
   "o2_range": null,
   "pressure_range_psi": null,
+  "note": null,
   "outcomes": null,
   "materials": [
    "Propylene",
@@ -406,6 +424,7 @@
    7.2,
    48.0
   ],
+  "note": null,
   "outcomes": {
    "SE": 183,
    "FT": 89
