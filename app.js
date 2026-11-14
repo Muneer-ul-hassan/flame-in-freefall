@@ -1004,7 +1004,14 @@ let flEarth = null, flUG = null, flReduced = false, flLast = 0;
    along a noise-deformed spine (no round glow orbs), the µg ball is built
    from concentric layers with a capped pale core and a defined rim, and
    the fuel surface is one smooth band with smooth burned/cool washes —
-   still rendering only. */
+   still rendering only.
+   Iteration 3 (same day): the teardrop leans one-sided with uneven edges
+   (no mirrored silhouette), layer gradients gain stops so the colour
+   blends without banding, the flame foot sinks into the surface ember
+   glow, the detached tip fragments are gone and Earth texture particles
+   render only inside a flame body; the µg view draws ONE ball on the
+   principal burning run with a calm gradient interior (particles are a
+   faint whisper inside that ball only) — still rendering only. */
 function flMakeSprite(stops) {
   const cv = document.createElement('canvas'); cv.width = cv.height = 128;
   const g = cv.getContext('2d');
@@ -1025,6 +1032,9 @@ function flSprites() {
   FL_SPR = {
     earth: flMakeSprite([[0, 'rgba(255,252,235,1)'], [.22, 'rgba(255,224,130,.95)'], [.5, 'rgba(255,146,32,.72)'], [.78, 'rgba(226,64,8,.30)'], [1, 'rgba(200,40,0,0)']]),
     ug: flMakeSprite([[0, 'rgba(240,248,255,1)'], [.28, 'rgba(165,205,255,.95)'], [.58, 'rgba(70,130,250,.68)'], [.82, 'rgba(40,80,220,.26)'], [1, 'rgba(30,60,200,0)']]),
+    /* soft µg texture sprite — no hot centre, so overlapping particles can
+       never stack into bright mottled spots inside the ball */
+    ugSoft: flMakeSprite([[0, 'rgba(168,204,255,.50)'], [.45, 'rgba(112,162,250,.32)'], [.75, 'rgba(70,120,235,.14)'], [1, 'rgba(50,100,225,0)']]),
     core: flMakeSprite([[0, 'rgba(255,255,255,1)'], [.45, 'rgba(255,240,200,.85)'], [1, 'rgba(255,200,80,0)']]),
     smoke: flMakeSprite([[0, 'rgba(168,178,194,.50)'], [.55, 'rgba(150,160,178,.26)'], [1, 'rgba(150,160,178,0)']]),
     cool: flMakeSprite([[0, 'rgba(214,232,255,.9)'], [.55, 'rgba(150,195,250,.42)'], [1, 'rgba(150,195,250,0)']])
@@ -1043,6 +1053,22 @@ function flBurnGeom(s) {
   const surfY = FL.oy + FL.fuelTop * FL.cell;
   const R = Math.max(20, Math.min(70, wPx * .62));
   return { cx, surfY, wPx, R, cy: surfY - R * .55 };
+}
+/* Rendering geometry for the ONE microgravity ball: the simulation has a
+   single ignition source, so the ball sits on the principal burning run —
+   the run containing the ignition column, or the widest run once that one
+   has burned out — never stretched across separated runs. Secondary runs
+   get only the surface ember glow in flDrawGround. Rendering only. */
+function flPrincipalGeom(s) {
+  const cls = flBurnClusters(s);
+  if (!cls.length) return null;
+  const ignX = FL.ox + (FL.cols / 2) * FL.cell;
+  let pick = null;
+  for (const cl of cls) if (Math.abs(cl.cx - ignX) <= cl.wPx / 2 + FL.cell) { pick = cl; break; }
+  if (!pick) { pick = cls[0]; for (const cl of cls) if (cl.wPx > pick.wPx) pick = cl; }
+  const surfY = FL.oy + FL.fuelTop * FL.cell;
+  const R = Math.max(20, Math.min(70, pick.wPx * .62));
+  return { cx: pick.cx, surfY, wPx: pick.wPx, R, cy: surfY - R * .55 };
 }
 /* Contiguous runs of burning surface cells — the Earth plume is drawn per
    run, so the glow sits on the actual flame fronts, not between them. */
@@ -1213,30 +1239,35 @@ function flDrawGround(s) {
   ctx.globalCompositeOperation = 'lighter';
   for (const cl of flBurnClusters(s)) {
     const w = Math.max(60, cl.wPx * 1.5);
-    ctx.globalAlpha = .30;
-    ctx.drawImage(SPR.earth, cl.cx - w / 2, top - 8, w, 16);
+    ctx.globalAlpha = .36;
+    ctx.drawImage(SPR.earth, cl.cx - w / 2, top - 11, w, 22);
   }
   ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
 }
 /* One continuous teardrop silhouette: narrow base at the surface, widest
-   around 38% of the height, tapering to a point. The spine sways and the
-   edges are deformed by flNoise, so the boundary is irregular — never a
-   smooth oval or a round glow orb. */
+   in the lower-middle, tapering to a point. Deliberately asymmetric: the
+   spine leans one way (a fixed direction per flame, from the seed) and
+   grows with height, the left edge peaks lower than the right, and each
+   edge carries its own uneven noise deformation — so the silhouette can
+   never read as a mirrored, geometric shape or a round glow orb. */
 function flTeardropPath(ctx, cx, baseY, wBody, h, seed, t, sway) {
-  const N = 10;
-  const half = u => {
-    const grow = u <= .38 ? .40 + .60 * Math.sin((u / .38) * Math.PI / 2) : Math.pow(1 - (u - .38) / .62, .72);
+  const N = 14;
+  const lean = Math.sin(seed * 7.31) * 11;
+  const peakL = .34 + .07 * Math.sin(seed * 3.7);
+  const peakR = .47 - .07 * Math.sin(seed * 3.7);
+  const half = (u, peak) => {
+    const grow = u <= peak ? .40 + .60 * Math.sin((u / peak) * Math.PI / 2) : Math.pow(1 - (u - peak) / (1 - peak), .72);
     return (wBody / 2) * Math.max(.03, grow);
   };
-  const spine = u => cx + sway * u * u + flNoise(seed + u * 3.1, t * .9) * 6 * u;
+  const spine = u => cx + (lean + sway) * u * u + flNoise(seed + u * 3.1, t * .9) * 6 * u;
   const pts = [];
   for (let i = 0; i <= N; i++) {
-    const u = i / N, j = 1 + .15 * flNoise(seed * 2 + u * 6.7, t * 1.25);
-    pts.push([spine(u) - half(u) * j, baseY - u * h]);
+    const u = i / N, j = 1 + .21 * flNoise(seed * 2 + u * 6.7, t * 1.25);
+    pts.push([spine(u) - half(u, peakL) * j, baseY - u * h]);
   }
   for (let i = N; i >= 0; i--) {
-    const u = i / N, j = 1 + .15 * flNoise(seed * 2 + 40 + u * 6.7, t * 1.25);
-    pts.push([spine(u) + half(u) * j, baseY - u * h]);
+    const u = i / N, j = 1 + .21 * flNoise(seed * 2 + 40 + u * 6.7, t * 1.25) + .10 * Math.sin(u * Math.PI);
+    pts.push([spine(u) + half(u, peakR) * j, baseY - u * h]);
   }
   ctx.beginPath();
   ctx.moveTo((pts[0][0] + pts[1][0]) / 2, (pts[0][1] + pts[1][1]) / 2);
@@ -1256,39 +1287,41 @@ function flFlameLayer(ctx, cx, baseY, wBody, h, seed, t, sway, sx, sy, stops, al
   ctx.restore();
 }
 /* Earth flame for one burn cluster: layered teardrops, outer amber to a
-   bright ELONGATED yellow-white core sitting low — plus small dim tip
-   fragments breaking away above the tip. One continuous body per cluster;
+   bright ELONGATED yellow-white core sitting low. One continuous body per
+   cluster — nothing is drawn above or outside it (no tip fragments);
    wide bodies and a generous cluster merge make neighbours read as a
-   single wall of flame, not separate balls. */
+   single wall of flame, not separate balls. Each layer's gradient has
+   five stops so core→yellow→amber→orange blends without banding, and the
+   foot is sunk into the surface so the base grows out of the ember glow. */
 function flDrawEarthFlame(ctx, cl, surfY, t, ventDim) {
   const seed = cl.cx * .37 + 3;
   const flick = 1 + .055 * flNoise(seed, t);
   const h = Math.min(300, Math.max(135, cl.wPx * 1.3 + 95)) * flick;
   const wBody = Math.min(178, Math.max(48, cl.wPx * .92 + 38));
   const sway = flNoise(seed + 90, t * .55) * 7;
-  const baseY = surfY + 3;
+  /* base sunk into the surface band — the bottom of every layer hides in
+     the ground/ember glow, so the flame looks planted, not cut off */
+  const baseY = surfY + 8;
   ctx.globalCompositeOperation = 'lighter';
   /* faint wide atmospheric glow behind the body — atmosphere only, far
      too dim and broad to read as a blob */
   const gw = wBody * 1.9, gh = h * 1.02;
-  ctx.globalAlpha = .12 * ventDim;
+  ctx.globalAlpha = .15 * ventDim;
   ctx.drawImage(flSprites().earth, cl.cx - gw / 2, baseY - gh * .88, gw, gh);
+  /* low wide foot glow — blends the flame's base into the surface embers */
+  const fw = wBody * 1.55;
+  ctx.globalAlpha = .20 * ventDim;
+  ctx.drawImage(flSprites().earth, cl.cx - fw / 2, surfY - 13, fw, 27);
   /* each layer gets its own noise seed so the silhouettes deform
      independently instead of nesting like contour lines */
   flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed, t, sway, 1, 1,
-    [[0, 'rgba(255,118,18,.48)'], [.45, 'rgba(233,72,6,.32)'], [1, 'rgba(205,44,0,0)']], .95 * ventDim);
+    [[0, 'rgba(255,122,20,.46)'], [.22, 'rgba(250,96,12,.40)'], [.48, 'rgba(238,74,6,.30)'], [.72, 'rgba(224,56,2,.16)'], [1, 'rgba(205,44,0,0)']], .88 * ventDim);
   flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed + 3.7, t, sway, .74, .84,
-    [[0, 'rgba(255,168,38,.55)'], [.5, 'rgba(255,128,22,.27)'], [1, 'rgba(255,100,10,0)']], .9 * ventDim);
+    [[0, 'rgba(255,176,44,.52)'], [.28, 'rgba(255,152,30,.42)'], [.55, 'rgba(255,128,22,.26)'], [.8, 'rgba(255,110,14,.10)'], [1, 'rgba(255,100,10,0)']], .62 * ventDim);
   flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed + 7.4, t, sway, .50, .62,
-    [[0, 'rgba(255,214,92,.60)'], [.55, 'rgba(255,182,64,.25)'], [1, 'rgba(255,160,40,0)']], .9 * ventDim);
+    [[0, 'rgba(255,220,102,.56)'], [.3, 'rgba(255,202,76,.44)'], [.6, 'rgba(255,182,64,.24)'], [.85, 'rgba(255,168,46,.08)'], [1, 'rgba(255,160,40,0)']], .58 * ventDim);
   flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed + 11.1, t, sway, .27, .44,
-    [[0, 'rgba(255,247,208,.92)'], [.6, 'rgba(255,226,130,.38)'], [1, 'rgba(255,205,90,0)']], .95 * ventDim);
-  for (let k = 0; k < 2; k++) {
-    const fh = 15 + 9 * (.5 + .5 * flNoise(seed + 20 + k * 13, t));
-    const fx = cl.cx + sway + (k - .5) * 13 + 3 * flNoise(seed + 31 + k, t * 1.2);
-    flFlameLayer(ctx, fx, surfY - h + 4 - k * 12, 13 - k * 3, fh, seed + 55 + k * 7, t, 0, 1, 1,
-      [[0, 'rgba(255,150,40,.32)'], [1, 'rgba(230,70,5,0)']], .5 * ventDim);
-  }
+    [[0, 'rgba(255,250,220,.90)'], [.35, 'rgba(255,238,168,.62)'], [.65, 'rgba(255,226,130,.34)'], [.88, 'rgba(255,214,102,.12)'], [1, 'rgba(255,205,90,0)']], .76 * ventDim);
   ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
 }
 /* Microgravity sphere: concentric radial layers with a defined boundary
@@ -1305,7 +1338,7 @@ function flDrawUGBall(ctx, g, t, ventDim) {
   ctx.drawImage(SPR.ug, cx - dh / 2, cy - dh / 2, dh, dh);
   ctx.globalCompositeOperation = 'source-over';
   const gr = ctx.createRadialGradient(cx, cy, 0, cx, cy, R);
-  gr.addColorStop(0, 'rgba(198,226,255,.88)');
+  gr.addColorStop(0, 'rgba(198,226,255,.80)');
   gr.addColorStop(.30, 'rgba(142,192,255,.66)');
   gr.addColorStop(.55, 'rgba(84,144,250,.58)');
   gr.addColorStop(.78, 'rgba(50,100,228,.52)');
@@ -1324,7 +1357,7 @@ function flDrawUGCore(ctx, ball, ventDim) {
   cg.addColorStop(.6, 'rgba(182,215,255,.36)');
   cg.addColorStop(1, 'rgba(160,200,255,0)');
   ctx.globalCompositeOperation = 'lighter';
-  ctx.globalAlpha = .48 * ventDim;
+  ctx.globalAlpha = .36 * ventDim;
   ctx.beginPath(); ctx.arc(cx, cy, cr, 0, 6.2832); ctx.fillStyle = cg; ctx.fill();
   ctx.globalCompositeOperation = 'source-over';
   ctx.globalAlpha = .40 * ventDim;
@@ -1339,10 +1372,22 @@ function flDraw(s) {
   flDrawGround(s);
   const g = s.geom || flBurnGeom(s);
   const ventDim = s.ug ? 1 : 1 - .8 * flState.ventK;
-  let ball = null;
-  if (g) {
-    if (s.ug) ball = flDrawUGBall(ctx, g, t, ventDim);
-    else for (const cl of flBurnClusters(s)) flDrawEarthFlame(ctx, cl, g.surfY, t, ventDim);
+  let ball = null, clusters = null, clamps = null;
+  const surfY = g ? g.surfY : FL.oy + FL.fuelTop * FL.cell;
+  if (s.ug) {
+    /* ONE ball, on the principal burning run — a separated secondary run
+       never gets a ball of its own, only surface ember glow */
+    const pg = flPrincipalGeom(s);
+    if (pg) ball = flDrawUGBall(ctx, pg, t, ventDim);
+  } else if (g) {
+    clusters = flBurnClusters(s);
+    for (const cl of clusters) flDrawEarthFlame(ctx, cl, surfY, t, ventDim);
+    /* silhouette regions the texture particles may render inside */
+    clamps = clusters.map(cl => {
+      const wB = Math.min(178, Math.max(48, cl.wPx * .92 + 38));
+      const hC = Math.min(300, Math.max(135, cl.wPx * 1.3 + 95));
+      return { cx: cl.cx, wB, hC, top: surfY - hC * 1.02 };
+    });
   }
   for (const p of s.parts) {
     const f = p.age / p.life, fade = f < .15 ? f / .15 : 1 - (f - .15) / .85;
@@ -1352,22 +1397,46 @@ function flDraw(s) {
       const nz = flNoise(p.seed * 3.7, t * 1.4), na = 1 + .18 * flNoise(p.seed * 5.3 + 9, t * 1.4);
       ctx.globalCompositeOperation = 'lighter';
       if (s.ug) {
-        /* faint texture only — the layered sphere carries the shape, so
-           additive stacking can no longer blow the centre out to white */
-        const d = p.size * (1.3 + .4 * Math.sin(Math.PI * f)) * (1 + .16 * nz);
-        ctx.globalAlpha = Math.max(0, .15 * fade * (.45 + .55 * p.inten) * ventDim * na);
-        ctx.drawImage(SPR.ug, p.x - d / 2, p.y - d / 2, d, d);
+        /* whisper texture inside the ONE ball only — a soft sprite with
+           no hot centre at very low alpha, so the interior stays a smooth
+           layered glow (never mottled) and no particle can ever render
+           as a detached second ball outside it */
+        if (ball) {
+          const dx = p.x - ball.cx, dy = p.y - ball.cy;
+          if (dx * dx + dy * dy <= Math.pow(ball.R * 1.05, 2)) {
+            const d = p.size * (1.2 + .35 * Math.sin(Math.PI * f)) * (1 + .16 * nz);
+            ctx.globalAlpha = Math.max(0, .07 * fade * (.45 + .55 * p.inten) * ventDim * na);
+            ctx.drawImage(SPR.ugSoft, p.x - d / 2, p.y - d / 2, d, d);
+          }
+        }
       } else {
-        /* texture tongues over the teardrop body — stretched upward,
-           dimmer than before so they never form blobs of their own */
-        const d = p.size * .85 * (1.15 + .6 * Math.sin(Math.PI * Math.min(1, f * 1.12))) * (1 + .16 * nz);
-        const dh = d * 1.9;
-        ctx.globalAlpha = Math.max(0, .26 * fade * (.45 + .55 * p.inten) * ventDim * na);
-        ctx.drawImage(SPR.earth, p.x - d / 2, p.y - dh / 2, d, dh);
+        /* texture tongues render only inside a flame body's silhouette
+           region — a particle that has risen past the tip is skipped, so
+           nothing can float detached above the flame */
+        let inside = false;
+        if (clamps) for (const cm of clamps) {
+          if (p.y > surfY + 6 || p.y < cm.top) continue;
+          /* the allowed half-width follows the teardrop's own profile at
+             the particle's height — texture hugs the narrow foot instead
+             of spreading into separate flamelets beside it */
+          const u = Math.min(1, Math.max(0, (surfY + 4 - p.y) / cm.hC));
+          const grow = u <= .4 ? .40 + .60 * Math.sin((u / .4) * Math.PI / 2) : Math.pow(1 - (u - .4) / .6, .72);
+          if (Math.abs(p.x - cm.cx) <= (cm.wB / 2) * Math.max(.05, grow) * 1.3 + 10) { inside = true; break; }
+        }
+        if (inside) {
+          const d = p.size * .85 * (1.15 + .6 * Math.sin(Math.PI * Math.min(1, f * 1.12))) * (1 + .16 * nz);
+          const dh = d * 1.9;
+          ctx.globalAlpha = Math.max(0, .26 * fade * (.45 + .55 * p.inten) * ventDim * na);
+          ctx.drawImage(SPR.earth, p.x - d / 2, p.y - dh / 2, d, dh);
+        }
       }
       ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = 'source-over';
     } else if (p.kind === 'smoke') {
+      /* microgravity smoke that has sunk below the surface line only
+         renders while it still hugs the ball — no stray grey pools
+         sitting on the ground band far from the flame */
+      if (s.ug && p.y > surfY + 4 && !(ball && Math.abs(p.x - ball.cx) <= ball.R * 2.2)) continue;
       const d = (p.size + f * 9) * 3.4;
       ctx.globalAlpha = .5 * (f < .2 ? f / .2 : 1 - Math.max(0, f - .55) / .45);
       ctx.drawImage(SPR.smoke, p.x - d / 2, p.y - d / 2, d, d);
