@@ -999,7 +999,12 @@ let flEarth = null, flUG = null, flReduced = false, flLast = 0;
    particle lifetimes and the detector feed are unchanged. Flames are drawn
    as additive radial-gradient sprites over a soft body glow, so a still
    frame reads as fire — Earth a teardrop plume, microgravity a round blue
-   ball centred on the burn zone. */
+   ball centred on the burn zone.
+   Iteration 2 (same day): Earth flames are layered teardrop silhouettes
+   along a noise-deformed spine (no round glow orbs), the µg ball is built
+   from concentric layers with a capped pale core and a defined rim, and
+   the fuel surface is one smooth band with smooth burned/cool washes —
+   still rendering only. */
 function flMakeSprite(stops) {
   const cv = document.createElement('canvas'); cv.width = cv.height = 128;
   const g = cv.getContext('2d');
@@ -1045,16 +1050,27 @@ function flBurnClusters(s) {
   const runs = [];
   let start = -1;
   for (let c = 0; c <= FL.cols; c++) {
-    const on = c < FL.cols && s.state[FL.fuelTop * FL.cols + c] === 2;
+    /* a column counts as burning if any fuel row burns in it — late in a
+       burn the top row can be out while deeper rows still flame, and
+       those columns emit the flame particles the body must sit under */
+    let on = false;
+    if (c < FL.cols) for (let r = FL.fuelTop; r < FL.rows && !on; r++) on = s.state[r * FL.cols + c] === 2;
     if (on && start < 0) start = c;
     if (!on && start >= 0) { runs.push([start, c - 1]); start = -1; }
   }
   const merged = [];
   for (const [a, b] of runs) {
     const last = merged[merged.length - 1];
-    if (last && a - last[1] <= 4) last[1] = b; else merged.push([a, b]);
+    if (last && a - last[1] <= 18) last[1] = b; else merged.push([a, b]);
   }
-  if (!merged.length || merged.length > 3) {
+  /* cap at 3 bodies by merging the closest pair — every visible front
+     gets a flame body, so particle texture never sits alone as a blob */
+  while (merged.length > 3) {
+    let bi = 0, bg = 1e9;
+    for (let i = 0; i < merged.length - 1; i++) { const gp = merged[i + 1][0] - merged[i][1]; if (gp < bg) { bg = gp; bi = i; } }
+    merged[bi][1] = merged[bi + 1][1]; merged.splice(bi + 1, 1);
+  }
+  if (!merged.length) {
     const g = flBurnGeom(s);
     return g ? [{ cx: g.cx, wPx: g.wPx }] : [];
   }
@@ -1173,53 +1189,160 @@ function flParticles(s, dt) {
     if (p.y < 4 || p.x < 2 || p.x > 468) s.parts.splice(k, 1);
   }
 }
+/* Fuel surface as ONE smooth band — a subtle vertical gradient, a thin
+   lighter top edge, and smooth washes for the burned and cool extents.
+   No per-cell fills anywhere, so no speckled pixel blocks can show. */
+function flDrawGround(s) {
+  const ctx = s.ctx, C = FL.cols, st = s.state;
+  const x0 = FL.ox, x1 = FL.ox + C * FL.cell;
+  const top = FL.oy + FL.fuelTop * FL.cell, bot = FL.oy + FL.rows * FL.cell;
+  const gr = ctx.createLinearGradient(0, top, 0, bot);
+  gr.addColorStop(0, '#503d1e'); gr.addColorStop(.35, '#3a2a12'); gr.addColorStop(1, '#221605');
+  ctx.fillStyle = gr; ctx.fillRect(x0, top, x1 - x0, bot - top);
+  let bMin = 1e9, bMax = -1, cMin = 1e9, cMax = -1;
+  for (let r = FL.fuelTop; r < FL.rows; r++) for (let c = 0; c < C; c++) {
+    const v = st[r * C + c];
+    if (v === 3) { if (c < bMin) bMin = c; if (c > bMax) bMax = c; }
+    else if (v === 4) { if (c < cMin) cMin = c; if (c > cMax) cMax = c; }
+  }
+  if (bMax >= 0) { ctx.fillStyle = 'rgba(8,8,12,.52)'; ctx.fillRect(FL.ox + bMin * FL.cell, top, (bMax - bMin + 1) * FL.cell, bot - top); }
+  if (cMax >= 0) { ctx.fillStyle = 'rgba(125,180,250,.15)'; ctx.fillRect(FL.ox + cMin * FL.cell, top, (cMax - cMin + 1) * FL.cell, bot - top); }
+  ctx.fillStyle = 'rgba(216,170,96,.5)'; ctx.fillRect(x0, top, x1 - x0, 2);
+  /* warm ember glow hugging the surface under each burning run */
+  const SPR = flSprites();
+  ctx.globalCompositeOperation = 'lighter';
+  for (const cl of flBurnClusters(s)) {
+    const w = Math.max(60, cl.wPx * 1.5);
+    ctx.globalAlpha = .30;
+    ctx.drawImage(SPR.earth, cl.cx - w / 2, top - 8, w, 16);
+  }
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+}
+/* One continuous teardrop silhouette: narrow base at the surface, widest
+   around 38% of the height, tapering to a point. The spine sways and the
+   edges are deformed by flNoise, so the boundary is irregular — never a
+   smooth oval or a round glow orb. */
+function flTeardropPath(ctx, cx, baseY, wBody, h, seed, t, sway) {
+  const N = 10;
+  const half = u => {
+    const grow = u <= .38 ? .40 + .60 * Math.sin((u / .38) * Math.PI / 2) : Math.pow(1 - (u - .38) / .62, .72);
+    return (wBody / 2) * Math.max(.03, grow);
+  };
+  const spine = u => cx + sway * u * u + flNoise(seed + u * 3.1, t * .9) * 6 * u;
+  const pts = [];
+  for (let i = 0; i <= N; i++) {
+    const u = i / N, j = 1 + .15 * flNoise(seed * 2 + u * 6.7, t * 1.25);
+    pts.push([spine(u) - half(u) * j, baseY - u * h]);
+  }
+  for (let i = N; i >= 0; i--) {
+    const u = i / N, j = 1 + .15 * flNoise(seed * 2 + 40 + u * 6.7, t * 1.25);
+    pts.push([spine(u) + half(u) * j, baseY - u * h]);
+  }
+  ctx.beginPath();
+  ctx.moveTo((pts[0][0] + pts[1][0]) / 2, (pts[0][1] + pts[1][1]) / 2);
+  for (let i = 1; i < pts.length - 1; i++) {
+    const mx = (pts[i][0] + pts[i + 1][0]) / 2, my = (pts[i][1] + pts[i + 1][1]) / 2;
+    ctx.quadraticCurveTo(pts[i][0], pts[i][1], mx, my);
+  }
+  ctx.closePath();
+}
+function flFlameLayer(ctx, cx, baseY, wBody, h, seed, t, sway, sx, sy, stops, alpha) {
+  ctx.save();
+  ctx.translate(cx, baseY); ctx.scale(sx, sy); ctx.translate(-cx, -baseY);
+  flTeardropPath(ctx, cx, baseY, wBody, h, seed, t, sway);
+  const gr = ctx.createLinearGradient(0, baseY, 0, baseY - h);
+  for (const [o, col] of stops) gr.addColorStop(o, col);
+  ctx.globalAlpha = alpha; ctx.fillStyle = gr; ctx.fill();
+  ctx.restore();
+}
+/* Earth flame for one burn cluster: layered teardrops, outer amber to a
+   bright ELONGATED yellow-white core sitting low — plus small dim tip
+   fragments breaking away above the tip. One continuous body per cluster;
+   wide bodies and a generous cluster merge make neighbours read as a
+   single wall of flame, not separate balls. */
+function flDrawEarthFlame(ctx, cl, surfY, t, ventDim) {
+  const seed = cl.cx * .37 + 3;
+  const flick = 1 + .055 * flNoise(seed, t);
+  const h = Math.min(300, Math.max(135, cl.wPx * 1.3 + 95)) * flick;
+  const wBody = Math.min(178, Math.max(48, cl.wPx * .92 + 38));
+  const sway = flNoise(seed + 90, t * .55) * 7;
+  const baseY = surfY + 3;
+  ctx.globalCompositeOperation = 'lighter';
+  /* faint wide atmospheric glow behind the body — atmosphere only, far
+     too dim and broad to read as a blob */
+  const gw = wBody * 1.9, gh = h * 1.02;
+  ctx.globalAlpha = .12 * ventDim;
+  ctx.drawImage(flSprites().earth, cl.cx - gw / 2, baseY - gh * .88, gw, gh);
+  /* each layer gets its own noise seed so the silhouettes deform
+     independently instead of nesting like contour lines */
+  flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed, t, sway, 1, 1,
+    [[0, 'rgba(255,118,18,.48)'], [.45, 'rgba(233,72,6,.32)'], [1, 'rgba(205,44,0,0)']], .95 * ventDim);
+  flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed + 3.7, t, sway, .74, .84,
+    [[0, 'rgba(255,168,38,.55)'], [.5, 'rgba(255,128,22,.27)'], [1, 'rgba(255,100,10,0)']], .9 * ventDim);
+  flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed + 7.4, t, sway, .50, .62,
+    [[0, 'rgba(255,214,92,.60)'], [.55, 'rgba(255,182,64,.25)'], [1, 'rgba(255,160,40,0)']], .9 * ventDim);
+  flFlameLayer(ctx, cl.cx, baseY, wBody, h, seed + 11.1, t, sway, .27, .44,
+    [[0, 'rgba(255,247,208,.92)'], [.6, 'rgba(255,226,130,.38)'], [1, 'rgba(255,205,90,0)']], .95 * ventDim);
+  for (let k = 0; k < 2; k++) {
+    const fh = 15 + 9 * (.5 + .5 * flNoise(seed + 20 + k * 13, t));
+    const fx = cl.cx + sway + (k - .5) * 13 + 3 * flNoise(seed + 31 + k, t * 1.2);
+    flFlameLayer(ctx, fx, surfY - h + 4 - k * 12, 13 - k * 3, fh, seed + 55 + k * 7, t, 0, 1, 1,
+      [[0, 'rgba(255,150,40,.32)'], [1, 'rgba(230,70,5,0)']], .5 * ventDim);
+  }
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+}
+/* Microgravity sphere: concentric radial layers with a defined boundary
+   falloff, drawn source-over so the centre can never blow out to white.
+   Uniform breathing (scale/alpha, a few percent) instead of blob noise.
+   The pale core and crisp rim are drawn after the particles (flDrawUGCore). */
+function flDrawUGBall(ctx, g, t, ventDim) {
+  const SPR = flSprites();
+  const breathe = 1 + .03 * flNoise(11.3, t * .55);
+  const R = g.R * breathe, cx = g.cx, cy = g.cy;
+  const dh = R * 3.6;
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.globalAlpha = .07 * ventDim;
+  ctx.drawImage(SPR.ug, cx - dh / 2, cy - dh / 2, dh, dh);
+  ctx.globalCompositeOperation = 'source-over';
+  const gr = ctx.createRadialGradient(cx, cy, 0, cx, cy, R);
+  gr.addColorStop(0, 'rgba(198,226,255,.88)');
+  gr.addColorStop(.30, 'rgba(142,192,255,.66)');
+  gr.addColorStop(.55, 'rgba(84,144,250,.58)');
+  gr.addColorStop(.78, 'rgba(50,100,228,.52)');
+  gr.addColorStop(.92, 'rgba(36,76,205,.30)');
+  gr.addColorStop(1, 'rgba(28,58,190,0)');
+  ctx.globalAlpha = (.95 + .05 * flNoise(4.2, t * .55)) * ventDim;
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.2832); ctx.fillStyle = gr; ctx.fill();
+  ctx.globalAlpha = 1;
+  return { cx, cy, R };
+}
+function flDrawUGCore(ctx, ball, ventDim) {
+  const { cx, cy, R } = ball;
+  const cr = R * .32;
+  const cg = ctx.createRadialGradient(cx, cy, 0, cx, cy, cr);
+  cg.addColorStop(0, 'rgba(230,243,255,.78)');
+  cg.addColorStop(.6, 'rgba(182,215,255,.36)');
+  cg.addColorStop(1, 'rgba(160,200,255,0)');
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.globalAlpha = .48 * ventDim;
+  ctx.beginPath(); ctx.arc(cx, cy, cr, 0, 6.2832); ctx.fillStyle = cg; ctx.fill();
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.globalAlpha = .40 * ventDim;
+  ctx.beginPath(); ctx.arc(cx, cy, R * .965, 0, 6.2832);
+  ctx.strokeStyle = 'rgba(150,198,255,.85)'; ctx.lineWidth = 1.4; ctx.stroke();
+  ctx.globalAlpha = 1;
+}
 function flDraw(s) {
-  const ctx = s.ctx, C = FL.cols, SPR = flSprites();
+  const ctx = s.ctx, SPR = flSprites();
   const t = performance.now() / 1000;
   ctx.clearRect(0, 0, 470, 400);
-  /* fuel surface only, kept subtle — the flame itself is sprite-drawn, so
-     no square cells show through the flame area */
-  for (let r = FL.fuelTop; r < FL.rows; r++) for (let c = 0; c < C; c++) {
-    const i = r * C + c, st = s.state[i]; if (!st) continue;
-    const x = FL.ox + c * FL.cell, y = FL.oy + r * FL.cell;
-    if (st === 1) ctx.fillStyle = r === FL.fuelTop ? '#7c5223' : '#5f3c16';
-    else if (st === 2) ctx.fillStyle = s.ug ? '#152740' : '#38220e';
-    else if (st === 4) ctx.fillStyle = `rgba(147,197,253,${.30 + .12 * Math.sin(t * 2.1 + flHash(c, r) * 6)})`;
-    else ctx.fillStyle = s.early[i] ? '#463a2d' : '#20242b';
-    ctx.fillRect(x, y, FL.cell, FL.cell);
-  }
+  flDrawGround(s);
   const g = s.geom || flBurnGeom(s);
   const ventDim = s.ug ? 1 : 1 - .8 * flState.ventK;
+  let ball = null;
   if (g) {
-    /* body glow — guarantees the silhouette in a still frame: a round blue
-       ball in microgravity; on Earth, a teardrop plume per flame front,
-       drawn with its bright core low so it sits on the fuel surface */
-    ctx.globalCompositeOperation = 'lighter';
-    if (s.ug) {
-      const flick = 1 + .06 * flNoise(3.1, t);
-      const dh2 = g.R * 3.4 * flick;
-      ctx.globalAlpha = .10 * ventDim;
-      ctx.drawImage(SPR.ug, g.cx - dh2 / 2, g.cy - dh2 / 2, dh2, dh2);
-      const d = g.R * 2.3 * flick;
-      ctx.globalAlpha = .55 * (1 + .1 * flNoise(7.7, t)) * ventDim;
-      ctx.drawImage(SPR.ug, g.cx - d / 2, g.cy - d / 2, d, d);
-      const dc = g.R * .95 * flick;
-      ctx.globalAlpha = .72 * ventDim;
-      ctx.drawImage(SPR.core, g.cx - dc / 2, g.cy - dc / 2, dc, dc);
-    } else {
-      for (const cl of flBurnClusters(s)) {
-        const flick = 1 + .07 * flNoise(cl.cx * .13, t);
-        const w = Math.max(54, Math.min(150, cl.wPx * 1.4));
-        const h = Math.max(150, Math.min(320, w * 2.6)) * flick;
-        ctx.globalAlpha = .55 * (1 + .12 * flNoise(cl.cx * .29 + 40, t)) * ventDim;
-        ctx.drawImage(SPR.earth, cl.cx - w / 2, g.surfY - h * .66, w, h);
-        const wc = w * .55, hc = h * .38;
-        ctx.globalAlpha = .8 * ventDim;
-        ctx.drawImage(SPR.core, cl.cx - wc / 2, g.surfY - hc * .72, wc, hc);
-      }
-    }
-    ctx.globalAlpha = 1;
-    ctx.globalCompositeOperation = 'source-over';
+    if (s.ug) ball = flDrawUGBall(ctx, g, t, ventDim);
+    else for (const cl of flBurnClusters(s)) flDrawEarthFlame(ctx, cl, g.surfY, t, ventDim);
   }
   for (const p of s.parts) {
     const f = p.age / p.life, fade = f < .15 ? f / .15 : 1 - (f - .15) / .85;
@@ -1229,14 +1352,17 @@ function flDraw(s) {
       const nz = flNoise(p.seed * 3.7, t * 1.4), na = 1 + .18 * flNoise(p.seed * 5.3 + 9, t * 1.4);
       ctx.globalCompositeOperation = 'lighter';
       if (s.ug) {
+        /* faint texture only — the layered sphere carries the shape, so
+           additive stacking can no longer blow the centre out to white */
         const d = p.size * (1.3 + .4 * Math.sin(Math.PI * f)) * (1 + .16 * nz);
-        ctx.globalAlpha = Math.max(0, .42 * fade * (.45 + .55 * p.inten) * ventDim * na);
+        ctx.globalAlpha = Math.max(0, .15 * fade * (.45 + .55 * p.inten) * ventDim * na);
         ctx.drawImage(SPR.ug, p.x - d / 2, p.y - d / 2, d, d);
       } else {
-        /* drawn stretched vertically — a rising flame tongue, not a blob */
-        const d = p.size * (1.35 + .85 * Math.sin(Math.PI * Math.min(1, f * 1.12))) * (1 + .16 * nz);
-        const dh = d * 2.2;
-        ctx.globalAlpha = Math.max(0, .5 * fade * (.45 + .55 * p.inten) * ventDim * na);
+        /* texture tongues over the teardrop body — stretched upward,
+           dimmer than before so they never form blobs of their own */
+        const d = p.size * .85 * (1.15 + .6 * Math.sin(Math.PI * Math.min(1, f * 1.12))) * (1 + .16 * nz);
+        const dh = d * 1.9;
+        ctx.globalAlpha = Math.max(0, .26 * fade * (.45 + .55 * p.inten) * ventDim * na);
         ctx.drawImage(SPR.earth, p.x - d / 2, p.y - dh / 2, d, dh);
       }
       ctx.globalAlpha = 1;
@@ -1253,6 +1379,7 @@ function flDraw(s) {
       ctx.globalAlpha = 1;
     }
   }
+  if (ball) flDrawUGCore(ctx, ball, ventDim);
 }
 /* detector's eye — levels are measured SAME-R medians from data/detection.json */
 function flDetMedian(mat) { const m = (DET.by_material || []).find(b => b.material === mat); return m ? m.obsc_drop_med_V : 0; }
