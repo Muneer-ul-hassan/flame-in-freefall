@@ -169,7 +169,7 @@ Kapton
 Teflon
 Silicone</textarea>
         <button id="sc-run" class="run">Screen this inventory</button>
-        <div class="method-note">Verdict per atmosphere, from the material's real test rows: <span class="chip green">TESTED</span> a test row sits within ±1 O₂ point of the atmosphere · <span class="chip yellow">NEARBY ONLY</span> nearest test within ±4 points · <span class="chip red">GAP</span> never tested near this O₂ · <span class="chip grey">NOT IN PSI DATA</span> no test rows under this name. This is a coverage verdict (was it tested?), not a burn prediction.</div>
+        <div class="method-note">Verdict per atmosphere, from the material's real test rows: <span class="chip green">TESTED</span> a test row sits within ±1 O₂ point of the atmosphere · <span class="chip yellow">NEARBY ONLY</span> nearest test within ±4 points · <span class="chip red">GAP</span> never tested near this O₂ · <span class="chip grey">NO O₂ DATA</span> the material's test rows record no O₂ level · <span class="chip grey">NOT IN PSI DATA</span> no test rows under this name. This is a coverage verdict (was it tested?), not a burn prediction.</div>
       </div>
       <div id="sc-result"></div>
     </section>
@@ -181,7 +181,7 @@ Silicone</textarea>
 
       <div class="card wide">
         <h3>What the ISS smoke detector actually saw — SAME-R (PSI-101)</h3>
-        <p>Median drop of the station's obscuration detector when each material's smoke was generated (baseline ≈ 3.44 V; bigger drop = detector saw more smoke). Computed from 68,699 raw telemetry readings across 45 tests with raw files.</p>
+        <p>Median drop of the station's obscuration detector when each material's smoke was generated (baseline ≈ 3.44 V; bigger drop = detector saw more smoke). Computed from 63,397 raw telemetry samples across the 45 tests with raw files.</p>
         <div id="det-chart"></div>
         <div id="det-mat-table"></div>
         <div class="src">Source: PSI-101 SAME-R raw HKP telemetry (44 files) + PSI-101 experimental table. Full method and caveats in References.</div>
@@ -190,7 +190,7 @@ Silicone</textarea>
       <div class="cards2">
         <div class="card finding">
           <h3>⚠️ The three-channel lesson</h3>
-          <p>The obscuration beam is not the whole story. In Lampwick tests 80 and 82 the obscuration drop was only 0.06–0.08 V, yet the scatter channel median railed at <strong>−6.25 V</strong> (a saturation value — read it as “detector saturated”, not a concentration). Kapton test 62: obscuration barely moved (0.03 V) while scatter read −1.67 V and the ion channel 0.23 V. A detection panel must show all channels, not one.</p>
+          <p>The obscuration beam is not the whole story. In Lampwick tests 80 and 82 the obscuration drop was only 0.06–0.08 V, yet the scatter channel slammed into its <strong>−6.25 V</strong> saturation rail (the signal's floor; smoke-window medians −5.23 and −5.55 V — read the rail as “detector saturated”, not a concentration). Kapton test 62: obscuration barely moved (0.03 V) while scatter read −1.67 V and the ion channel 0.23 V. A detection panel must show all channels, not one.</p>
           <div class="src">Source: SAME-R per-test analysis (samer_detection_by_test.csv).</div>
         </div>
         <div class="card finding">

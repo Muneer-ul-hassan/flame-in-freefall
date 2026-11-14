@@ -38,7 +38,7 @@ function buildMaterialSelect() {
     const og = document.createElement('optgroup'); og.label = groups[cls];
     mats.forEach(k => {
       const m = k.split('|')[0];
-      const o = document.createElement('option'); o.value = m; o.textContent = `${m} (${counts[k]} rows)`;
+      const o = document.createElement('option'); o.value = m; o.textContent = `${m} (${counts[k]} row${counts[k] === 1 ? '' : 's'})`;
       og.appendChild(o);
     });
     sel.appendChild(og);
@@ -55,7 +55,8 @@ function rowTable(rows, limit = 8) {
     (rows.length > limit ? `<div class="chart-note">Showing ${limit} of ${rows.length} matched rows — all from the NASA PSI backbone.</div>` : '');
 }
 function cabinCheck(mat, o2, p, flow) {
-  const rows = BB.rows.filter(r => r.mat === mat);
+  /* design-range rows (PSI-68) are a planned test matrix, not tests — never matched */
+  const rows = BB.rows.filter(r => r.mat === mat && r.kind !== 'design-range');
   const cond = (r, tol) => {
     if (!r.o2 || Math.abs(mid(r.o2) - o2) > tol) return false;
     if (p !== null && r.p && Math.abs(mid(r.p) - p) > 3) return false;
@@ -70,15 +71,22 @@ function runCabin() {
   const mat = $('#cc-material').value;
   const o2 = parseFloat($('#cc-o2').value);
   const pRaw = $('#cc-p').value, fRaw = $('#cc-flow').value;
-  const p = pRaw === '' ? null : parseFloat(pRaw);
-  const flow = fRaw === '' ? null : parseFloat(fRaw);
-  const { rows, matched, nearby } = cabinCheck(mat, o2, p, flow);
+  const p = pRaw === '' || !isFinite(parseFloat(pRaw)) ? null : parseFloat(pRaw);
+  const flow = fRaw === '' || !isFinite(parseFloat(fRaw)) ? null : parseFloat(fRaw);
   const box = $('#cc-result');
+  if (!isFinite(o2)) {
+    box.innerHTML = `<div class="verdict v-grey"><h3>⬜ Enter a valid O₂ value</h3>
+      <p>Oxygen is a required input — without it no honest comparison against the test record is possible.</p></div>`;
+    return;
+  }
+  const { rows, matched, nearby } = cabinCheck(mat, o2, p, flow);
   const o2vals = rows.filter(r => r.o2).map(r => mid(r.o2));
-  const rangeTxt = o2vals.length ? `tested O₂ range for this material: ${fmt(Math.min(...o2vals))}% – ${fmt(Math.max(...o2vals))}%` : 'this material\u2019s rows record no O₂ level';
+  const rangeTxt = o2vals.length ? `tested O₂ range for this material: ${fmt(Math.min(...o2vals))}% – ${fmt(Math.max(...o2vals))}%`
+    : rows.length ? 'this material\u2019s rows record no O₂ level'
+    : 'no per-test rows exist for this material — its backbone entries are a planned test-matrix summary, not test records';
   if (!matched.length && !nearby.length) {
     box.innerHTML = `<div class="verdict v-grey"><h3>⬜ NO TEST DATA — ${mat} at ${o2}% O₂</h3>
-      <p>No PSI test row for ${mat} comes within ±5 O₂ points of ${o2}% (${rows.length} rows exist for this material; ${rangeTxt}). This tool will not guess what happens at an untested atmosphere.</p></div>`;
+      <p>No PSI test row for ${mat} comes within ±5 O₂ points of ${o2}% (${rows.length} test rows exist for this material; ${rangeTxt}). This tool will not guess what happens at an untested atmosphere.</p></div>`;
     return;
   }
   if (!matched.length) {
@@ -98,16 +106,16 @@ function runCabin() {
     cls = share >= 0.8 ? 'v-green' : share >= 0.4 ? 'v-yellow' : 'v-red';
     head = share >= 0.8 ? 'Flames went out in most matched tests' :
            share >= 0.4 ? 'Mixed outcomes in matched tests' : 'Flames usually did NOT go out in matched tests';
-    body = `<p>${matched.length} real test rows match ${mat} at ${o2}% O₂. Of the ${tot} with a recorded test end: <strong>${ext} ended in Extinction</strong>` +
+    body = `<p>${matched.length} real test row${matched.length === 1 ? '' : 's'} match ${mat} at ${o2}% O₂. Of the ${tot} with a recorded test end: <strong>${ext} ended in Extinction</strong>` +
       (oc['Disruption'] ? `, ${oc['Disruption']} in Disruption` : '') + (oc['Completion'] ? `, ${oc['Completion']} burned to Completion` : '') + `.</p>`;
   } else if (ocKeys.length) {
     cls = 'v-yellow';
     head = 'Tested at these conditions — outcomes recorded as codes';
-    body = `<p>${matched.length} real test rows match. Recorded outcome codes: ${ocKeys.map(k => `${k} × ${oc[k]}`).join(', ')} — shown exactly as recorded in the PSI table; this tool does not reinterpret codes it cannot define from the data.</p>`;
+    body = `<p>${matched.length} real test row${matched.length === 1 ? '' : 's'} match. Recorded outcome codes: ${ocKeys.map(k => `${k} × ${oc[k]}`).join(', ')} — shown exactly as recorded in the PSI table; this tool does not reinterpret codes it cannot define from the data.</p>`;
   } else {
     cls = 'v-yellow';
     head = 'Tested at these conditions — coverage only';
-    body = `<p>${matched.length} real test rows match ${mat} at ${o2}% O₂ — so this atmosphere <strong>has</strong> been tested for this material. But the PSI tables for these investigations record test conditions, not burn outcomes, so no burn/extinction verdict can honestly be drawn. (${rangeTxt}.)</p>`;
+    body = `<p>${matched.length} real test row${matched.length === 1 ? '' : 's'} match ${mat} at ${o2}% O₂ — so this atmosphere <strong>has</strong> been tested for this material. But the PSI tables for these investigations record test conditions, not burn outcomes, so no burn/extinction verdict can honestly be drawn. (${rangeTxt}.)</p>`;
   }
   box.innerHTML = `<div class="verdict ${cls}"><h3>${head}</h3>${body}${rowTable(matched)}</div>`;
 }
@@ -123,10 +131,12 @@ function matchMaterial(name) {
   const mats = [...new Set(BB.rows.map(r => r.mat).filter(Boolean))];
   const exact = mats.find(m => m.toLowerCase() === name.toLowerCase());
   if (exact) return exact;
+  /* substring matching only for names of 3+ chars — a 1–2 letter fragment matches arbitrary materials */
+  if (name.trim().length < 3) return null;
   return mats.find(m => m.toLowerCase().includes(name.toLowerCase()) || name.toLowerCase().includes(m.toLowerCase())) || null;
 }
 function screenStatus(mat, preset) {
-  const rows = BB.rows.filter(r => r.mat === mat && r.o2);
+  const rows = BB.rows.filter(r => r.mat === mat && r.o2 && r.kind !== 'design-range');
   if (!rows.length) return { chip: 'grey', label: 'NO O₂ DATA', detail: 'test rows record no O₂ level' };
   let best = null, bd = 1e9;
   rows.forEach(r => { const d = Math.abs(mid(r.o2) - preset.o2); if (d < bd) { bd = d; best = mid(r.o2); } });
@@ -140,7 +150,9 @@ function runScreener() {
   const lines = $('#sc-input').value.split('\n').map(s => s.trim()).filter(Boolean);
   let html = '<table><tr><th>Material (as typed → matched)</th>' + PRESETS.map(p => `<th>${p.name}<br>${p.o2}% O₂ · ${p.p} psia</th>`).join('') + '</tr>';
   lines.forEach(line => {
-    const m = matchMaterial(line);
+    let m = matchMaterial(line);
+    /* a material whose only backbone rows are a planned test matrix has no test rows under its name */
+    if (m && !BB.rows.some(r => r.mat === m && r.kind !== 'design-range')) m = null;
     if (!m) { html += `<tr><td>${line}</td>` + PRESETS.map(() => `<td><span class="chip grey">NOT IN PSI DATA</span></td>`).join('') + '</tr>'; return; }
     html += `<tr><td><b>${m}</b>${m.toLowerCase() !== line.toLowerCase() ? ` <span style="color:var(--muted)">(typed: ${line})</span>` : ''}</td>` +
       PRESETS.map(p => { const s = screenStatus(m, p); return `<td><span class="chip ${s.chip}">${s.label}</span><div class="chart-note">${s.detail}</div></td>`; }).join('') + '</tr>';
@@ -185,8 +197,12 @@ function supMatch(fuel, o2, p) {
 }
 function runSuppression() {
   const fuel = $('#sup-fuel').value, o2 = parseFloat($('#sup-o2').value), p = parseFloat($('#sup-p').value);
-  const m = supMatch(fuel, o2, p);
   const box = $('#sup-result');
+  if (!isFinite(o2) || !isFinite(p)) {
+    box.innerHTML = `<div class="verdict v-grey"><h3>⬜ Enter valid O₂ and pressure values</h3><p>Both are required inputs — without them no honest match against the test record is possible.</p></div>`;
+    return;
+  }
+  const m = supMatch(fuel, o2, p);
   if (!m.length) {
     box.innerHTML = `<div class="verdict v-grey"><h3>⬜ NO MATCHED TEST ROWS</h3><p>No FLEX test with ${fuel} ran within ±3 O₂ points and ±5 psia of ${o2}% / ${p} psia. No recommendation is made — widen the conditions toward the tested envelope (O₂ 12–34%, 10.2–44.9 psia) to find real evidence.</p></div>`;
     return;
@@ -194,7 +210,7 @@ function runSuppression() {
   const ext = m.filter(r => r.out === 'Extinction').length;
   const share = Math.round(ext / m.length * 100);
   box.innerHTML = `<div class="verdict ${share >= 60 ? 'v-green' : share >= 30 ? 'v-yellow' : 'v-red'}">
-    <h3>Based on ${m.length} real FLEX test rows: ${ext} of ${m.length} flames went out (${share}%)</h3>
+    <h3>Based on ${m.length} real FLEX test row${m.length === 1 ? '' : 's'}: ${ext} of ${m.length} flames went out (${share}%)</h3>
     <p>${fuel} droplets at ${o2}% O₂ / ${p} psia (±3 O₂, ±5 psia window). ` +
     (share >= 60 ? 'At these conditions, most tested flames extinguished before burning through.' :
      share >= 30 ? 'At these conditions, extinction was inconsistent — roughly a coin toss in the test record.' :
@@ -214,6 +230,7 @@ function renderSupChart() {
 /* ---------- Safe Predictor ---------- */
 function predict(fuel, o2, p) {
   const env = MODEL.envelope;
+  if (!isFinite(o2) || !isFinite(p)) return { abstain: 'a numeric O₂ and pressure are required' };
   if (!env.fuels.includes(fuel)) return { abstain: `fuel “${fuel}” was never in the training tests (only ${env.fuels.join(' and ')})` };
   if (o2 < env.o2[0] || o2 > env.o2[1]) return { abstain: `O₂ ${o2}% is outside the tested range ${env.o2[0]}–${env.o2[1]}%` };
   if (p < env.pressure_psi[0] || p > env.pressure_psi[1]) return { abstain: `pressure ${p} psia is outside the tested range ${fmt(env.pressure_psi[0])}–${fmt(env.pressure_psi[1])} psia` };
@@ -231,8 +248,12 @@ function predict(fuel, o2, p) {
 }
 function runPredictor() {
   const fuel = $('#pr-fuel').value, o2 = parseFloat($('#pr-o2').value), p = parseFloat($('#pr-p').value);
-  const r = predict(fuel, o2, p);
   const box = $('#pr-result');
+  if (!isFinite(o2) || !isFinite(p)) {
+    box.innerHTML = `<div class="verdict v-grey"><h3>⬜ Enter valid O₂ and pressure values</h3><p>Both are required inputs — the model cannot be queried with a missing number.</p></div>`;
+    return;
+  }
+  const r = predict(fuel, o2, p);
   if (r.abstain) {
     box.innerHTML = `<div class="verdict v-grey"><h3>⬜ NO PREDICTION — outside tested data</h3><p>The model refuses: ${r.abstain}. Guessing here is exactly how a fire tool becomes dangerous, so it abstains. Bring the inputs inside the tested envelope to get an answer.</p></div>`;
     return;
@@ -245,8 +266,8 @@ function runPredictor() {
 function renderValidation() {
   const v = MODEL.validation;
   $('#pr-validation').innerHTML = `<div class="kv">
-    <div><b>${Math.round(v.holdout_accuracy * 100)}%</b><span>holdout accuracy (${v.n_holdout} unseen tests)</span></div>
-    <div><b>${Math.round(v.majority_baseline_accuracy * 100)}%</b><span>“always say Extinction” baseline</span></div>
+    <div><b>${(v.holdout_accuracy * 100).toFixed(1)}%</b><span>holdout accuracy (${v.n_holdout} unseen tests)</span></div>
+    <div><b>${(v.majority_baseline_accuracy * 100).toFixed(1)}%</b><span>“always say Extinction” baseline</span></div>
     <div><b>${MODEL.n_rows}</b><span>training rows (PSI-69 FLEX)</span></div>
     <div><b>${v.gate_abstained_on_holdout}</b><span>gate abstentions on holdout*</span></div></div>
     <p>Confusion on holdout: correctly predicted Extinction ${v.confusion.tp_extinction} · wrongly predicted Extinction ${v.confusion.fp_extinction} · correctly predicted No-extinction ${v.confusion.tn} · missed Extinction ${v.confusion.fn}. The model is modest — it beats the baseline by ~7 points, and we say so. *Holdout tests come from inside the same tested envelope, so the gate rarely fires there; it exists for inputs beyond the tested ranges, like O₂ 60%.</p>`;
@@ -272,6 +293,7 @@ function renderCards() {
       <div>Materials<br><b>${c.materials.slice(0, 2).join(', ') || '—'}</b></div>
     </div>
     <p style="font-size:13px;color:#cfdae4;margin:4px 0">Outcomes: ${outcomeTxt(c)}</p>
+    ${c.note ? `<p style="font-size:13px;color:var(--yellow);margin:4px 0">${c.note}</p>` : ''}
     <div class="src">DOI: <a href="https://doi.org/${c.doi}" target="_blank" rel="noopener">${c.doi}</a> · via NASA PSI</div>
   </div>`).join('');
   $('#cards-empty').innerHTML = list.length ? '' : '<div class="empty-note">No investigation matches that search/filter.</div>';

@@ -21,6 +21,7 @@ for r in rows:
         'inv': r['investigation'], 'acc': r['accession'], 'doi': r['doi'],
         'ref': r['row_ref'], 'mat': r['material_canonical'], 'mraw': r['material_raw'],
         'cls': r['material_class'],
+        'kind': r['row_kind'].split(' (')[0],
         'o2': None if r['o2_pct_min'] is None else [r['o2_pct_min'], r['o2_pct_max']],
         'p': None if r['pressure_psi_min'] is None else [r['pressure_psi_min'], r['pressure_psi_max']],
         'flow': r['flow_cm_s'], 'out': r['outcome'], 'burn': r['burn_time_s'],
@@ -48,17 +49,26 @@ for r in rows: by[r['accession']].append(r)
 cards = []
 for acc in sorted(by, key=lambda a: int(a.split('-')[1])):
     sel = by[acc]
-    o2 = [r['o2_pct_min'] for r in sel if r['o2_pct_min'] is not None]
-    pr = [r['pressure_psi_min'] for r in sel if r['pressure_psi_min'] is not None]
+    o2lo = [r['o2_pct_min'] for r in sel if r['o2_pct_min'] is not None]
+    o2hi = [(r['o2_pct_max'] if r['o2_pct_max'] is not None else r['o2_pct_min'])
+            for r in sel if r['o2_pct_min'] is not None]
+    prlo = [r['pressure_psi_min'] for r in sel if r['pressure_psi_min'] is not None]
+    prhi = [(r['pressure_psi_max'] if r['pressure_psi_max'] is not None else r['pressure_psi_min'])
+            for r in sel if r['pressure_psi_min'] is not None]
     oc = collections.Counter(r['outcome'] for r in sel if r['outcome'])
     mats = collections.Counter(r['material_canonical'] for r in sel if r['material_canonical'])
+    note = None
+    if all(r['row_kind'].startswith('design-range') for r in sel):
+        note = ('Rows are the planned test-matrix summary (design ranges), '
+                'not per-test records — the tools on this site do not count them as tests.')
     cards.append({
         'accession': acc, 'name': sel[0]['investigation'], 'doi': sel[0]['doi'],
         'family': FAMILY[acc], 'family_label': FAMILY_LABEL[FAMILY[acc]],
         'n_rows': len(sel),
         'tables': sorted({r['table_file'] for r in sel}),
-        'o2_range': [min(o2), max(o2)] if o2 else None,
-        'pressure_range_psi': [round(min(pr), 1), round(max(pr), 1)] if pr else None,
+        'o2_range': [min(o2lo), max(o2hi)] if o2lo else None,
+        'pressure_range_psi': [round(min(prlo), 1), round(max(prhi), 1)] if prlo else None,
+        'note': note,
         'outcomes': dict(oc) if oc else None,
         'materials': [m for m, _ in mats.most_common(4)],
     })

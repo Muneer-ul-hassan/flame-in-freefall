@@ -78,3 +78,37 @@ Cosmetics only. **No data, number, claim text, JS logic, element ID or data JSON
 - **Zero JavaScript console errors** in headless Chrome on both paths.
 - Screenshots inspected: Home (new hero, CTAs, stat cards, dataset band, footer strip), Cabin Check (default verdict + rows render, citation strip under the section), Home at 400px width (nav wraps, CTAs and band stack cleanly).
 - Caveat carried over from v1: the sandbox's headless Chrome cannot reach the internet, so the Google Fonts and GSAP CDNs cannot load *in the test environment* — screenshots render with the font/animation fallbacks. On GitHub Pages / any online browser both CDNs load normally. No sample/mock content was adopted — no invented ratings, labels or charts were added.
+
+## Audit — Nov 14 (hostile self-audit, judge-style)
+
+Method: 30+ displayed numbers recomputed from the SOURCE files (cleaned.json, samer CSVs, psi115_summary.csv, model.json), not the app's own JSONs; all 31 external URLs curled (10 official resources, PSI-115/PSI-117 DOIs, 19 card DOIs — **all returned 200**); all 8 sections screenshot-inspected at desktop width plus Home + Cabin Check at 400px; ~35 scripted edge-case interactions via a headless-Chrome harness; self-test re-run after fixes.
+
+### Defects found: 9 — all 9 fixed
+
+1. **Card ranges silently truncated range-recorded rows** (prep_data.py + investigations.json). Card O₂/pressure ranges were built from the `*_min` columns only. PSI-68 card showed O₂ "17.0–17.0%" and pressure "7.3–7.3 psia"; the source rows record 17.0–30.0% and 7.35–44.09 psia. PSI-98 card O₂ max showed 21.5 vs a recorded 21.5–21.7 row. Fix: ranges now [min of mins, max of maxes]; regenerated JSONs — only backbone.json (added `kind`) and investigations.json changed, other three byte-identical.
+2. **PSI-68 design-range rows counted as tests** (prep_data.py, app.js). PSI-68's 8 rows are a planned test-matrix summary (source `row_kind` says "do not count as tested points"), yet Cabin Check matched them — IsoOctane @ 23.5% returned "1 real test rows match". Fix: backbone slim rows now carry `kind`; Cabin Check and the Screener exclude design-range rows; a material with only design rows (IsoOctane, n-Octane, Decane, Ethanol, …) now honestly returns NO TEST DATA / NOT IN PSI DATA, and the PSI-68 card carries the note "Rows are the planned test-matrix summary (design ranges), not per-test records".
+3. **Empty O₂ in Cabin Check produced a false verdict** (app.js). `Math.abs(x − NaN)` comparisons silently passed, so a cleared O₂ field returned "99 real test rows match PMMA at NaN% O₂". Fix: O₂ is now validated — a grey "Enter a valid O₂ value" verdict is shown instead; non-numeric pressure/flow are treated as blank (optional fields).
+4. **Predictor answered with NaN inputs** (app.js). Cleared O₂ or pressure fields walked the decision tree and printed a confident prediction "at NaN% O₂ / NaN psia" (captured in a screenshot). Fix: runPredictor validates both inputs, and predict() itself abstains on non-finite numbers. All envelope boundaries re-verified after the fix (O₂ 12 ✓ / 34 ✓ / 11.99 abstain / 34.01 abstain; pressure 10.17 abstain / 10.18 ✓ / 44.85 ✓ / 44.86 abstain).
+5. **Suppression no-match message printed "NaN%"** for empty inputs (app.js). Fix: same input validation as the Predictor.
+6. **Detection intro misattributed the sample count** (index.html). "Computed from 68,699 raw telemetry readings across 45 tests" — the 45 analysed tests hold 63,397 samples (verified two ways: sum of per-test sample counts in samer_detection_by_test.csv, and an independent recount of in-test rows in the raw HKP files); 68,699 is the whole downloaded file corpus including 5,301 idle TestNumber-0 rows. Fix: sentence now reads 63,397 samples across the 45 tests.
+7. **"Scatter channel median railed at −6.25 V" was wrong** (index.html). Recomputed from the raw PSI-101 HKP files over the same 200–1000 s smoke window as the source analysis: Lampwick test 80 scatter median −5.2307 V, test 82 −5.5473 V (matching samer_detection_by_test.csv and the app's own per-test table); −6.26 V is the channel minimum (the saturation floor the signal hit). Fix: text now says the channel "slammed into its −6.25 V saturation rail" and gives the true medians.
+8. **Screener legend omitted a verdict the tool emits** (index.html). The default inventory shows NO O₂ DATA chips (Kapton, Teflon) but the method note defined only TESTED / NEARBY ONLY / GAP / NOT IN PSI DATA. Fix: NO O₂ DATA definition added.
+9. **Small display inaccuracies** (app.js): (a) holdout accuracy displayed "75%" / baseline "67%" via Math.round — model.json says 0.745 / 0.673; now displayed as 74.5% / 67.3%. (b) 1-letter screener input "a" fuzzy-matched PMMA and returned full verdicts; substring matching now requires ≥3 characters. (c) Grammar: "(1 rows)" in the material dropdown and "1 real test rows" in verdicts — singular forms fixed in 6 places.
+
+### Verified correct (sample of the recomputation)
+- Detection by-material table == samer_detection_by_material.csv exactly (Silicone 0.300 / Pyrell 0.069 / Lampwick 0.020 / Kapton 0.001 / Teflon 0.001 V; 21 of 45 tests with no response).
+- PSI-115 chart + table == psi115_summary.csv (8 cm Earth peak 7.50 vs microgravity 14.17; 10 cm 11.24 / 11.72; coverage 94.16/75.19/92.44/69.50%).
+- Suppression bins and default match (Methanol 21% / 14.7 psia → 78 rows, 63 extinguished, 81%) recompute exactly from cleaned.json.
+- Model stats (273 rows, classes 185/61/27, holdout n=55, accuracy 0.745, confusion 29/6/12/8, envelope O₂ 12–34%, 10.177–44.859 psia) all exact; PSI-108 card values (0.092 cm/s @35% O₂/1 atm → 0.547 @50%/2 atm) exact; all 19 card row counts and DOIs exact.
+- README and this report's earlier claims spot-checked (PMMA@21% → 43 rows; suppression default; self-test 10/10): all hold.
+
+### Findings left open (judgement calls, not fixed)
+- **F1 (low):** Home stat-2 source line and the dataset band cite 68,699 SAME-R readings — that is the full downloaded corpus (44 files incl. idle rows), while the analysed 45 tests hold 63,397 samples. Both numbers are now used consistently with their context, but a strict judge could ask for the distinction on the Home page too.
+- **F2 (low):** 119 backbone rows are day-aggregates (PSI-20/21/22/23), not per-test records; the app calls all backbone rows "test rows". This is the PSI tables' own structure, but it is not distinguished in the UI.
+- **F3 (info):** This report's header status ("NOT pushed, NOT deployed") reflects build time; deployment state is tracked outside this file.
+- **F4 (info):** Mir card wording "burned for several minutes" is vaguer than the commonly reported ~14 minutes; left as deliberately conservative.
+
+### Post-fix verification
+- `?selftest=1`: **10/10 PASS at root and under `/flame-in-freefall/`**, zero FAIL lines, no page JS errors (only Chrome-internal component messages).
+- Harness re-run: every previously broken case now returns the honest grey/abstain state; previously correct cases (PMMA@21% → 43 rows, Moon GAP, predictor boundaries, card filters 19/5/2/9/3) unchanged.
+- Fixes are LOCAL only — the live GitHub Pages copy still serves the pre-audit build until the changed files (index.html, app.js, data/backbone.json, data/investigations.json, prep_data.py, BUILD-REPORT.md) are re-uploaded.
