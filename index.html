@@ -108,7 +108,7 @@
           <div class="ds-label">Smoke-modelling values (PSI-115)</div>
         </div>
       </div>
-      <p class="chart-note">Two SAME-R numbers, kept distinct on purpose: 68,699 readings were downloaded across 44 telemetry files; 63,397 samples fall inside the 45 tests with raw files (the rest are idle rows between tests). The Detection Panel's analysis uses the 63,397.</p>
+      <p class="chart-note">Two SAME-R numbers, kept distinct on purpose: 68,699 readings were downloaded across 44 telemetry files; 63,397 samples fall inside the 45 tests with raw files (the rest are idle rows between tests, plus repeated file headers). The Detection Panel's analysis uses the 63,397.</p>
 
       <h2>One tool, three jobs</h2>
       <div class="cards3">
@@ -170,6 +170,10 @@
       <figure class="img-fig">
         <img src="assets/saffire-flame.jpg" alt="A fabric sample burning inside NASA's Saffire-IV spacecraft fire experiment" loading="lazy">
         <figcaption>A fabric sample burning inside <strong>Saffire-IV</strong> — the glowing front crossing a composite fabric of the kind used for astronaut clothing and cargo bags. Experiments like this are why any test data exists at all. Photo: NASA / JSC (jsc2023e046375), public domain.</figcaption>
+      </figure>
+      <figure class="img-fig">
+        <img src="assets/candle-compare.jpg" alt="The same candle burning on Earth (tall, teardrop-shaped flame) and in microgravity (round, blue, dome-shaped flame)" loading="lazy">
+        <figcaption>The same candle, on Earth (left) and in microgravity (right): with no buoyancy to pull it upward, the flame is round, blue and dome-shaped. Photo: NASA Glenn Research Center (GRC-1998-C-00485), public domain.</figcaption>
       </figure>
       <p class="foot-note">Built for the NASA Space Apps 2026 challenge <em>Flame in Freefall</em>. Data: NASA Physical Science Informatics (PSI). Method and full references in the <a href="#refs" data-goto="refs">References &amp; Method</a> section.</p>
     </section>
@@ -315,9 +319,9 @@ Silicone</textarea>
       <div class="card wide">
         <div class="dchip-row"><span class="dchip dc-modelling">MODELLING</span></div>
         <h3>❄️ The flame you cannot see — PSI-117 cool flames</h3>
-        <p>Some flames do not go out when they look out. In the PSI-117 cool-flame record, droplets kept vaporising under <em>invisible</em> cool flames after the visible flame died — a fire a crew cannot see and a camera cannot flag. The chart plots the recorded extinction diameter of the cool flame against pressure, from the 93-row tidy extraction of PSI-117. <strong>Model and experiment points are plotted separately and never merged</strong> — most of this dataset is CFD and conference-proceedings data, and it is labelled that way everywhere on this site.</p>
+        <p>Some flames do not go out when they look out. In the PSI-117 cool-flame record, droplets kept vaporising under <em>invisible</em> cool flames after the visible flame died — a fire a crew cannot see and a camera cannot flag. The chart plots the recorded extinction diameter of the cool flame against pressure, from the 93-row tidy extraction of PSI-117 — 58 of those rows record a cool-flame diameter and are plotted; the other 35 record a burning rate or a hot-flame diameter instead. <strong>Model and experiment points are plotted separately and never merged</strong> — most of this dataset is CFD and conference-proceedings data, and it is labelled that way everywhere on this site.</p>
         <div id="psi117-chart"></div>
-        <div class="legend-row"><span><i class="dot" style="background:#38BDF8"></i>Experiment (54 rows)</span><span><i class="dot" style="background:#FFB020"></i>Model / CFD (39 rows)</span></div>
+        <div class="legend-row"><span><i class="dot" style="background:#38BDF8"></i>Experiment (30 plotted)</span><span><i class="dot" style="background:#FFB020"></i>Model / CFD (28 plotted)</span></div>
         <div class="src">Source: PSI-117 analysed data (DOI 10.60555/gz0q-b577), tidy extraction psi117_extinction_tidy.csv. This table has no O₂ column and no extinction yes/no outcome — which is also why it cannot cross-check the Safe Predictor (see References).</div>
       </div>
 
@@ -385,6 +389,7 @@ Silicone</textarea>
       </div>
 
       <div class="card wide">
+        <div class="dchip-row"><span class="chip grey">SYNTHESIS — each step cites its own source</span></div>
         <h3>From evidence to action — the response sequence</h3>
         <p>Four steps a crew actually faces, each tied to a finding already shown on this site — no invented guidance:</p>
         <div class="seq-row">
@@ -451,7 +456,7 @@ Silicone</textarea>
       <div class="card wide">
         <div class="dchip-row"><span class="dchip dc-model">MODEL</span></div>
         <h3>Where it answers, where it refuses — the decision map</h3>
-        <p>The exported tree evaluated over the whole O₂ × pressure plane. Green shades = predicts Extinction (darker = more of the leaf's training tests extinguished); red = predicts No-extinction; <strong>grey = refuses</strong> (outside the tested envelope). No rival FLEX predictor in this challenge shows its refusal zone — ours is most of the map, and that is the honest picture.</p>
+        <p>The exported tree evaluated over the whole O₂ × pressure plane. Green shades = predicts Extinction (darker = more of the leaf's training tests extinguished); red = predicts No-extinction; <strong>grey = refuses</strong> (outside the tested envelope). Most of this map is refusal — and that is the honest picture.</p>
         <div class="preset-row"><button class="preset pmap-fuel active" data-fuel="Methanol">Methanol</button><button class="preset pmap-fuel" data-fuel="Heptane">Heptane</button></div>
         <canvas id="pmap-canvas" width="980" height="400" class="chart-canvas"></canvas>
         <div class="chart-note">Axes: O₂ 10–36% (x) · pressure 8–47 psia (y). The envelope boundary is the training rows' own range: O₂ 12–34%, 10.2–44.9 psia.</div>
@@ -600,6 +605,7 @@ Silicone</textarea>
       </div>
 
       <div class="card wide">
+        <div class="dchip-row"><span class="dchip dc-report">REPORT</span></div>
         <h3>This research, back on Earth</h3>
         <p>NASA's own Spinoff programme documents where combustion and fire-safety research reached daily life — the same detector problem this dashboard analyses, carried into homes and fire stations:</p>
         <ul class="refs-list">
