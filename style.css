@@ -30,7 +30,7 @@ a{color:var(--sky)}
 .brand-name{font-family:var(--font-head);font-weight:700;font-size:18px;letter-spacing:.01em}
 .brand-sub{color:var(--muted);font-size:12px}
 #nav{display:flex;flex-direction:column;gap:4px}
-#nav button{background:transparent;border:1px solid transparent;color:var(--text);text-align:left;
+#nav button{background:transparent;border:1px solid transparent;color:var(--text);text-align:left;white-space:nowrap;
   padding:9px 12px;border-radius:9px;font-size:15px;cursor:pointer;font-family:var(--font-body)}
 #nav button:hover{background:var(--panel2)}
 #nav button.active{background:var(--panel2);border-color:rgba(125,211,252,.28);font-weight:600;

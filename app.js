@@ -54,7 +54,7 @@ function rowTable(rows, limit = 8) {
     `<tr><td>${r.ref}</td><td>${r.acc}</td><td>${r.o2 ? fmt(mid(r.o2)) + '%' : 'not recorded'}</td>` +
     `<td>${r.p ? fmt(mid(r.p)) : '—'}</td><td>${r.flow !== null ? r.flow : '—'}</td>` +
     `<td>${r.out || 'no outcome recorded'}</td></tr>`).join('');
-  return `<table><tr><th>Test row</th><th>Investigation (PSI)</th><th>O₂</th><th>Pressure (psia)</th><th>Flow (cm/s)</th><th>Recorded outcome</th></tr>${trs}</table>` +
+  return `<div class="scroll-table"><table><tr><th>Test row</th><th>Investigation (PSI)</th><th>O₂</th><th>Pressure (psia)</th><th>Flow (cm/s)</th><th>Recorded outcome</th></tr>${trs}</table></div>` +
     (rows.length > limit ? `<div class="chart-note">Showing ${limit} of ${rows.length} matched rows — all from the NASA PSI backbone.</div>` : '');
 }
 function cabinCheck(mat, o2, p, flow) {
@@ -153,6 +153,10 @@ function screenStatus(mat, preset) {
 }
 function runScreener() {
   const lines = $('#sc-input').value.split('\n').map(s => s.trim()).filter(Boolean);
+  if (!lines.length) {
+    $('#sc-result').innerHTML = '<div class="empty-note">Nothing to screen — paste one material per line above (or use the pre-filled examples), then press “Screen this inventory”.</div>';
+    return;
+  }
   const gaps = [];
   let html = '<table><tr><th>Material (as typed → matched)</th>' + PRESETS.map(p => `<th>${p.name}<br>${p.o2}% O₂ · ${p.p} psia</th>`).join('') + '</tr>';
   lines.forEach(line => {
@@ -215,7 +219,7 @@ function runSuppression() {
   }
   const m = supMatch(fuel, o2, p);
   if (!m.length) {
-    box.innerHTML = `<div class="verdict v-grey"><h3>⬜ NO MATCHED TEST ROWS</h3><p>No FLEX test with ${fuel} ran within ±3 O₂ points and ±5 psia of ${o2}% / ${p} psia. No recommendation is made — widen the conditions toward the tested envelope (O₂ 12–34%, 10.2–44.9 psia) to find real evidence.</p></div>`;
+    box.innerHTML = `<div class="verdict v-grey"><h3>⬜ NO MATCHED TEST ROWS</h3><p>No FLEX test with ${fuel} ran within ±3 O₂ points and ±5 psia of ${o2}% / ${p} psia. No recommendation is made — widen the conditions toward the tested envelope (O₂ 12–34%, 10.18–44.86 psia) to find real evidence.</p></div>`;
     return;
   }
   const ext = m.filter(r => r.out === 'Extinction').length;
@@ -241,10 +245,12 @@ function renderSupChart() {
 /* ---------- Safe Predictor ---------- */
 function predict(fuel, o2, p) {
   const env = MODEL.envelope;
+  /* gate on the bounds as displayed (2 dp): the displayed maximum must itself be accepted */
+  const pLo = Math.round(env.pressure_psi[0] * 100) / 100, pHi = Math.round(env.pressure_psi[1] * 100) / 100;
   if (!isFinite(o2) || !isFinite(p)) return { abstain: 'a numeric O₂ and pressure are required' };
   if (!env.fuels.includes(fuel)) return { abstain: `fuel “${fuel}” was never in the training tests (only ${env.fuels.join(' and ')})` };
   if (o2 < env.o2[0] || o2 > env.o2[1]) return { abstain: `O₂ ${o2}% is outside the tested range ${env.o2[0]}–${env.o2[1]}%` };
-  if (p < env.pressure_psi[0] || p > env.pressure_psi[1]) return { abstain: `pressure ${p} psia is outside the tested range ${fmt(env.pressure_psi[0])}–${fmt(env.pressure_psi[1])} psia` };
+  if (p < pLo || p > pHi) return { abstain: `pressure ${p} psia is outside the tested range ${fmt(pLo, 2)}–${fmt(pHi, 2)} psia` };
   const vals = { fuel: fuel === 'Heptane' ? 1 : 0, o2, pressure: p };
   const names = { fuel: 'fuel is Heptane', o2: 'O₂', pressure: 'pressure' };
   let node = MODEL.tree, path = [];
@@ -286,6 +292,9 @@ function renderValidation() {
 
 /* ---------- Investigation cards ---------- */
 let cardFamily = 'all';
+/* programme acronyms the cards are known by — BASS, FLEX and Saffire appear
+   in the app's own prose but in no card name, so index them explicitly */
+const CARD_ALIASES = { 'PSI-25': 'BASS', 'PSI-26': 'BASS', 'PSI-68': 'FLEX', 'PSI-69': 'FLEX', 'PSI-98': 'Saffire', 'PSI-99': 'Saffire', 'PSI-100': 'Saffire' };
 function outcomeTxt(c) {
   if (!c.outcomes) return 'No outcome column in PSI table';
   return Object.entries(c.outcomes).map(([k, n]) => `${k} × ${n}`).join(' · ');
@@ -293,7 +302,7 @@ function outcomeTxt(c) {
 function renderCards() {
   const q = $('#card-search').value.trim().toLowerCase();
   const list = INV.filter(c => (cardFamily === 'all' || c.family === cardFamily) &&
-    (!q || (c.name + ' ' + c.accession + ' ' + c.materials.join(' ')).toLowerCase().includes(q)));
+    (!q || (c.name + ' ' + c.accession + ' ' + c.materials.join(' ') + ' ' + (CARD_ALIASES[c.accession] || '')).toLowerCase().includes(q)));
   $('#cards-grid').innerHTML = list.map(c => `<div class="inv-card">
     <div class="inv-top"><span class="acc-badge">${c.accession}</span><span class="fam">${c.family_label}</span></div>
     <h3>${c.name}</h3>
@@ -350,7 +359,7 @@ async function init() {
   fill('bass-mats', SUP.bass.materials.join(', '));
   fill('bass-o2', SUP.bass.o2_range ? SUP.bass.o2_range[0] + '–' + SUP.bass.o2_range[1] + '%' : 'not recorded');
   fill('env-o2', MODEL.envelope.o2[0] + '–' + MODEL.envelope.o2[1] + '%');
-  fill('env-p', fmt(MODEL.envelope.pressure_psi[0]) + '–' + fmt(MODEL.envelope.pressure_psi[1]));
+  fill('env-p', fmt(MODEL.envelope.pressure_psi[0], 2) + '–' + fmt(MODEL.envelope.pressure_psi[1], 2));
   fill('model-n', MODEL.n_rows);
   fill('holdout-n', MODEL.validation.n_holdout);
   fill('holdout-acc', (MODEL.validation.holdout_accuracy * 100).toFixed(1) + '%');
