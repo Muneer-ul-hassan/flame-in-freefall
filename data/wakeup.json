@@ -1,0 +1,279 @@
+{
+ "tests": [
+  {
+   "test_no": 58,
+   "material": "Teflon",
+   "obsc": null,
+   "scat": 54,
+   "ion": 67
+  },
+  {
+   "test_no": 59,
+   "material": "Silicone",
+   "obsc": 63,
+   "scat": 63,
+   "ion": 65
+  },
+  {
+   "test_no": 60,
+   "material": "Silicone",
+   "obsc": 62,
+   "scat": 63,
+   "ion": 65
+  },
+  {
+   "test_no": 61,
+   "material": "Kapton",
+   "obsc": null,
+   "scat": null,
+   "ion": 72
+  },
+  {
+   "test_no": 62,
+   "material": "Kapton",
+   "obsc": 55,
+   "scat": 55,
+   "ion": 55
+  },
+  {
+   "test_no": 63,
+   "material": "Pyrell",
+   "obsc": 51,
+   "scat": 51,
+   "ion": 53
+  },
+  {
+   "test_no": 64,
+   "material": "Pyrell",
+   "obsc": 64,
+   "scat": 65,
+   "ion": 66
+  },
+  {
+   "test_no": 65,
+   "material": "Silicone",
+   "obsc": 57,
+   "scat": 58,
+   "ion": 60
+  },
+  {
+   "test_no": 66,
+   "material": "Silicone",
+   "obsc": 62,
+   "scat": 63,
+   "ion": 65
+  },
+  {
+   "test_no": 73,
+   "material": "Kapton",
+   "obsc": null,
+   "scat": null,
+   "ion": null
+  },
+  {
+   "test_no": 75,
+   "material": "Kapton",
+   "obsc": null,
+   "scat": 520,
+   "ion": 48
+  },
+  {
+   "test_no": 76,
+   "material": "Pyrell",
+   "obsc": 66,
+   "scat": 67,
+   "ion": 69
+  },
+  {
+   "test_no": 77,
+   "material": "Kapton",
+   "obsc": null,
+   "scat": 587,
+   "ion": 63
+  },
+  {
+   "test_no": 78,
+   "material": "Lampwick",
+   "obsc": 59,
+   "scat": 56,
+   "ion": 59
+  },
+  {
+   "test_no": 79,
+   "material": "Teflon",
+   "obsc": null,
+   "scat": 26,
+   "ion": 28
+  },
+  {
+   "test_no": 80,
+   "material": "Lampwick",
+   "obsc": 58,
+   "scat": 57,
+   "ion": 58
+  },
+  {
+   "test_no": 81,
+   "material": "Teflon",
+   "obsc": null,
+   "scat": 56,
+   "ion": 57
+  },
+  {
+   "test_no": 82,
+   "material": "Lampwick",
+   "obsc": 60,
+   "scat": 58,
+   "ion": 60
+  },
+  {
+   "test_no": 84,
+   "material": "Pyrell",
+   "obsc": 63,
+   "scat": 63,
+   "ion": 65
+  },
+  {
+   "test_no": 85,
+   "material": "Kapton",
+   "obsc": null,
+   "scat": 59,
+   "ion": 61
+  },
+  {
+   "test_no": 86,
+   "material": "Silicone",
+   "obsc": 65,
+   "scat": 66,
+   "ion": 67
+  },
+  {
+   "test_no": 90,
+   "material": "Kapton",
+   "obsc": null,
+   "scat": null,
+   "ion": null
+  },
+  {
+   "test_no": 93,
+   "material": "Kapton",
+   "obsc": null,
+   "scat": 62,
+   "ion": 67
+  },
+  {
+   "test_no": 94,
+   "material": "Kapton",
+   "obsc": null,
+   "scat": 57,
+   "ion": 60
+  },
+  {
+   "test_no": 95,
+   "material": "Pyrell",
+   "obsc": null,
+   "scat": 161,
+   "ion": 166
+  },
+  {
+   "test_no": 96,
+   "material": "Lampwick",
+   "obsc": 135,
+   "scat": 120,
+   "ion": 122
+  },
+  {
+   "test_no": 97,
+   "material": "Pyrell",
+   "obsc": 147,
+   "scat": 129,
+   "ion": 131
+  },
+  {
+   "test_no": 98,
+   "material": "Lampwick",
+   "obsc": 122,
+   "scat": 121,
+   "ion": 123
+  },
+  {
+   "test_no": 99,
+   "material": "Silicone",
+   "obsc": 126,
+   "scat": 127,
+   "ion": 128
+  },
+  {
+   "test_no": 100,
+   "material": "Teflon",
+   "obsc": null,
+   "scat": 119,
+   "ion": 120
+  },
+  {
+   "test_no": 101,
+   "material": "Kapton",
+   "obsc": null,
+   "scat": 120,
+   "ion": 120
+  },
+  {
+   "test_no": 102,
+   "material": "Kapton",
+   "obsc": null,
+   "scat": 135,
+   "ion": 137
+  },
+  {
+   "test_no": 103,
+   "material": "Silicone",
+   "obsc": 185,
+   "scat": 185,
+   "ion": 187
+  },
+  {
+   "test_no": 105,
+   "material": "Teflon",
+   "obsc": null,
+   "scat": 196,
+   "ion": null
+  },
+  {
+   "test_no": 106,
+   "material": "Lampwick",
+   "obsc": 184,
+   "scat": 132,
+   "ion": 184
+  },
+  {
+   "test_no": 107,
+   "material": "Pyrell",
+   "obsc": 180,
+   "scat": 178,
+   "ion": 180
+  },
+  {
+   "test_no": 108,
+   "material": "Kapton",
+   "obsc": null,
+   "scat": 118,
+   "ion": 119
+  }
+ ],
+ "thresholds": {
+  "obsc_V": -0.05,
+  "scatter_V": -0.5,
+  "ion_V": 0.05
+ },
+ "window_start_s": 200,
+ "excluded_sts_tests": [
+  67,
+  68,
+  69,
+  70,
+  87,
+  89,
+  91,
+  92
+ ]
+}

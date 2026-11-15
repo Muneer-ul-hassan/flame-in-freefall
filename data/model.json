@@ -1,0 +1,254 @@
+{
+ "trained_on": "PSI-69 FLEX (Flame Extinguishment Experiment), NASA PSI backbone",
+ "doi": "10.60555/mbq8-0451",
+ "features": [
+  "fuel (Methanol/Heptane)",
+  "o2_pct",
+  "pressure_psi"
+ ],
+ "target": "Test end = Extinction vs No extinction (Disruption or Completion)",
+ "n_rows": 273,
+ "class_counts": {
+  "Extinction": 185,
+  "No extinction": 88
+ },
+ "envelope": {
+  "fuels": [
+   "Methanol",
+   "Heptane"
+  ],
+  "o2": [
+   12.0,
+   34.0
+  ],
+  "pressure_psi": [
+   10.17695093677064,
+   44.85941189096373
+  ]
+ },
+ "validation": {
+  "method": "stratified 80/20 holdout, seed 42, tree max_depth=4, min_samples_leaf=10",
+  "n_train": 218,
+  "n_holdout": 55,
+  "holdout_accuracy": 0.745,
+  "majority_baseline_accuracy": 0.673,
+  "gate_abstained_on_holdout": 0,
+  "accuracy_on_answered": 0.745,
+  "confusion": {
+   "tp_extinction": 29,
+   "fp_extinction": 6,
+   "tn": 12,
+   "fn": 8
+  }
+ },
+ "psi117_crosscheck": "NOT POSSIBLE \u2014 PSI-117 tidy table columns are ['source_file', 'fuel', 'pressure_atm', 'dext_cool', 'dext_hot', 'kb_mm2_s', 'value_type']: it has pressure and fuel but no oxygen column and no extinction yes/no outcome (it records the droplet diameter AT extinction for cases that extinguished). Features/target do not align with the FLEX model, so no honest cross-validation exists.",
+ "tree": {
+  "n": 273,
+  "counts": [
+   88,
+   185
+  ],
+  "prediction": "Extinction",
+  "proba_extinction": 0.678,
+  "feature": "o2",
+  "threshold": 23.5,
+  "left": {
+   "n": 224,
+   "counts": [
+    48,
+    176
+   ],
+   "prediction": "Extinction",
+   "proba_extinction": 0.786,
+   "feature": "fuel",
+   "threshold": 0.5,
+   "left": {
+    "n": 135,
+    "counts": [
+     15,
+     120
+    ],
+    "prediction": "Extinction",
+    "proba_extinction": 0.889,
+    "feature": "o2",
+    "threshold": 20.5,
+    "left": {
+     "n": 92,
+     "counts": [
+      2,
+      90
+     ],
+     "prediction": "Extinction",
+     "proba_extinction": 0.978,
+     "feature": "o2",
+     "threshold": 17.5,
+     "left": {
+      "n": 54,
+      "counts": [
+       0,
+       54
+      ],
+      "prediction": "Extinction",
+      "proba_extinction": 1.0
+     },
+     "right": {
+      "n": 38,
+      "counts": [
+       2,
+       36
+      ],
+      "prediction": "Extinction",
+      "proba_extinction": 0.947
+     }
+    },
+    "right": {
+     "n": 43,
+     "counts": [
+      13,
+      30
+     ],
+     "prediction": "Extinction",
+     "proba_extinction": 0.698,
+     "feature": "pressure",
+     "threshold": 14.674,
+     "left": {
+      "n": 22,
+      "counts": [
+       9,
+       13
+      ],
+      "prediction": "Extinction",
+      "proba_extinction": 0.591
+     },
+     "right": {
+      "n": 21,
+      "counts": [
+       4,
+       17
+      ],
+      "prediction": "Extinction",
+      "proba_extinction": 0.81
+     }
+    }
+   },
+   "right": {
+    "n": 89,
+    "counts": [
+     33,
+     56
+    ],
+    "prediction": "Extinction",
+    "proba_extinction": 0.629,
+    "feature": "pressure",
+    "threshold": 14.578,
+    "left": {
+     "n": 25,
+     "counts": [
+      4,
+      21
+     ],
+     "prediction": "Extinction",
+     "proba_extinction": 0.84,
+     "feature": "o2",
+     "threshold": 19.0,
+     "left": {
+      "n": 10,
+      "counts": [
+       1,
+       9
+      ],
+      "prediction": "Extinction",
+      "proba_extinction": 0.9
+     },
+     "right": {
+      "n": 15,
+      "counts": [
+       3,
+       12
+      ],
+      "prediction": "Extinction",
+      "proba_extinction": 0.8
+     }
+    },
+    "right": {
+     "n": 64,
+     "counts": [
+      29,
+      35
+     ],
+     "prediction": "Extinction",
+     "proba_extinction": 0.547,
+     "feature": "o2",
+     "threshold": 18.5,
+     "left": {
+      "n": 32,
+      "counts": [
+       10,
+       22
+      ],
+      "prediction": "Extinction",
+      "proba_extinction": 0.688
+     },
+     "right": {
+      "n": 32,
+      "counts": [
+       19,
+       13
+      ],
+      "prediction": "No extinction",
+      "proba_extinction": 0.406
+     }
+    }
+   }
+  },
+  "right": {
+   "n": 49,
+   "counts": [
+    40,
+    9
+   ],
+   "prediction": "No extinction",
+   "proba_extinction": 0.184,
+   "feature": "o2",
+   "threshold": 24.5,
+   "left": {
+    "n": 19,
+    "counts": [
+     12,
+     7
+    ],
+    "prediction": "No extinction",
+    "proba_extinction": 0.368
+   },
+   "right": {
+    "n": 30,
+    "counts": [
+     28,
+     2
+    ],
+    "prediction": "No extinction",
+    "proba_extinction": 0.067,
+    "feature": "pressure",
+    "threshold": 10.454,
+    "left": {
+     "n": 20,
+     "counts": [
+      20,
+      0
+     ],
+     "prediction": "No extinction",
+     "proba_extinction": 0.0
+    },
+    "right": {
+     "n": 10,
+     "counts": [
+      8,
+      2
+     ],
+     "prediction": "No extinction",
+     "proba_extinction": 0.2
+    }
+   }
+  }
+ }
+}
