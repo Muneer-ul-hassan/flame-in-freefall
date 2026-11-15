@@ -332,7 +332,7 @@
     <!-- ============ FIRENEX: ASK FLAME ============ -->
     <section id="sec-ask" class="sec">
       <h1>Ask Flame</h1>
-      <p class="lede">Retrieval, not generation: every answer is quoted from NASA-derived records with its source, so it cannot hallucinate. If nothing matches, it abstains.</p>
+      
       <p class="lede">An evidence search over FIRENEX’s own NASA-derived data and its claims table. It is <strong>not</strong> a generative AI: it retrieves, cites and abstains. If nothing in the sources matches, it says so.</p>
       <form class="ask-form" id="ask-form"><input type="search" id="ask-q" placeholder="e.g. smoke detector Kapton, droplet extinction oxygen, Moon atmosphere" aria-label="Ask Flame"><button class="cta cta-primary" type="submit">Search evidence</button></form>
       <div class="ask-chips" id="ask-chips"></div>
@@ -828,7 +828,7 @@ Silicone</textarea>
           <li><a href="data/downloads/psi117_extinction_tidy.csv">psi117_extinction_tidy.csv</a> — PSI-117 tidy extinction table (93 rows; model/experiment flagged)</li>
           <li><a href="data/downloads/coverage-verdicts.json">coverage-verdicts.json</a> — per-material coverage verdicts from the backbone</li>
           <li><a href="data/downloads/psi-101_experimental table_same-r.csv">PSI-101 experimental table (SAME-R)</a> — the original PSI table, unmodified</li>
-          <li><a href="data/downloads/readme.md">Dataset release README</a> — sources, DOIs, method and caveats for every file above</li>
+          <li><a href="data/downloads/README.md">Dataset release README</a> — sources, DOIs, method and caveats for every file above</li>
         </ul>
         <p>The app's own JSON (backbone, detection, model, archive) lives in the project repository alongside the preparation scripts (<span class="path">prep_data.py</span>, <span class="path">prep_final.py</span>, <span class="path">train_model.py</span>) that compute every number from the PSI source files.</p>
       </div>
