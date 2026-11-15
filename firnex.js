@@ -180,12 +180,13 @@ function inspector(i, extra) {
 
   /* ---------------- Research Library ---------------- */
   let libSel = null;
-  function renderLib() {
+    const LIB_ALIASES = { 'PSI-25': 'BASS', 'PSI-26': 'BASS', 'PSI-68': 'FLEX', 'PSI-69': 'FLEX', 'PSI-98': 'Saffire', 'PSI-99': 'Saffire', 'PSI-100': 'Saffire' };
+function renderLib() {
     const q = $('#lib-q').value.trim().toLowerCase(), fam = $('#lib-fam').value, lo = $('#lib-o2lo').value, hi = $('#lib-o2hi').value, unrec = $('#lib-unrec').checked;
     const list = INV.filter(i => {
       const s = STATS[i.accession];
       if (fam && i.family_label !== fam) return false;
-      if (q && !(i.name + ' ' + i.accession + ' ' + (i.materials || []).join(' ') + ' ' + i.family_label).toLowerCase().includes(q)) return false;
+      if (q && !(i.name + ' ' + i.accession + ' ' + (i.materials || []).join(' ') + ' ' + i.family_label + ' ' + (LIB_ALIASES[i.accession] || '')).toLowerCase().includes(q)) return false;
       if (lo !== '' || hi !== '') { if (!s.o2r) return unrec; if (lo !== '' && s.o2r[1] < +lo) return false; if (hi !== '' && s.o2r[0] > +hi) return false; }
       return true;
     });
