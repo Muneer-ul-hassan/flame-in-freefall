@@ -1,3 +1,3 @@
-User-agent: *
+﻿User-agent: *
 Allow: /
-Sitemap: https://whimsical-custard-58b654.netlify.app/sitemap.xml
+Sitemap: https://firnex.netlify.app/sitemap.xml
