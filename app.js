@@ -1,5 +1,5 @@
 'use strict';
-/* Flame in Freefall — all logic runs client-side over the JSON files in data/.
+/* FIRNEX — all logic runs client-side over the JSON files in data/.
    Every number displayed is computed from those files at runtime. */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -14,7 +14,7 @@ function showSec(id) {
   $$('#nav button').forEach(b => b.classList.toggle('active', b.dataset.sec === id));
   if (location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
   const sec = $('#sec-' + id);
-  if (window.gsap && sec) {
+  if (window.gsap && sec && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     /* transform-only entrance: content is NEVER left invisible if a tween
        is interrupted — opacity stays 1 throughout (final-build hardening). */
     gsap.fromTo(sec.querySelectorAll('.card,.panel,.verdict,.inv-card'),
@@ -24,6 +24,12 @@ function showSec(id) {
 }
 $$('#nav button').forEach(b => b.addEventListener('click', () => showSec(b.dataset.sec)));
 $$('[data-goto]').forEach(b => b.addEventListener('click', () => showSec(b.dataset.goto)));
+document.querySelector('[data-judge-moon]')?.addEventListener('click', () => {
+  document.querySelector('#judge-moon-preset')?.click();
+});
+document.querySelector('[data-judge-replay]')?.addEventListener('click', () => {
+  document.querySelector('#replay-play')?.click();
+});
 
 /* ---------- generic fills ---------- */
 function fill(name, val) { $$('[data-fill="' + name + '"]').forEach(e => e.textContent = val); }
@@ -318,7 +324,7 @@ function renderCards() {
     <button class="goto cmp-btn" data-acc="${c.accession}">${compareSet.has(c.accession) ? '✓ In compare (click to remove)' : '+ Compare'}</button>
   </div>`).join('');
   $('#cards-empty').innerHTML = list.length ? '' : '<div class="empty-note">No investigation matches that search/filter.</div>';
-  if (window.gsap) gsap.fromTo('#cards-grid .inv-card', { y: 14 }, { y: 0, duration: .6, ease: 'power2.out', stagger: .03, overwrite: true, clearProps: 'all' });
+  if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) gsap.fromTo('#cards-grid .inv-card', { y: 14 }, { y: 0, duration: .6, ease: 'power2.out', stagger: .03, overwrite: true, clearProps: 'all' });
 }
 $$('#card-filters .preset').forEach(b => b.addEventListener('click', () => {
   $$('#card-filters .preset').forEach(x => x.classList.remove('active'));
@@ -380,6 +386,7 @@ async function init() {
   if (document.getElementById('sec-' + start)) showSec(start);
   if (params.has('tour')) startTour();
   if (params.has('selftest')) selfTest();
+  document.querySelectorAll('[data-chart-loading]').forEach(el => { el.hidden = true; });
 }
 function selfTest() {
   const out = [];
@@ -438,7 +445,7 @@ function renderFrontier() {
     `<th>${b}%${i === 2 ? '<br><span class="mx-mark">ISS 21%</span>' : ''}${i === 4 ? '<br><span class="mx-mark">Moon 34%</span>' : ''}${i === 6 ? '<br><span class="mx-mark">Suit 100%</span>' : ''}</th>`).join('') + '</tr>';
   F.families.forEach(f => {
     html += `<tr><td><b>${famLabel[f]}</b></td>` + F.counts[f].map(c =>
-      `<td class="mx-cell" style="background:rgba(56,189,248,${c ? 0.12 + 0.55 * c / max : 0})">${c || '—'}</td>`).join('') + '</tr>';
+      `<td class="mx-cell" style="background:rgba(255,122,47,${c ? 0.12 + 0.55 * c / max : 0})">${c || '—'}</td>`).join('') + '</tr>';
   });
   $('#frontier-matrix').innerHTML = html + '</table>';
   drawScatter();

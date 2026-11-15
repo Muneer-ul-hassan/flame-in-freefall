@@ -3,32 +3,68 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flame in Freefall — Spacecraft Fire-Safety Decisions from Real NASA Test Data</title>
-<meta name="description" content="A dashboard that turns NASA PSI combustion data into fire-safety decisions for spacecraft cabins: Prevention, Detection, Suppression. Real test rows only — no guesses.">
-<meta property="og:title" content="Flame in Freefall — Tested-or-Silent">
-<meta property="og:description" content="Cabin fire-safety decisions from 2,012 real NASA PSI test records, 63,397 analysed ISS detector samples and 9.4M smoke-modelling values. Every answer comes from a real NASA test row — or the tool says NO TEST DATA.">
+<title>FIRNEX — Evidence-Grounded Space Fire Research (Team IGNIX)</title>
+<meta name="description" content="FIRNEX by team IGNIX — explore NASA PSI combustion research, compare experiments and see evidence gaps. A dashboard that turns NASA PSI combustion data into fire-safety decisions for spacecraft cabins: Prevention, Detection, Suppression. Real test rows only — no guesses.">
+<meta name="firnex-site-url" content="https://whimsical-custard-58b654.netlify.app/">
+<meta property="og:title" content="FIRNEX — Evidence-Grounded Space Fire Research (Team IGNIX)">
+<meta property="og:description" content="FIRNEX by team IGNIX — explore NASA PSI combustion research, compare experiments and see evidence gaps. A dashboard that turns NASA PSI combustion data into fire-safety decisions for spacecraft cabins: Prevention, Detection, Suppression. Real test rows only — no guesses.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://muneer-ul-hassan.github.io/flame-in-freefall/">
-<meta property="og:image" content="https://muneer-ul-hassan.github.io/flame-in-freefall/assets/saffire-pmma.jpg">
+<meta property="og:url" content="https://whimsical-custard-58b654.netlify.app/">
+<meta property="og:image" content="https://whimsical-custard-58b654.netlify.app/assets/saffire-pmma.jpg">
+<meta name="twitter:image" content="https://whimsical-custard-58b654.netlify.app/assets/saffire-pmma.jpg">
+<meta property="og:image:alt" content="Plexiglass burning inside NASA's Saffire-IV spacecraft fire experiment">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<meta name="twitter:title" content="FIRNEX — Evidence-Grounded Space Fire Research (Team IGNIX)">
+<meta name="twitter:description" content="FIRNEX by team IGNIX — explore NASA PSI combustion research, compare experiments and see evidence gaps. A dashboard that turns NASA PSI combustion data into fire-safety decisions for spacecraft cabins: Prevention, Detection, Suppression. Real test rows only — no guesses.">
+<meta name="twitter:image:alt" content="Plexiglass burning inside NASA's Saffire-IV spacecraft fire experiment">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23ff7a2f' d='M34 3c3 15-8 17-5 29 2 7 9 7 10 1 1-4-1-7-3-10 13 7 20 18 15 29-4 9-13 12-23 9C13 58 7 49 10 38c2-8 8-13 15-20-1 10 4 13 8 15-3-13 1-22 1-30z'/%3E%3C/svg%3E">
+<link rel="canonical" href="https://whimsical-custard-58b654.netlify.app/">
 <link rel="stylesheet" href="style.css">
-<script src="vendor/gsap.min.js"></script>
+<link rel="stylesheet" href="firnex.css">
+<link rel="preload" href="assets/fonts/syne-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<script>
+  const FIRNEX_SITE_URL = document.querySelector('meta[name="firnex-site-url"]').content.replace(/\/$/, '');
+  document.querySelector('link[rel="canonical"]').href = FIRNEX_SITE_URL + '/';
+  document.querySelector('meta[property="og:url"]').content = FIRNEX_SITE_URL + '/';
+  const schema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {"@type":"WebSite","name":"FIRNEX","url":FIRNEX_SITE_URL + "/","description":"FIRNEX — Evidence-Grounded Space Fire Research (Team IGNIX)."},
+      {"@type":"Dataset","name":"FIRNEX NASA PSI combustion research dataset","description":"A research explorer over 2,012 NASA PSI combustion test records from 19 investigations, with SAME-R detector telemetry and PSI-115 smoke-modelling data. PSI-117 is identified as model/proceedings data.","url":FIRNEX_SITE_URL + "/","creator":{"@type":"Organization","name":"Team IGNIX"}}
+    ]
+  };
+  const schemaTag = document.createElement('script');
+  schemaTag.type = 'application/ld+json';
+  schemaTag.textContent = JSON.stringify(schema);
+  document.head.append(schemaTag);
+  const shareImage = FIRNEX_SITE_URL + '/assets/saffire-pmma.jpg';
+  for (const key of ['og:image', 'twitter:image']) {
+    let tag = document.querySelector('meta[property="' + key + '"],meta[name="' + key + '"]');
+    if (!tag) { tag = document.createElement('meta'); tag.setAttribute(key.startsWith('og:') ? 'property' : 'name', key); document.head.append(tag); }
+    tag.content = shareImage;
+  }
+</script>
+<script src="vendor/gsap.min.js" defer></script>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
 <div class="layout">
   <aside class="sidebar">
     <div class="brand">
-      <div class="brand-mark">🔥</div>
+      <div class="brand-mark" aria-hidden="true"><svg width="34" height="34" viewBox="0 0 34 34" role="img" aria-label="FIRNEX flame mark"><defs><radialGradient id="bm" cx="50%" cy="45%" r="55%"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#ffc48a"/><stop offset=".7" stop-color="#c2410c"/><stop offset="1" stop-color="#1d2129"/></radialGradient></defs><circle cx="17" cy="17" r="10" fill="url(#bm)"/><ellipse cx="17" cy="17" rx="16" ry="6" fill="none" stroke="#9a9ca5" stroke-opacity=".6" transform="rotate(-25 17 17)"/></svg></div>
       <div>
-        <div class="brand-name">Flame in Freefall</div>
-        <div class="brand-sub">NASA Space Apps 2026</div>
+        <div class="brand-name">FIRNEX</div>
+        <div class="brand-sub">IGNIX // NASA SPACE APPS 2026</div>
       </div>
     </div>
     <nav id="nav">
       <button data-sec="home" class="active">Home</button>
+      <div class="nav-group">DISCOVER</div>
+      <button data-sec="missions">Mission Discovery</button>
+      <button data-sec="library">Research Library</button>
+      <button data-sec="compare">Compare Experiments</button>
+      <button data-sec="gaps">Evidence Gap Radar</button>
+      <button data-sec="ask">Ask Flame</button>
       <div class="nav-group">PREVENTION</div>
       <button data-sec="cabin">Cabin Check</button>
       <button data-sec="screener">Inventory Screener</button>
@@ -47,10 +83,41 @@
     <div class="side-note">Every number on this site comes from a real NASA PSI test record. Where NASA never tested, this tool says so — it never guesses.</div>
   </aside>
 
-  <main>
+  <main id="main-content" tabindex="-1">
     <!-- ============ HOME ============ -->
     <section id="sec-home" class="sec active">
-      <h1>Understanding Fire Safety <span class="accent">Beyond Earth.</span></h1>
+      <div class="hero" id="hero">
+        <canvas id="hero-canvas" role="img" aria-label="Conceptual animated illustration of a microgravity flame"></canvas>
+        <div class="hero-copy">
+          <div class="hero-kicker">Team IGNIX · NASA Space Apps 2026 · Flame in Freefall</div>
+          <h1>FIRNEX</h1>
+          <p class="hero-tag">Explore the science. Understand the evidence. Discover the gaps.</p>
+          <p class="hero-sub">An evidence-grounded research explorer over <span data-fx="rows">2,012</span> real NASA PSI combustion test records from <span data-fx="invs">19</span> investigations. Where NASA never tested, FIRNEX says so — it never guesses.</p>
+          <div class="cta-row">
+            <button class="cta cta-primary" data-goto="library">Explore Research</button>
+            <button class="cta cta-ghost" data-goto="ask">Ask Flame</button>
+            <button class="cta cta-ghost" data-goto="missions">Select Mission</button>
+          </div>
+        </div>
+        <div class="hero-note">Conceptual illustration of a microgravity flame — not a NASA image</div>
+      </div>
+      <div class="judge-strip" aria-label="Judge in 60 seconds">
+        <div class="judge-heading">Judge in 60 seconds</div>
+        <a href="#cabin" data-goto="cabin" data-judge-moon>Cabin Check · Moon preset <span aria-hidden="true">↗</span></a>
+        <a href="#detection" data-goto="detection" data-judge-replay>Detection Panel · replay <span aria-hidden="true">↗</span></a>
+        <a href="#gaps" data-goto="gaps">Evidence Gap Radar <span aria-hidden="true">↗</span></a>
+      </div>
+      <p class="home-limit-link"><a href="#gaps" data-goto="gaps">Read the limitations &amp; evidence boundaries →</a></p>
+      <div class="card wide limitation-summary" id="home-limitations">
+        <h3>Limitations — stated plainly</h3>
+        <ul class="refs-list">
+          <li>Only 546 of 2,012 records record an outcome; coverage is not the same as an outcome.</li>
+          <li>The Safe Predictor’s holdout accuracy is 0.745 versus a 0.673 majority baseline — a modest margin of about 4 tests in 55.</li>
+          <li>PSI-117 is model/proceedings data, not ISS flight-test rows.</li>
+        </ul>
+        <a href="#gaps" data-goto="gaps">Open the evidence boundaries in Evidence Gap Radar →</a>
+      </div>
+      <h2 class="home-h2">Understanding Fire Safety <span class="accent">Beyond Earth.</span></h2>
       <p class="lede">From the International Space Station to deep-space missions, fire safety in space requires evidence, not assumptions. This dashboard exists for the engineers choosing materials for 34%-oxygen Artemis-era lunar cabins — and the crews who will live inside them.</p>
 
       <div class="method-banner">
@@ -152,7 +219,7 @@
       </div>
 
       <figure class="img-fig">
-        <img src="assets/saffire-pmma.jpg" alt="Plexiglass burning inside NASA's Saffire-IV spacecraft fire experiment" loading="lazy">
+        <img src="assets/saffire-pmma.jpg" alt="Plexiglass burning inside NASA's Saffire-IV spacecraft fire experiment" loading="lazy" width="640" height="305">
         <figcaption>Plexiglass burning inside NASA's <strong>Saffire-IV</strong> spacecraft fire experiment — the Saffire series set the largest fires ever deliberately burned in space (NASA), aboard uncrewed Cygnus vehicles so materials like the ones in this dashboard could be watched at full scale. Photo: NASA / JSC (<a href="https://images.nasa.gov/details/jsc2023e046631" target="_blank" rel="noopener">jsc2023e046631</a>), public domain.</figcaption>
       </figure>
 
@@ -189,15 +256,87 @@
         </div>
       </div>
       <figure class="img-fig">
-        <img src="assets/saffire-flame.jpg" alt="A fabric sample burning inside NASA's Saffire-IV spacecraft fire experiment" loading="lazy">
+        <img src="assets/saffire-flame.jpg" alt="A fabric sample burning inside NASA's Saffire-IV spacecraft fire experiment" loading="lazy" width="1280" height="1037">
         <figcaption>A fabric sample burning inside <strong>Saffire-IV</strong> — the glowing front crossing a composite fabric of the kind used for astronaut clothing and cargo bags. Experiments like this are why any test data exists at all. Photo: NASA / JSC (jsc2023e046375), public domain.</figcaption>
       </figure>
       <figure class="img-fig">
-        <img src="assets/candle-compare.jpg" alt="The same candle burning on Earth (tall, teardrop-shaped flame) and in microgravity (round, blue, dome-shaped flame)" loading="lazy">
+        <img src="assets/candle-compare.jpg" alt="The same candle burning on Earth (tall, teardrop-shaped flame) and in microgravity (round, blue, dome-shaped flame)" loading="lazy" width="1280" height="1024">
         <figcaption>The same candle, on Earth (left) and in microgravity (right): with no buoyancy to pull it upward, the flame is round, blue and dome-shaped. Photo: NASA Glenn Research Center (GRC-1998-C-00485), public domain.</figcaption>
       </figure>
       <p class="foot-note">Built for the NASA Space Apps 2026 challenge <em>Flame in Freefall</em>. Data: NASA Physical Science Informatics (PSI). Method and full references in the <a href="#refs" data-goto="refs">References &amp; Method</a> section.</p>
       <p class="foot-note verify-line">Every number on this page was recomputed from the source files in two independent audits. The sources and method behind every figure are documented in <a href="#refs" data-goto="refs">References &amp; Method</a>.</p>
+    </section>
+
+        <!-- ============ FIRNEX: MISSION DISCOVERY ============ -->
+    <section id="sec-missions" class="sec">
+      <h1>Mission Discovery</h1>
+      <p class="lede">Pick a mission type. FIRNEX reveals the NASA investigations in the PSI data that bear on it — and whether their recorded test conditions actually overlap the mission atmosphere.</p>
+      <div class="fx-legend" aria-label="Evidence classes"><span class="ev ev-MEASURED">MEASURED</span><span class="ev ev-MODELLED">MODELLED</span><span class="ev ev-REPORTED">REPORTED</span><span class="ev ev-INFERRED">INFERRED</span><span class="ev ev-UNKNOWN">UNKNOWN</span></div>
+      <div class="mission-tabs" role="group" aria-label="Mission type" id="mission-tabs"></div>
+      <div class="fx-ctrls">
+        <label>O₂ (%)<input type="number" id="ms-o2" min="0" max="100" step="any" placeholder="not defined"></label>
+        <label>Pressure (psia)<input type="number" id="ms-p" min="0" max="100" step="any" placeholder="not defined"></label>
+        <span class="mono" style="font-size:12px;color:var(--muted)" id="ms-src"></span>
+      </div>
+      <div class="fx-grid">
+        <div><div class="const-wrap"><svg id="constellation" class="const-svg" viewBox="0 0 700 560" role="group" aria-label="Research constellation"></svg></div>
+          <div class="key"><span><i style="background:#ff7a2f"></i>O₂ and pressure ranges overlap</span><span><i style="background:#5b7cfa"></i>one range overlaps</span><span><i style="background:#e5484d"></i>recorded range does not reach it</span><span><i style="background:transparent;border:1px dashed #9a9ca5"></i>conditions not recorded</span><span>Inner orbit = direct, outer = indirect</span></div>
+          <div class="fx-note" id="ms-note"></div></div>
+        <aside class="fx-insp" id="ms-insp" aria-live="polite"><p class="mono" style="color:var(--muted)">Select a node to open the investigation.</p></aside>
+      </div>
+    </section>
+
+    <!-- ============ FIRNEX: RESEARCH LIBRARY ============ -->
+    <section id="sec-library" class="sec">
+      <h1>Research Library</h1>
+      <p class="lede">All <span data-fx="invs">19</span> NASA PSI combustion investigations in the data, filterable by what was actually recorded. Blank means “not recorded”, never zero.</p>
+      <div class="fx-legend" aria-label="Evidence classes"><span class="ev ev-MEASURED">MEASURED</span><span class="ev ev-MODELLED">MODELLED</span><span class="ev ev-REPORTED">REPORTED</span><span class="ev ev-INFERRED">INFERRED</span><span class="ev ev-UNKNOWN">UNKNOWN</span></div>
+      <div class="fx-ctrls">
+        <label>Search<input type="search" id="lib-q" placeholder="name, accession, fuel…" aria-label="Search investigations"></label>
+        <label>Family<select id="lib-fam"></select></label>
+        <label>O₂ ≥ (%)<input type="number" id="lib-o2lo" min="0" max="100" step="any"></label>
+        <label>O₂ ≤ (%)<input type="number" id="lib-o2hi" min="0" max="100" step="any"></label>
+        <label style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="lib-unrec" checked style="min-width:0"> include O₂ not recorded</label>
+        <span class="mono" id="lib-count" style="font-size:12px;color:var(--muted)"></span>
+      </div>
+      <div class="fx-note">Gravity: the PSI tables used here have <strong>no gravity field</strong> and no partial-gravity (lunar/Mars g) data, so there is no gravity filter.</div>
+      <div class="fx-grid">
+        <div class="fx-list" id="lib-list"></div>
+        <aside class="fx-insp" id="lib-insp" aria-live="polite"><p class="mono" style="color:var(--muted)">Select an investigation.</p></aside>
+      </div>
+    </section>
+
+    <!-- ============ FIRNEX: COMPARE ============ -->
+    <section id="sec-compare" class="sec">
+      <h1>Compare Experiments</h1>
+      <p class="lede">Pick 2–3 investigations. Only fields that were actually recorded are compared; where studies cannot be compared fairly, FIRNEX says why.</p>
+      <div class="fx-ctrls"><fieldset style="border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:0"><legend class="mono" style="font-size:11px;color:var(--muted)">CHOOSE UP TO 3</legend><div id="cmp-pick" style="display:flex;flex-wrap:wrap;gap:6px 16px"></div></fieldset></div>
+      <div id="cmp-out"></div>
+    </section>
+
+    <!-- ============ FIRNEX: GAP RADAR ============ -->
+    <section id="sec-gaps" class="sec">
+      <h1>Evidence Gap Radar</h1>
+      <p class="lede">Where the PSI test records cluster — and where they do not. Counts are numbers of recorded test rows, not safety scores. An empty cell means “no rows in this data”, not “safe” or “unsafe”.</p>
+      <div class="fx-legend" aria-label="Evidence classes"><span class="ev ev-MEASURED">MEASURED</span><span class="ev ev-MODELLED">MODELLED</span><span class="ev ev-REPORTED">REPORTED</span><span class="ev ev-INFERRED">INFERRED</span><span class="ev ev-UNKNOWN">UNKNOWN</span></div>
+      <div class="fx-ctrls"><label>Axis<select id="gap-axis"><option value="o2">Oxygen concentration (%)</option><option value="p">Pressure (psia)</option></select></label></div>
+      <div class="tbl-wrap"><table class="fx-table radar" id="gap-table"></table></div>
+      <div id="gap-detail" aria-live="polite" class="fx-note">Select a cell to see which investigations contribute.</div>
+      <h2>Evidence-to-Decision cards</h2>
+      <p class="lede" style="font-size:15px">Traceable evidence summaries — not safety recommendations.</p>
+      <div class="ev-cards" id="ev-cards"></div>
+      <h2 id="limitations">What the project can and cannot say</h2>
+      <div class="tbl-wrap"><table class="fx-table" id="gap-classes"></table></div>
+    </section>
+
+    <!-- ============ FIRNEX: ASK FLAME ============ -->
+    <section id="sec-ask" class="sec">
+      <h1>Ask Flame</h1>
+      <p class="lede">Retrieval, not generation: every answer is quoted from NASA-derived records with its source, so it cannot hallucinate. If nothing matches, it abstains.</p>
+      <p class="lede">An evidence search over FIRNEX’s own NASA-derived data and its claims table. It is <strong>not</strong> a generative AI: it retrieves, cites and abstains. If nothing in the sources matches, it says so.</p>
+      <form class="ask-form" id="ask-form"><input type="search" id="ask-q" placeholder="e.g. smoke detector Kapton, droplet extinction oxygen, Moon atmosphere" aria-label="Ask Flame"><button class="cta cta-primary" type="submit">Search evidence</button></form>
+      <div class="ask-chips" id="ask-chips"></div>
+      <div id="ask-out" aria-live="polite"></div>
     </section>
 
     <!-- ============ CABIN CHECK ============ -->
@@ -213,8 +352,9 @@
         <div class="chart-note">Markers: ISS cabin 21% · Moon exploration 34% · Spacesuit 100%. Counts computed from the shipped backbone at load; design-range rows (a planned test matrix, not tests) are excluded.</div>
         <h3 style="margin-top:20px">Conditions actually tested — O₂ × pressure</h3>
         <p>Each dot is one real record with both values recorded (<span data-fill="scatter-n"></span> records), coloured by family. Note the honest gap behind this chart: only <span data-fill="o2flow-n"></span> backbone records record <em>both</em> O₂ and airflow, so the condition scatter uses O₂ × pressure, the pair the archive actually supports.</p>
-        <canvas id="scatter-canvas" width="980" height="380" class="chart-canvas"></canvas>
-        <div class="legend-row"><span><i class="dot" style="background:#2ECC71"></i>Solids</span><span><i class="dot" style="background:#38BDF8"></i>Droplets</span><span><i class="dot" style="background:#FFB020"></i>Gas flames</span><span><i class="dot" style="background:#c792ff"></i>Aerosols / smoke</span></div>
+        <p class="chart-loading" data-chart-loading="scatter-canvas" role="status">Loading chart data…</p>
+        <canvas id="scatter-canvas" role="img" aria-label="Scatter chart of recorded oxygen and pressure conditions by fuel family" width="980" height="380" class="chart-canvas"></canvas>
+        <div class="legend-row"><span><i class="dot" style="background:#2ECC71"></i>Solids</span><span><i class="dot" style="background:#38BDF8"></i>Droplets</span><span><i class="dot" style="background:#FFB020"></i>Gas flames</span><span><i class="dot" style="background:#a9bcff"></i>Aerosols / smoke</span></div>
       </div>
 
       <div class="panel">
@@ -235,7 +375,7 @@
         <div class="preset-row">
           <span>Presets:</span>
           <button class="preset" data-o2="21" data-p="14.7">ISS cabin · 21% O₂ · 14.7 psia</button>
-          <button class="preset" data-o2="34" data-p="8.2">Moon exploration · 34% O₂ · 8.2 psia</button>
+          <button class="preset" id="judge-moon-preset" data-o2="34" data-p="8.2">Moon exploration · 34% O₂ · 8.2 psia</button>
           <button class="preset" data-o2="100" data-p="4.3">Spacesuit · 100% O₂ · 4.3 psia</button>
         </div>
         <button id="cc-run" class="run">Check against test data</button>
@@ -279,7 +419,8 @@ Silicone</textarea>
         <h3>Watch the detector miss it — SAME-R telemetry replay</h3>
         <p>These are the <strong>actual recorded voltages</strong> from the ISS detector, one sample per second, replayed — not an animation of what we think happened. Kapton test 62 is the lesson: smoke is generated from elapsed 200 s, the obscuration beam barely moves… while the scatter and ion channels do. (This is a replay of raw SAME-R HKP telemetry; it makes no claim to be the first of its kind — it is simply the station's own recording, played back.)</p>
         <div class="preset-row" id="replay-tests"></div>
-        <canvas id="replay-canvas" width="980" height="330" class="chart-canvas"></canvas>
+        <p class="chart-loading" data-chart-loading="replay-canvas" role="status">Loading detector replay…</p>
+        <canvas id="replay-canvas" role="img" aria-label="Replay chart of recorded ISS smoke detector telemetry" width="980" height="330" class="chart-canvas"></canvas>
         <div class="replay-controls">
           <button class="goto" id="replay-play">▶ Play</button>
           <input type="range" id="replay-scrub" min="0" max="1000" value="0">
@@ -360,8 +501,8 @@ Silicone</textarea>
           <button class="preset" id="smoke-flow-toggle">Show flow direction</button>
         </div>
         <div class="smoke-pair">
-          <figure><img id="smoke-img-earth" src="assets/smoke-8cm-earth.png" alt="PSI-115 modelled smoke field, Earth gravity, 8 cm case"><figcaption>Earth gravity</figcaption></figure>
-          <figure><img id="smoke-img-ug" src="assets/smoke-8cm-ug.png" alt="PSI-115 modelled smoke field, microgravity, 8 cm case"><figcaption>Microgravity</figcaption></figure>
+          <figure><img id="smoke-img-earth" src="assets/smoke-8cm-earth.png" loading="lazy" alt="PSI-115 modelled smoke field, Earth gravity, 8 cm case" width="1056" height="264"><figcaption>Earth gravity</figcaption></figure>
+          <figure><img id="smoke-img-ug" src="assets/smoke-8cm-ug.png" loading="lazy" alt="PSI-115 modelled smoke field, microgravity, 8 cm case" width="1056" height="264"><figcaption>Microgravity</figcaption></figure>
         </div>
         <div class="src">Modelled smoke field from PSI-115 (CFD analysed data), not a photograph and not flight measurements. Single analysed field per case — shown as a still image; no time series exists in this dataset. Colour scale is shared between the two panels so the comparison is honest. The flow view overlays unit direction vectors from the same model's U/V fields (direction only, not speed).</div>
         <h3 style="margin-top:20px">How big is space smoke? — particle-size distribution</h3>
@@ -401,11 +542,11 @@ Silicone</textarea>
 
         <div class="flame-pair">
           <figure id="fl-fig-earth">
-            <canvas id="fl-earth" width="470" height="400" class="chart-canvas"></canvas>
+            <canvas id="fl-earth" role="img" aria-label="Simulated flame spread on Earth gravity" width="470" height="400" class="chart-canvas"></canvas>
             <figcaption>Earth — 1 g · buoyant plume: flame stretches, smoke rises and disperses</figcaption>
           </figure>
           <figure id="fl-fig-ug">
-            <canvas id="fl-ug" width="470" height="400" class="chart-canvas"></canvas>
+            <canvas id="fl-ug" role="img" aria-label="Simulated flame spread in microgravity" width="470" height="400" class="chart-canvas"></canvas>
             <figcaption>Microgravity — ISS · round flame: smoke accumulates around it</figcaption>
           </figure>
         </div>
@@ -560,7 +701,8 @@ Silicone</textarea>
         <h3>Where it answers, where it refuses — the decision map</h3>
         <p>The exported tree evaluated over the whole O₂ × pressure plane. Green shades = predicts Extinction (darker = more of the leaf's training tests extinguished); red = predicts No-extinction; <strong>grey = refuses</strong> (outside the tested envelope). Most of this map is refusal — and that is the honest picture.</p>
         <div class="preset-row"><button class="preset pmap-fuel active" data-fuel="Methanol">Methanol</button><button class="preset pmap-fuel" data-fuel="Heptane">Heptane</button></div>
-        <canvas id="pmap-canvas" width="980" height="400" class="chart-canvas"></canvas>
+        <p class="chart-loading" data-chart-loading="pmap-canvas" role="status">Loading predictor data…</p>
+        <canvas id="pmap-canvas" role="img" aria-label="Safe Predictor decision boundary map across oxygen and pressure conditions" width="980" height="400" class="chart-canvas"></canvas>
         <div class="chart-note">Axes: O₂ 10–36% (x) · pressure 8–47 psia (y). The envelope boundary is the training rows' own range: O₂ 12–34%, 10.18–44.86 psia.</div>
       </div>
 
@@ -665,7 +807,7 @@ Silicone</textarea>
 
       <div class="card wide">
         <h3>The method — Tested-or-Silent</h3>
-        <p><strong>Tested-or-Silent: every answer comes from a real NASA test row — or the tool says NO TEST DATA.</strong> Tested-or-Silent is the rule that every answer in Flame in Freefall is produced only from real NASA PSI test rows, matched at the conditions those rows were actually tested at. Where no test row matches — or a question falls outside the tested envelope — the tool returns NO TEST DATA, or the model abstains, instead of extrapolating, interpolating, or guessing.</p>
+        <p><strong>Tested-or-Silent: every answer comes from a real NASA test row — or the tool says NO TEST DATA.</strong> Tested-or-Silent is the rule that every answer in FIRNEX is produced only from real NASA PSI test rows, matched at the conditions those rows were actually tested at. Where no test row matches — or a question falls outside the tested envelope — the tool returns NO TEST DATA, or the model abstains, instead of extrapolating, interpolating, or guessing.</p>
       </div>
 
       <div class="card wide">
@@ -685,8 +827,8 @@ Silicone</textarea>
           <li><a href="data/downloads/psi115_summary.csv">psi115_summary.csv</a> — PSI-115 grid statistics (44 files)</li>
           <li><a href="data/downloads/psi117_extinction_tidy.csv">psi117_extinction_tidy.csv</a> — PSI-117 tidy extinction table (93 rows; model/experiment flagged)</li>
           <li><a href="data/downloads/coverage-verdicts.json">coverage-verdicts.json</a> — per-material coverage verdicts from the backbone</li>
-          <li><a href="data/downloads/PSI-101_Experimental table_SAME-R.csv">PSI-101 experimental table (SAME-R)</a> — the original PSI table, unmodified</li>
-          <li><a href="data/downloads/README.md">Dataset release README</a> — sources, DOIs, method and caveats for every file above</li>
+          <li><a href="data/downloads/psi-101_experimental table_same-r.csv">PSI-101 experimental table (SAME-R)</a> — the original PSI table, unmodified</li>
+          <li><a href="data/downloads/readme.md">Dataset release README</a> — sources, DOIs, method and caveats for every file above</li>
         </ul>
         <p>The app's own JSON (backbone, detection, model, archive) lives in the project repository alongside the preparation scripts (<span class="path">prep_data.py</span>, <span class="path">prep_final.py</span>, <span class="path">train_model.py</span>) that compute every number from the PSI source files.</p>
       </div>
@@ -748,7 +890,7 @@ Silicone</textarea>
 
       <div class="card wide">
         <h3>How this was built — and audited</h3>
-        <p>Flame in Freefall was built by one developer with AI assistance, under the same rule the site applies to NASA's data: <strong>Tested-or-Silent, applied to our own work.</strong> Before submission, the project ran a hostile self-audit: every displayed number was recomputed from the PSI source files (not from the app's own JSON), every external link was fetched, and every tool was pushed through edge cases — empty inputs, boundary values, impossible atmospheres. Three hostile self-audits found 26 defects and gaps between them (a truncated range, a miscounted sample total, NaN-input verdicts among them); every one was fixed and re-verified. The audits are documented in the <a href="BUILD-REPORT.md">project build report</a>; a two-page summary is in the <a href="evidence-brief-2026-11-14.md">Evidence Brief</a>. If a claim on this site cannot survive that treatment, it does not ship.</p>
+        <p>FIRNEX was built by Team IGNIX with AI assistance, under the same rule the site applies to NASA's data: <strong>Tested-or-Silent, applied to our own work.</strong> Before submission, the project ran a hostile self-audit: every displayed number was recomputed from the PSI source files (not from the app's own JSON), every external link was fetched, and every tool was pushed through edge cases — empty inputs, boundary values, impossible atmospheres. Three hostile self-audits found 26 defects and gaps between them (a truncated range, a miscounted sample total, NaN-input verdicts among them); every one was fixed and re-verified. The audits are documented in the <a href="docs/test-report.md">project test report</a>; a two-page summary is in the <a href="evidence-brief-2026-11-14.md">Evidence Brief</a>. If a claim on this site cannot survive that treatment, it does not ship.</p>
       </div>
 
       <div class="card wide">
@@ -757,7 +899,7 @@ Silicone</textarea>
       </div>
     </section>
 
-    <footer class="cite-strip">Data: NASA Physical Sciences Informatics (psi.nasa.gov) — 19 combustion investigations · SAME-R detector recordings (PSI-101) · PSI-115 (DOI 10.60555/q0v5-1v28) · PSI-117 (DOI 10.60555/gz0q-b577). Every number on this page traces to these sources — see <a href="#refs" data-goto="refs">References</a>.</footer>
+    <footer class="cite-strip">Data: NASA Physical Sciences Informatics (psi.nasa.gov) — 19 combustion investigations · SAME-R detector recordings (PSI-101) · PSI-115 (DOI 10.60555/q0v5-1v28) · PSI-117 (DOI 10.60555/gz0q-b577). Every number on this page traces to these sources — see <a href="#refs" data-goto="refs">References</a>. · Team IGNIX · NASA Space Apps 2026</footer>
 
     <div id="selftest" style="display:none"></div>
   </main>
@@ -781,6 +923,7 @@ Silicone</textarea>
 
 <div id="gloss-tip" style="display:none"></div>
 
-<script src="app.js"></script>
+<script src="app.js" defer></script>
+<script src="firnex.js" defer></script>
 </body>
 </html>
