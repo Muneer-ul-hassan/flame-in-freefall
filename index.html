@@ -30,7 +30,7 @@
     "@context": "https://schema.org",
     "@graph": [
       {"@type":"WebSite","name":"FIRENEX","url":FIRENEX_SITE_URL + "/","description":"FIRENEX — Evidence-Grounded Space Fire Research (Team IGNIX)."},
-      {"@type":"Dataset","name":"FIRENEX NASA PSI combustion research dataset","description":"A research explorer over 2,012 NASA PSI combustion test records from 19 investigations, with SAME-R detector telemetry and PSI-115 smoke-modelling data. PSI-117 is identified as model/proceedings data.","url":FIRENEX_SITE_URL + "/","creator":{"@type":"Organization","name":"Team IGNIX"}}
+      {"@type":"Dataset","name":"FIRENEX NASA PSI combustion research dataset","description":"A research explorer over 2,012 NASA PSI records across 19 investigations, with SAME-R detector telemetry and PSI-115 smoke-modelling data. PSI-117 is identified as model/proceedings data.","url":FIRENEX_SITE_URL + "/","creator":{"@type":"Organization","name":"Team IGNIX"}}
     ]
   };
   const schemaTag = document.createElement('script');
@@ -80,7 +80,7 @@
       <button data-sec="refs">References &amp; Method</button>
     </nav>
     <button id="cmdk-open" class="cmdk-btn">⌘K — quick jump</button>
-    <div class="side-note">Every number on this site comes from a real NASA PSI test record. Where NASA never tested, this tool says so — it never guesses.</div>
+    <div class="side-note">Every scientific claim is traceable to its source. Measurements, computed results, modelling data and published findings are clearly distinguished. Where NASA never tested, this tool says so — it never guesses.</div>
   </aside>
 
   <main id="main-content" tabindex="-1">
@@ -92,7 +92,7 @@
           <div class="hero-kicker">Team IGNIX · NASA Space Apps 2026 · Flame in Freefall</div>
           <h1>FIRENEX</h1>
           <p class="hero-tag">Explore the science. Understand the evidence. Discover the gaps.</p>
-          <p class="hero-sub">An evidence-grounded research explorer over <span data-fx="rows">2,012</span> real NASA PSI combustion test records from <span data-fx="invs">19</span> investigations. Where NASA never tested, FIRENEX says so — it never guesses.</p>
+          <p class="hero-sub">An evidence-grounded research explorer over <span data-fx="rows">2,012</span> real NASA PSI records from <span data-fx="invs">19</span> investigations. Where NASA never tested, FIRENEX says so — it never guesses.</p>
           <div class="cta-row">
             <button class="cta cta-primary" data-goto="library">Explore Research</button>
             <button class="cta cta-ghost" data-goto="ask">Ask Flame</button>
@@ -202,7 +202,7 @@
       <div class="cards3">
         <div class="card pillar p-prev">
           <h3>🛡️ Prevention</h3>
-          <p><strong>Cabin Check</strong> — will this material burn in this cabin? Answered from matched real test rows, with the rows shown.</p>
+          <p><strong>Cabin Check</strong> — has NASA tested this material under these cabin conditions? Answered from matched real test rows, with the rows shown.</p>
           <p><strong>Inventory Screener</strong> — paste a whole cabin material list, get one traffic-light risk table per atmosphere.</p>
           <button class="goto" data-goto="cabin">Open Cabin Check →</button>
         </div>
