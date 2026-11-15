@@ -53,7 +53,7 @@ python3 -m http.server 8000
 - `train_model.py` — trains the Safe Predictor tree and exports `data/model.json`
 
 ## Team
-**Team IGNIX** — Team Lead: Fizza Malik (presentation layer, testing review, presentation). Members: Syed Muneer ul Hassan Bukhari (NASA PSI data pipeline, app build, model training), Abdul Rafay (model evaluation review, AI-use governance and demo video), Mahadi ur Rehman Siddiqui (testing and presentation support), Furqan Iftikhar (testing and presentation support), Haider Zaman (testing and presentation support).
+**Team IGNIX** — Team Lead: Fizza Malik (frontend — UI and presentation layer, testing review). Members: Syed Muneer ul Hassan Bukhari (backend — NASA PSI data pipeline, app core, model training), Abdul Rafay (model evaluation review and AI-use governance), Mahadi ur Rehman Siddiqui (QA testing and evidence validation), Furqan Iftikhar (testing and presentation support), Haider Zaman (final submission lead — demo video and 7-slide presentation).
 Built for NASA Space Apps 2026; submission deadline Sun Nov 15, 2026, 23:59 local.
 
 ---
