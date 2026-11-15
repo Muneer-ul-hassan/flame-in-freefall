@@ -5,20 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FIRNEX — Evidence-Grounded Space Fire Research (Team IGNIX)</title>
 <meta name="description" content="FIRNEX by team IGNIX — explore NASA PSI combustion research, compare experiments and see evidence gaps. A dashboard that turns NASA PSI combustion data into fire-safety decisions for spacecraft cabins: Prevention, Detection, Suppression. Real test rows only — no guesses.">
-<meta name="firnex-site-url" content="https://whimsical-custard-58b654.netlify.app/">
+<meta name="firnex-site-url" content="https://firnex.netlify.app/">
 <meta property="og:title" content="FIRNEX — Evidence-Grounded Space Fire Research (Team IGNIX)">
 <meta property="og:description" content="FIRNEX by team IGNIX — explore NASA PSI combustion research, compare experiments and see evidence gaps. A dashboard that turns NASA PSI combustion data into fire-safety decisions for spacecraft cabins: Prevention, Detection, Suppression. Real test rows only — no guesses.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://whimsical-custard-58b654.netlify.app/">
-<meta property="og:image" content="https://whimsical-custard-58b654.netlify.app/assets/saffire-pmma.jpg">
-<meta name="twitter:image" content="https://whimsical-custard-58b654.netlify.app/assets/saffire-pmma.jpg">
+<meta property="og:url" content="https://firnex.netlify.app/">
+<meta property="og:image" content="https://firnex.netlify.app/assets/saffire-pmma.jpg">
+<meta name="twitter:image" content="https://firnex.netlify.app/assets/saffire-pmma.jpg">
 <meta property="og:image:alt" content="Plexiglass burning inside NASA's Saffire-IV spacecraft fire experiment">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="FIRNEX — Evidence-Grounded Space Fire Research (Team IGNIX)">
 <meta name="twitter:description" content="FIRNEX by team IGNIX — explore NASA PSI combustion research, compare experiments and see evidence gaps. A dashboard that turns NASA PSI combustion data into fire-safety decisions for spacecraft cabins: Prevention, Detection, Suppression. Real test rows only — no guesses.">
 <meta name="twitter:image:alt" content="Plexiglass burning inside NASA's Saffire-IV spacecraft fire experiment">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23ff7a2f' d='M34 3c3 15-8 17-5 29 2 7 9 7 10 1 1-4-1-7-3-10 13 7 20 18 15 29-4 9-13 12-23 9C13 58 7 49 10 38c2-8 8-13 15-20-1 10 4 13 8 15-3-13 1-22 1-30z'/%3E%3C/svg%3E">
-<link rel="canonical" href="https://whimsical-custard-58b654.netlify.app/">
+<link rel="canonical" href="https://firnex.netlify.app/">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="firnex.css">
 <link rel="preload" href="assets/fonts/syne-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
@@ -121,7 +121,7 @@
       <p class="lede">From the International Space Station to deep-space missions, fire safety in space requires evidence, not assumptions. This dashboard exists for the engineers choosing materials for 34%-oxygen Artemis-era lunar cabins — and the crews who will live inside them.</p>
 
       <div class="method-banner">
-        <div class="method-name">Tested-or-Silent</div>
+        <div class="method-name">FIRNEX</div>
         <p>Our method, applied to every answer on this site: <strong>every answer comes from a real NASA test row — or the tool says NO TEST DATA.</strong> Where no test row matches — or a question falls outside the tested envelope — the tool returns NO TEST DATA, or the model abstains, instead of extrapolating, interpolating, or guessing.</p>
       </div>
 
@@ -157,7 +157,7 @@
       <div class="verdict v-grey" id="home-refusal">
         <div class="dchip-row"><span class="dchip dc-test">TEST DATA</span><span class="chip grey">PRE-RUN VERDICT — computed by Cabin Check itself</span></div>
         <h3>⬜ NO TEST DATA — PMMA at 34% O₂ (the Moon cabin)</h3>
-        <p>PMMA — the acrylic in windows, panels and light covers — has <span data-fill="pmma-rows"></span> real test rows in the backbone, tested up to <span data-fill="pmma-max-o2"></span>% O₂. At the recommended exploration atmosphere for lunar habitats (34% O₂ / 8.2 psia), the number of matching test rows is <strong><span data-fill="pmma-moon-matched"></span></strong>. Tested-or-Silent means the tool stops there — it will not guess what PMMA does in an atmosphere it was never tested in.</p>
+        <p>PMMA — the acrylic in windows, panels and light covers — has <span data-fill="pmma-rows"></span> real test rows in the backbone, tested up to <span data-fill="pmma-max-o2"></span>% O₂. At the recommended exploration atmosphere for lunar habitats (34% O₂ / 8.2 psia), the number of matching test rows is <strong><span data-fill="pmma-moon-matched"></span></strong>. FIRNEX means the tool stops there — it will not guess what PMMA does in an atmosphere it was never tested in.</p>
         <button class="goto" id="refusal-run">Run it yourself in Cabin Check →</button>
       </div>
 
@@ -806,8 +806,8 @@ Silicone</textarea>
       <p class="lede">Everything this dashboard uses, where it came from, and the rules it follows. Prepared for the Space Apps submission attestation: all external resources are listed here.</p>
 
       <div class="card wide">
-        <h3>The method — Tested-or-Silent</h3>
-        <p><strong>Tested-or-Silent: every answer comes from a real NASA test row — or the tool says NO TEST DATA.</strong> Tested-or-Silent is the rule that every answer in FIRNEX is produced only from real NASA PSI test rows, matched at the conditions those rows were actually tested at. Where no test row matches — or a question falls outside the tested envelope — the tool returns NO TEST DATA, or the model abstains, instead of extrapolating, interpolating, or guessing.</p>
+        <h3>The method — FIRNEX</h3>
+        <p><strong>FIRNEX: every answer comes from a real NASA test row — or the tool says NO TEST DATA.</strong> FIRNEX is the rule that every answer in FIRNEX is produced only from real NASA PSI test rows, matched at the conditions those rows were actually tested at. Where no test row matches — or a question falls outside the tested envelope — the tool returns NO TEST DATA, or the model abstains, instead of extrapolating, interpolating, or guessing.</p>
       </div>
 
       <div class="card wide">
@@ -890,7 +890,7 @@ Silicone</textarea>
 
       <div class="card wide">
         <h3>How this was built — and audited</h3>
-        <p>FIRNEX was built by Team IGNIX with AI assistance, under the same rule the site applies to NASA's data: <strong>Tested-or-Silent, applied to our own work.</strong> Before submission, the project ran a hostile self-audit: every displayed number was recomputed from the PSI source files (not from the app's own JSON), every external link was fetched, and every tool was pushed through edge cases — empty inputs, boundary values, impossible atmospheres. Three hostile self-audits found 26 defects and gaps between them (a truncated range, a miscounted sample total, NaN-input verdicts among them); every one was fixed and re-verified. The audits are documented in the <a href="docs/test-report.md">project test report</a>; a two-page summary is in the <a href="evidence-brief-2026-11-14.md">Evidence Brief</a>. If a claim on this site cannot survive that treatment, it does not ship.</p>
+        <p>FIRNEX was built by Team IGNIX with AI assistance, under the same rule the site applies to NASA's data: <strong>FIRNEX, applied to our own work.</strong> Before submission, the project ran a hostile self-audit: every displayed number was recomputed from the PSI source files (not from the app's own JSON), every external link was fetched, and every tool was pushed through edge cases — empty inputs, boundary values, impossible atmospheres. Three hostile self-audits found 26 defects and gaps between them (a truncated range, a miscounted sample total, NaN-input verdicts among them); every one was fixed and re-verified. The audits are documented in the <a href="docs/test-report.md">project test report</a>; a two-page summary is in the <a href="evidence-brief-2026-11-14.md">Evidence Brief</a>. If a claim on this site cannot survive that treatment, it does not ship.</p>
       </div>
 
       <div class="card wide">
