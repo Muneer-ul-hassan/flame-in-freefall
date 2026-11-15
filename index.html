@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FIRNEX — Evidence-Grounded Space Fire Research (Team IGNIX)</title>
-<meta name="description" content="FIRNEX by team IGNIX — explore NASA PSI combustion research, compare experiments and see evidence gaps. A dashboard that turns NASA PSI combustion data into fire-safety decisions for spacecraft cabins: Prevention, Detection, Suppression. Real test rows only — no guesses.">
+<title>FIRENEX — Evidence-Grounded Space Fire Research (Team IGNIX)</title>
+<meta name="description" content="FIRENEX by team IGNIX — explore NASA PSI combustion research, compare experiments and see evidence gaps. A dashboard that turns NASA PSI combustion data into fire-safety decisions for spacecraft cabins: Prevention, Detection, Suppression. Real test rows only — no guesses.">
 <meta name="firnex-site-url" content="https://firnex.netlify.app/">
-<meta property="og:title" content="FIRNEX — Evidence-Grounded Space Fire Research (Team IGNIX)">
-<meta property="og:description" content="FIRNEX by team IGNIX — explore NASA PSI combustion research, compare experiments and see evidence gaps. A dashboard that turns NASA PSI combustion data into fire-safety decisions for spacecraft cabins: Prevention, Detection, Suppression. Real test rows only — no guesses.">
+<meta property="og:title" content="FIRENEX — Evidence-Grounded Space Fire Research (Team IGNIX)">
+<meta property="og:description" content="FIRENEX by team IGNIX — explore NASA PSI combustion research, compare experiments and see evidence gaps. A dashboard that turns NASA PSI combustion data into fire-safety decisions for spacecraft cabins: Prevention, Detection, Suppression. Real test rows only — no guesses.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://firnex.netlify.app/">
 <meta property="og:image" content="https://firnex.netlify.app/assets/saffire-pmma.jpg">
 <meta name="twitter:image" content="https://firnex.netlify.app/assets/saffire-pmma.jpg">
 <meta property="og:image:alt" content="Plexiglass burning inside NASA's Saffire-IV spacecraft fire experiment">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="FIRNEX — Evidence-Grounded Space Fire Research (Team IGNIX)">
-<meta name="twitter:description" content="FIRNEX by team IGNIX — explore NASA PSI combustion research, compare experiments and see evidence gaps. A dashboard that turns NASA PSI combustion data into fire-safety decisions for spacecraft cabins: Prevention, Detection, Suppression. Real test rows only — no guesses.">
+<meta name="twitter:title" content="FIRENEX — Evidence-Grounded Space Fire Research (Team IGNIX)">
+<meta name="twitter:description" content="FIRENEX by team IGNIX — explore NASA PSI combustion research, compare experiments and see evidence gaps. A dashboard that turns NASA PSI combustion data into fire-safety decisions for spacecraft cabins: Prevention, Detection, Suppression. Real test rows only — no guesses.">
 <meta name="twitter:image:alt" content="Plexiglass burning inside NASA's Saffire-IV spacecraft fire experiment">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23ff7a2f' d='M34 3c3 15-8 17-5 29 2 7 9 7 10 1 1-4-1-7-3-10 13 7 20 18 15 29-4 9-13 12-23 9C13 58 7 49 10 38c2-8 8-13 15-20-1 10 4 13 8 15-3-13 1-22 1-30z'/%3E%3C/svg%3E">
 <link rel="canonical" href="https://firnex.netlify.app/">
@@ -23,21 +23,21 @@
 <link rel="stylesheet" href="firnex.css">
 <link rel="preload" href="assets/fonts/syne-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
 <script>
-  const FIRNEX_SITE_URL = document.querySelector('meta[name="firnex-site-url"]').content.replace(/\/$/, '');
-  document.querySelector('link[rel="canonical"]').href = FIRNEX_SITE_URL + '/';
-  document.querySelector('meta[property="og:url"]').content = FIRNEX_SITE_URL + '/';
+  const FIRENEX_SITE_URL = document.querySelector('meta[name="firnex-site-url"]').content.replace(/\/$/, '');
+  document.querySelector('link[rel="canonical"]').href = FIRENEX_SITE_URL + '/';
+  document.querySelector('meta[property="og:url"]').content = FIRENEX_SITE_URL + '/';
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
-      {"@type":"WebSite","name":"FIRNEX","url":FIRNEX_SITE_URL + "/","description":"FIRNEX — Evidence-Grounded Space Fire Research (Team IGNIX)."},
-      {"@type":"Dataset","name":"FIRNEX NASA PSI combustion research dataset","description":"A research explorer over 2,012 NASA PSI combustion test records from 19 investigations, with SAME-R detector telemetry and PSI-115 smoke-modelling data. PSI-117 is identified as model/proceedings data.","url":FIRNEX_SITE_URL + "/","creator":{"@type":"Organization","name":"Team IGNIX"}}
+      {"@type":"WebSite","name":"FIRENEX","url":FIRENEX_SITE_URL + "/","description":"FIRENEX — Evidence-Grounded Space Fire Research (Team IGNIX)."},
+      {"@type":"Dataset","name":"FIRENEX NASA PSI combustion research dataset","description":"A research explorer over 2,012 NASA PSI combustion test records from 19 investigations, with SAME-R detector telemetry and PSI-115 smoke-modelling data. PSI-117 is identified as model/proceedings data.","url":FIRENEX_SITE_URL + "/","creator":{"@type":"Organization","name":"Team IGNIX"}}
     ]
   };
   const schemaTag = document.createElement('script');
   schemaTag.type = 'application/ld+json';
   schemaTag.textContent = JSON.stringify(schema);
   document.head.append(schemaTag);
-  const shareImage = FIRNEX_SITE_URL + '/assets/saffire-pmma.jpg';
+  const shareImage = FIRENEX_SITE_URL + '/assets/saffire-pmma.jpg';
   for (const key of ['og:image', 'twitter:image']) {
     let tag = document.querySelector('meta[property="' + key + '"],meta[name="' + key + '"]');
     if (!tag) { tag = document.createElement('meta'); tag.setAttribute(key.startsWith('og:') ? 'property' : 'name', key); document.head.append(tag); }
@@ -51,9 +51,9 @@
 <div class="layout">
   <aside class="sidebar">
     <div class="brand">
-      <div class="brand-mark" aria-hidden="true"><svg width="34" height="34" viewBox="0 0 34 34" role="img" aria-label="FIRNEX flame mark"><defs><radialGradient id="bm" cx="50%" cy="45%" r="55%"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#ffc48a"/><stop offset=".7" stop-color="#c2410c"/><stop offset="1" stop-color="#1d2129"/></radialGradient></defs><circle cx="17" cy="17" r="10" fill="url(#bm)"/><ellipse cx="17" cy="17" rx="16" ry="6" fill="none" stroke="#9a9ca5" stroke-opacity=".6" transform="rotate(-25 17 17)"/></svg></div>
+      <div class="brand-mark" aria-hidden="true"><svg width="34" height="34" viewBox="0 0 34 34" role="img" aria-label="FIRENEX flame mark"><defs><radialGradient id="bm" cx="50%" cy="45%" r="55%"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#ffc48a"/><stop offset=".7" stop-color="#c2410c"/><stop offset="1" stop-color="#1d2129"/></radialGradient></defs><circle cx="17" cy="17" r="10" fill="url(#bm)"/><ellipse cx="17" cy="17" rx="16" ry="6" fill="none" stroke="#9a9ca5" stroke-opacity=".6" transform="rotate(-25 17 17)"/></svg></div>
       <div>
-        <div class="brand-name">FIRNEX</div>
+        <div class="brand-name">FIRENEX</div>
         <div class="brand-sub">IGNIX // NASA SPACE APPS 2026</div>
       </div>
     </div>
@@ -90,9 +90,9 @@
         <canvas id="hero-canvas" role="img" aria-label="Conceptual animated illustration of a microgravity flame"></canvas>
         <div class="hero-copy">
           <div class="hero-kicker">Team IGNIX · NASA Space Apps 2026 · Flame in Freefall</div>
-          <h1>FIRNEX</h1>
+          <h1>FIRENEX</h1>
           <p class="hero-tag">Explore the science. Understand the evidence. Discover the gaps.</p>
-          <p class="hero-sub">An evidence-grounded research explorer over <span data-fx="rows">2,012</span> real NASA PSI combustion test records from <span data-fx="invs">19</span> investigations. Where NASA never tested, FIRNEX says so — it never guesses.</p>
+          <p class="hero-sub">An evidence-grounded research explorer over <span data-fx="rows">2,012</span> real NASA PSI combustion test records from <span data-fx="invs">19</span> investigations. Where NASA never tested, FIRENEX says so — it never guesses.</p>
           <div class="cta-row">
             <button class="cta cta-primary" data-goto="library">Explore Research</button>
             <button class="cta cta-ghost" data-goto="ask">Ask Flame</button>
@@ -121,7 +121,7 @@
       <p class="lede">From the International Space Station to deep-space missions, fire safety in space requires evidence, not assumptions. This dashboard exists for the engineers choosing materials for 34%-oxygen Artemis-era lunar cabins — and the crews who will live inside them.</p>
 
       <div class="method-banner">
-        <div class="method-name">FIRNEX</div>
+        <div class="method-name">FIRENEX</div>
         <p>Our method, applied to every answer on this site: <strong>every answer comes from a real NASA test row — or the tool says NO TEST DATA.</strong> Where no test row matches — or a question falls outside the tested envelope — the tool returns NO TEST DATA, or the model abstains, instead of extrapolating, interpolating, or guessing.</p>
       </div>
 
@@ -157,7 +157,7 @@
       <div class="verdict v-grey" id="home-refusal">
         <div class="dchip-row"><span class="dchip dc-test">TEST DATA</span><span class="chip grey">PRE-RUN VERDICT — computed by Cabin Check itself</span></div>
         <h3>⬜ NO TEST DATA — PMMA at 34% O₂ (the Moon cabin)</h3>
-        <p>PMMA — the acrylic in windows, panels and light covers — has <span data-fill="pmma-rows"></span> real test rows in the backbone, tested up to <span data-fill="pmma-max-o2"></span>% O₂. At the recommended exploration atmosphere for lunar habitats (34% O₂ / 8.2 psia), the number of matching test rows is <strong><span data-fill="pmma-moon-matched"></span></strong>. FIRNEX means the tool stops there — it will not guess what PMMA does in an atmosphere it was never tested in.</p>
+        <p>PMMA — the acrylic in windows, panels and light covers — has <span data-fill="pmma-rows"></span> real test rows in the backbone, tested up to <span data-fill="pmma-max-o2"></span>% O₂. At the recommended exploration atmosphere for lunar habitats (34% O₂ / 8.2 psia), the number of matching test rows is <strong><span data-fill="pmma-moon-matched"></span></strong>. FIRENEX means the tool stops there — it will not guess what PMMA does in an atmosphere it was never tested in.</p>
         <button class="goto" id="refusal-run">Run it yourself in Cabin Check →</button>
       </div>
 
@@ -267,10 +267,10 @@
       <p class="foot-note verify-line">Every number on this page was recomputed from the source files in two independent audits. The sources and method behind every figure are documented in <a href="#refs" data-goto="refs">References &amp; Method</a>.</p>
     </section>
 
-        <!-- ============ FIRNEX: MISSION DISCOVERY ============ -->
+        <!-- ============ FIRENEX: MISSION DISCOVERY ============ -->
     <section id="sec-missions" class="sec">
       <h1>Mission Discovery</h1>
-      <p class="lede">Pick a mission type. FIRNEX reveals the NASA investigations in the PSI data that bear on it — and whether their recorded test conditions actually overlap the mission atmosphere.</p>
+      <p class="lede">Pick a mission type. FIRENEX reveals the NASA investigations in the PSI data that bear on it — and whether their recorded test conditions actually overlap the mission atmosphere.</p>
       <div class="fx-legend" aria-label="Evidence classes"><span class="ev ev-MEASURED">MEASURED</span><span class="ev ev-MODELLED">MODELLED</span><span class="ev ev-REPORTED">REPORTED</span><span class="ev ev-INFERRED">INFERRED</span><span class="ev ev-UNKNOWN">UNKNOWN</span></div>
       <div class="mission-tabs" role="group" aria-label="Mission type" id="mission-tabs"></div>
       <div class="fx-ctrls">
@@ -286,7 +286,7 @@
       </div>
     </section>
 
-    <!-- ============ FIRNEX: RESEARCH LIBRARY ============ -->
+    <!-- ============ FIRENEX: RESEARCH LIBRARY ============ -->
     <section id="sec-library" class="sec">
       <h1>Research Library</h1>
       <p class="lede">All <span data-fx="invs">19</span> NASA PSI combustion investigations in the data, filterable by what was actually recorded. Blank means “not recorded”, never zero.</p>
@@ -306,15 +306,15 @@
       </div>
     </section>
 
-    <!-- ============ FIRNEX: COMPARE ============ -->
+    <!-- ============ FIRENEX: COMPARE ============ -->
     <section id="sec-compare" class="sec">
       <h1>Compare Experiments</h1>
-      <p class="lede">Pick 2–3 investigations. Only fields that were actually recorded are compared; where studies cannot be compared fairly, FIRNEX says why.</p>
+      <p class="lede">Pick 2–3 investigations. Only fields that were actually recorded are compared; where studies cannot be compared fairly, FIRENEX says why.</p>
       <div class="fx-ctrls"><fieldset style="border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:0"><legend class="mono" style="font-size:11px;color:var(--muted)">CHOOSE UP TO 3</legend><div id="cmp-pick" style="display:flex;flex-wrap:wrap;gap:6px 16px"></div></fieldset></div>
       <div id="cmp-out"></div>
     </section>
 
-    <!-- ============ FIRNEX: GAP RADAR ============ -->
+    <!-- ============ FIRENEX: GAP RADAR ============ -->
     <section id="sec-gaps" class="sec">
       <h1>Evidence Gap Radar</h1>
       <p class="lede">Where the PSI test records cluster — and where they do not. Counts are numbers of recorded test rows, not safety scores. An empty cell means “no rows in this data”, not “safe” or “unsafe”.</p>
@@ -329,11 +329,11 @@
       <div class="tbl-wrap"><table class="fx-table" id="gap-classes"></table></div>
     </section>
 
-    <!-- ============ FIRNEX: ASK FLAME ============ -->
+    <!-- ============ FIRENEX: ASK FLAME ============ -->
     <section id="sec-ask" class="sec">
       <h1>Ask Flame</h1>
       <p class="lede">Retrieval, not generation: every answer is quoted from NASA-derived records with its source, so it cannot hallucinate. If nothing matches, it abstains.</p>
-      <p class="lede">An evidence search over FIRNEX’s own NASA-derived data and its claims table. It is <strong>not</strong> a generative AI: it retrieves, cites and abstains. If nothing in the sources matches, it says so.</p>
+      <p class="lede">An evidence search over FIRENEX’s own NASA-derived data and its claims table. It is <strong>not</strong> a generative AI: it retrieves, cites and abstains. If nothing in the sources matches, it says so.</p>
       <form class="ask-form" id="ask-form"><input type="search" id="ask-q" placeholder="e.g. smoke detector Kapton, droplet extinction oxygen, Moon atmosphere" aria-label="Ask Flame"><button class="cta cta-primary" type="submit">Search evidence</button></form>
       <div class="ask-chips" id="ask-chips"></div>
       <div id="ask-out" aria-live="polite"></div>
@@ -806,8 +806,8 @@ Silicone</textarea>
       <p class="lede">Everything this dashboard uses, where it came from, and the rules it follows. Prepared for the Space Apps submission attestation: all external resources are listed here.</p>
 
       <div class="card wide">
-        <h3>The method — FIRNEX</h3>
-        <p><strong>FIRNEX: every answer comes from a real NASA test row — or the tool says NO TEST DATA.</strong> FIRNEX is the rule that every answer in FIRNEX is produced only from real NASA PSI test rows, matched at the conditions those rows were actually tested at. Where no test row matches — or a question falls outside the tested envelope — the tool returns NO TEST DATA, or the model abstains, instead of extrapolating, interpolating, or guessing.</p>
+        <h3>The method — FIRENEX</h3>
+        <p><strong>FIRENEX: every answer comes from a real NASA test row — or the tool says NO TEST DATA.</strong> FIRENEX is the rule that every answer in FIRENEX is produced only from real NASA PSI test rows, matched at the conditions those rows were actually tested at. Where no test row matches — or a question falls outside the tested envelope — the tool returns NO TEST DATA, or the model abstains, instead of extrapolating, interpolating, or guessing.</p>
       </div>
 
       <div class="card wide">
@@ -890,7 +890,7 @@ Silicone</textarea>
 
       <div class="card wide">
         <h3>How this was built — and audited</h3>
-        <p>FIRNEX was built by Team IGNIX with AI assistance, under the same rule the site applies to NASA's data: <strong>FIRNEX, applied to our own work.</strong> Before submission, the project ran a hostile self-audit: every displayed number was recomputed from the PSI source files (not from the app's own JSON), every external link was fetched, and every tool was pushed through edge cases — empty inputs, boundary values, impossible atmospheres. Three hostile self-audits found 26 defects and gaps between them (a truncated range, a miscounted sample total, NaN-input verdicts among them); every one was fixed and re-verified. The audits are documented in the <a href="docs/test-report.md">project test report</a>; a two-page summary is in the <a href="evidence-brief-2026-11-14.md">Evidence Brief</a>. If a claim on this site cannot survive that treatment, it does not ship.</p>
+        <p>FIRENEX was built by Team IGNIX with AI assistance, under the same rule the site applies to NASA's data: <strong>FIRENEX, applied to our own work.</strong> Before submission, the project ran a hostile self-audit: every displayed number was recomputed from the PSI source files (not from the app's own JSON), every external link was fetched, and every tool was pushed through edge cases — empty inputs, boundary values, impossible atmospheres. Three hostile self-audits found 26 defects and gaps between them (a truncated range, a miscounted sample total, NaN-input verdicts among them); every one was fixed and re-verified. The audits are documented in the <a href="docs/test-report.md">project test report</a>; a two-page summary is in the <a href="evidence-brief-2026-11-14.md">Evidence Brief</a>. If a claim on this site cannot survive that treatment, it does not ship.</p>
       </div>
 
       <div class="card wide">
