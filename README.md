@@ -1,12 +1,12 @@
-# Flame in Freefall — Cabin Fire Safety from Real NASA Test Data
+# FIRENEX — Cabin Fire Safety from Real NASA Test Data
 
 A web dashboard for the NASA Space Apps 2026 **Flame in Freefall** challenge. It turns NASA PSI combustion experiments (flight programmes) into fire-safety decisions for habitable crew cabins — organised as **Prevention, Detection, Suppression** — using real test data only. Where NASA never tested, the tools say **"NO TEST DATA"** instead of guessing.
 
-## The method — Tested-or-Silent
-**Tested-or-Silent: every answer comes from a real NASA test row — or the tool says NO TEST DATA.** Every answer in the app is produced only from real NASA PSI test rows, matched at the conditions those rows were actually tested at. Where no test row matches — or a question falls outside the tested envelope — the tool returns NO TEST DATA, or the model abstains, instead of extrapolating, interpolating, or guessing.
+## The method — FIRENEX
+**FIRENEX: every answer comes from a real NASA test row — or the tool says NO TEST DATA.** Every answer in the app is produced only from real NASA PSI test rows, matched at the conditions those rows were actually tested at. Where no test row matches — or a question falls outside the tested envelope — the tool returns NO TEST DATA, or the model abstains, instead of extrapolating, interpolating, or guessing.
 
 ## Live app
-GitHub Pages: https://muneer-ul-hassan.github.io/flame-in-freefall/
+https://firnex.netlify.app/
 
 ## What's inside
 - **Cabin Check** — pick a material + oxygen + pressure: verdict from matched real PSI test rows, with the source rows shown.
@@ -58,9 +58,9 @@ Built for NASA Space Apps 2026; submission deadline Sun Nov 15, 2026, 23:59 loca
 
 ---
 
-# FIRNEX — Team IGNIX Improvements
+# FIRENEX — Team IGNIX Improvements
 
-FIRNEX is the enhanced research interface developed by Team IGNIX, building on Muneer's original Flame in Freefall project.
+FIRENEX is the enhanced research interface developed by Team IGNIX, building on Muneer's original Flame in Freefall project.
 
 Improvements include:
 - Redesigned interface and visual identity.
