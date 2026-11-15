@@ -78,7 +78,28 @@
   const evOf = i => i.accession === 'PSI-101' ? EV('REPORTED', 'PSI experimental-table entries as recorded') + EV('MEASURED', 'Raw SAME-R detector telemetry analysed in the Detection Panel') : EV('REPORTED', 'PSI experimental-table entries as recorded');
   const byAcc = a => INV.find(i => i.accession === a);
 
-  function inspector(i, extra) {
+    const OBJECTIVES = {
+    "PSI-10": "Obtain soot-inception limits, detailed measurements, and extinction limits for quasi-steady normal and inverse spherical diffusion flames of ethylene and methane, as functions of flow rate, mixture fraction (Zst), inert (N₂ or CO₂) amount, and pressure.",
+    "PSI-20": "Establish the burning conditions in a quiescent microgravity ambient in terms of material properties — observing long-duration burning of CH₄/N₂ and C₂H₄/N₂ mixtures on porous circular burners across O₂/N₂ ambients, pressures, and oxygen concentrations (including NASA's crewed-mission atmospheres), through to extinction limits.",
+    "PSI-21": "Provide the experimental data needed to rigorously test computational models at the extremes of the fuel-dilution spectrum: characterize weak coflow diffusion flames of methane and ethylene (shape, lift-off heights, temperatures, extinction limits) and their sooting tendencies, versus velocity and fuel dilution.",
+    "PSI-22": "To better understand the relationship between electric field voltage and chemi-ion current, analyze the dynamic response of flames to electric field changes, evaluate soot formation, and characterize stabilized near-limit lifted flames.",
+    "PSI-23": "Measure and characterize the transient structure of spherical diffusion flames, determine their convective/kinetic and radiative extinction limits, and determine the existence, onset, and nature of predicted pulsating instabilities — in soot-free and sooty flames, for comparison with detailed computational simulation.",
+    "PSI-25": "Study the ignition, flame growth, flame spread, and extinction limits for solid fuels burning in low-velocity forced flows in microgravity; begin to bridge the gap between the normal-gravity NASA-STD-6001 Test #1 method, ground-based microgravity tests, and actual material flammability in microgravity.",
+    "PSI-26": "Bridge the gap between the NASA-STD-6001 Test #1 method, ground-based microgravity tests, and actual material flammability in microgravity; and assess the effectiveness of an inert, gaseous extinguishing agent (similar to that used on ISS) in putting out flames over different materials and geometries.",
+    "PSI-39": "Examine the combustion behavior of n-dodecane and n-dodecane/iso-dodecane mixtures at pressures from 0.25 atm to 5 atm; analyze the effects of helium dilution on cool-flame behavior; and investigate the relationship between droplet size, pressure, and flame extinction, and the consequences of soot formation during cool-flame combustion.",
+    "PSI-47": "Mitigate the risk for the Smoke Aerosol Measurement Experiment (SAME): demonstrate the functionality of the modified TSI P-Trak particulate counter in microgravity, compare its performance against the DustTrak control, create and analyze aerosol standards in microgravity, and ensure the reliability of future aerosol experiments.",
+    "PSI-68": "Extend the results of FLEX-1 to fuels and environmental conditions that mimic real combustor conditions, and provide benchmark experimental data on bi-component droplet combustion over a wide range of initial conditions in order to validate numerical simulations and develop new theoretical models.",
+    "PSI-69": "Map the flammability limits of liquid fuels in microgravity environments, measure the effectiveness of various gaseous fire suppressants such as CO₂, He, and SF₆, and develop reliable predictive models for combustion limits under reduced-gravity conditions.",
+    "PSI-98": "Determine how rapidly a large-scale fire grows in low gravity, and investigate the low-g flammability limits compared to those obtained in NASA's normal-gravity material flammability screening test.",
+    "PSI-99": "Determine how rapidly a large-scale fire grows in low gravity, and investigate the low-g flammability limits compared to those obtained in NASA's normal-gravity material flammability screening test.",
+    "PSI-100": "Determine how rapidly a large-scale fire grows in low gravity, and investigate the low-g flammability limits compared to those obtained in NASA's normal-gravity material flammability screening test.",
+    "PSI-101": "Quantify the sizes that the liquid smoke particulate achieves in low gravity and relate the droplet size distribution to the smoke generation and smoke transport conditions in the experiment — a reflight of SAME using new materials, extended operating conditions, and diagnostic equipment (after the original's TEM grids were found contaminated).",
+    "PSI-102": "Quantify the sizes that the liquid smoke particulate achieves in low gravity and relate the droplet size distribution to the smoke generation and smoke transport conditions in the experiment; a numerical code was also to be developed to predict smoke droplet growth.",
+    "PSI-106": "Better understand the structure and stability of laminar diffusion flames in microgravity: investigate flame-base stabilizing mechanisms, determine liftoff velocity limits for different fuels and burner diameters, evaluate nitrogen dilution's impact on soot and stability, and validate numerical models.",
+    "PSI-107": "Identify the laminar smoke-point properties of non-buoyant jet diffusion flames under various co-flow conditions in microgravity; determine the effects of burner diameter and co-flow velocity on luminous flame lengths and smoke points; and quantify the sooting propensity of different fuels.",
+    "PSI-159": "Determine the conditions for which cool diffusion flames occur for propane, n-butane, and n-pentane — normal and inverse flames over a broad range of mixture fraction (Zst), adiabatic flame temperature, and flow rate — supported by CFD simulations and identification/development of a chemical kinetics mechanism matching the ISS measurements."
+  };
+function inspector(i, extra) {
     const s = STATS[i.accession], mats = (i.materials || []);
     const outs = Object.keys(s.out).length ? Object.entries(s.out).map(([k, v]) => `${esc(k)} ×${v}`).join(', ') : NA;
     return `<div class="mono" style="color:var(--sky);font-size:12px">${esc(i.accession)} · ${esc(i.family_label)}</div>
@@ -90,7 +111,7 @@
       <dt>Airflow</dt><dd>${fmtR(s.flr, ' cm/s') || NA}</dd>
       <dt>Outcomes</dt><dd>${outs}</dd>
       <dt>Gravity</dt><dd>${NA} <span style="color:var(--muted)">(no gravity field in the PSI tables used)</span></dd>
-      <dt>Objective</dt><dd>Not stored in this project’s data — see the DOI.</dd>
+      <dt>Objective</dt><dd>${esc(OBJECTIVES[i.accession] || 'Not stored in this project’s data — see the DOI.')} <span style="color:var(--muted)">(NASA PSI study record)</span></dd>
       <dt>Source</dt><dd>${doiLink(i.doi)} · <a href="https://psi.nasa.gov" target="_blank" rel="noopener">NASA PSI</a></dd></dl>
       ${extra || ''}
       <div class="fx-btns"><button class="fx-btn" data-act="cmp" data-acc="${esc(i.accession)}">Add to compare</button><button class="fx-btn" data-act="arch">Open Archive</button></div>`;
