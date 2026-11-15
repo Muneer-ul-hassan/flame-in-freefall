@@ -1,6 +1,6 @@
 # EVIDENCE BRIEF — Flame in Freefall
 **Method: Tested-or-Silent — every answer comes from a real NASA test row, or the tool says NO TEST DATA.**
-App: https://muneer-ul-hassan.github.io/flame-in-freefall/ · Code: https://github.com/Muneer-ul-hassan/flame-in-freefall
+App: https://firenex.vercel.app · Code: https://github.com/Muneer-ul-hassan/flame-in-freefall
 Purpose: every headline number in the app and the project page, with its source and how it was verified. Nothing in this brief is asserted without a traceable origin.
 
 ## 1. Dataset inventory (what we actually used)
