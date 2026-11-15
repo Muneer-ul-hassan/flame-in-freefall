@@ -39,7 +39,7 @@ No assumed values and no demo data anywhere: every number in the app traces to o
 - **Coverage ≠ outcome:** most PSI tables record test conditions, not burn outcomes; where a table has no outcome column (e.g. BASS solids), the app shows coverage only and says so.
 
 ## AI assistance
-AI assistance: Spark — used for data extraction, analysis code, model training. All results were verified against the NASA source data. Per-person detail: `docs/AI_USE_LOG.md`.
+AI assistance: Spark Open by Meta — used for data extraction, analysis code, model training. All results were verified against the NASA source data. Per-person detail: `docs/AI_USE_LOG.md`.
 
 ## Running locally
 ```bash
