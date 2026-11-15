@@ -1,5 +1,5 @@
 'use strict';
-/* FIRNEX — all logic runs client-side over the JSON files in data/.
+/* FIRENEX — all logic runs client-side over the JSON files in data/.
    Every number displayed is computed from those files at runtime. */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
