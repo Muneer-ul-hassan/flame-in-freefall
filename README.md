@@ -6,7 +6,7 @@ A web dashboard for the NASA Space Apps 2026 **Flame in Freefall** challenge. It
 **FIRENEX: every answer comes from a real NASA test row — or the tool says NO TEST DATA.** Every answer in the app is produced only from real NASA PSI test rows, matched at the conditions those rows were actually tested at. Where no test row matches — or a question falls outside the tested envelope — the tool returns NO TEST DATA, or the model abstains, instead of extrapolating, interpolating, or guessing.
 
 ## Live app
-https://firenex.vercel.app/
+https://firenex.vercel.app
 
 ## What's inside
 - **Cabin Check** — pick a material + oxygen + pressure: verdict from matched real PSI test rows, with the source rows shown.
