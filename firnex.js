@@ -1,4 +1,4 @@
-/* FIRNEX — research-discovery layer. Reads only the project's own data/*.json and docs/claims.md.
+/* FIRENEX — research-discovery layer. Reads only the project's own data/*.json and docs/claims.md.
    No network calls except same-origin fetches; no keys; no generative AI. */
 (function () {
   'use strict';
@@ -105,7 +105,7 @@
   const MISSIONS = [
     { id: 'iss', name: 'ISS & spacecraft', o2: 21, p: 14.7, src: 'ISS cabin preset (21% O₂, 14.7 psia) — same preset as Cabin Check.',
       links: ['PSI-25', 'PSI-26', 'PSI-98', 'PSI-99', 'PSI-100', 'PSI-101', 'PSI-102', 'PSI-47', 'PSI-68', 'PSI-69', 'PSI-107'],
-      note: 'Relevance is FIRNEX’s inference from each investigation’s family and recorded conditions — it is not an official NASA mission mapping, and there are no mission risk scores.' },
+      note: 'Relevance is FIRENEX’s inference from each investigation’s family and recorded conditions — it is not an official NASA mission mapping, and there are no mission risk scores.' },
     { id: 'moon', name: 'Lunar habitat', o2: 34, p: 8.2, src: 'NASA-recommended exploration atmosphere: 8.2 psia, 34% O₂ (NTRS 20240003211). A recommendation, not a measurement.',
       links: ['PSI-25', 'PSI-26', 'PSI-101', 'PSI-102', 'PSI-68', 'PSI-69', 'PSI-159', 'PSI-10', 'PSI-39'],
       note: 'Solid-material tests in the data stop well below 34% O₂ (see Evidence Gap Radar). Overlap here means a recorded test row exists near the condition — not that the result transfers.' },
@@ -151,7 +151,7 @@
     svg.innerHTML = h;
     $$('.node', svg).forEach(g => { const open = () => { msSel = g.dataset.acc; const i = byAcc(msSel), it = place.find(x => x.i === i), ov = overlap(msSel, o2, p); renderConst(); const box = $('#ms-insp');
       const why = i.family === 'solid' ? 'Tests of solid materials of the kind found in crew cabins.' : i.family === 'smoke' ? 'Smoke / aerosol detection experiment — relevant to cabin fire detection.' : i.family === 'droplet' ? 'Fundamental droplet-flame extinction on liquid fuels (' + esc((i.materials || []).join(', ')) + ') — not cabin materials.' : 'Fundamental gas-flame / cool-flame study — background physics, not cabin materials.';
-      box.innerHTML = `<div class="mono" style="color:var(--muted);font-size:11px">RELEVANCE TO ${esc(mission.name.toUpperCase())}</div><div>${EV('INFERRED', 'FIRNEX judgement from family and recorded conditions')}<span class="ev ev-${it.rel === 'direct' ? 'REPORTED' : 'UNKNOWN'}">${it.rel.toUpperCase()}</span></div><p style="margin:6px 0">${why}</p>
+      box.innerHTML = `<div class="mono" style="color:var(--muted);font-size:11px">RELEVANCE TO ${esc(mission.name.toUpperCase())}</div><div>${EV('INFERRED', 'FIRENEX judgement from family and recorded conditions')}<span class="ev ev-${it.rel === 'direct' ? 'REPORTED' : 'UNKNOWN'}">${it.rel.toUpperCase()}</span></div><p style="margin:6px 0">${why}</p>
         <div class="fx-note" style="margin:6px 0 12px"><strong>Condition overlap</strong> (±${O2_TOL} O₂ pts, ±${P_TOL} psia): O₂ — ${tri(ov.o2, '±' + O2_TOL + ' pts')}; pressure — ${tri(ov.p, '±' + P_TOL + ' psia')}.</div>` + inspector(i); wireInsp(box); box.querySelector('[data-act]') && 0; };
       g.addEventListener('click', open); g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } }); });
     if (msSel) { const g = $(`.node[data-acc="${msSel}"]`, svg); if (g) g.setAttribute('aria-current', 'true'); }
@@ -223,7 +223,7 @@
       card('ISS smoke detector barely responded to Kapton and Teflon smoke', ['MEASURED'], { Finding: `Median obscuration drop: Kapton ${m('Kapton').obsc_drop_med_V} V (${m('Kapton').tests} tests), Teflon ${m('Teflon').obsc_drop_med_V} V (${m('Teflon').tests}); Silicone ${m('Silicone').obsc_drop_med_V} V (${m('Silicone').tests}).`, Conditions: 'SAME-R (PSI-101) ISS detector telemetry, smoke window 200–1000 s; ' + DET.headlines.samer_tests_no_response + ' of ' + DET.headlines.samer_tests_analysed + ' analysed tests showed no response.', Source: doiLink('10.60555/2np7-jv14'), Limits: 'Medians only; per-test spread exists (Kapton max ' + m('Kapton').obsc_drop_max_V + ' V). Not a reliability rating.', Uncertain: 'Other materials, smoke sizes and detector designs are untested here.' }) +
       card('Modelled smoke accumulates more in microgravity', ['MODELLED'], { Finding: `Peak smoke concentration ${sm.Microgravity.max.toFixed(2)} (microgravity) vs ${sm.Earth.max.toFixed(2)} (Earth), 8 cm case.`, Conditions: 'PSI-115 smoke-modelling grids (summarised).', Source: doiLink('10.60555/q0v5-1v28'), Limits: 'Modelling output — not flight measurement.', Uncertain: 'Real-cabin behaviour is not established by this model alone.' }) +
       card('Safe Predictor: a modest model that abstains', ['MODELLED'], { Finding: `Holdout accuracy ${v.holdout_accuracy} vs ${v.majority_baseline_accuracy} majority baseline (n=${v.n_holdout}) — a margin of about 4 tests.`, Conditions: `Only ${env.fuels.join(' / ')}, ${env.o2[0]}–${env.o2[1]}% O₂, ${env.pressure_psi[0].toFixed(1)}–${env.pressure_psi[1].toFixed(1)} psia.`, Source: doiLink(MODEL.doi), Limits: 'Refuses outside the tested envelope. Not validated for operational spacecraft safety.', Uncertain: 'Generalisation beyond droplet tests is unknown.' }) +
-      card('Most records lack outcomes and pressure', ['UNKNOWN'], { Finding: `${nf(withOut)} of ${nf(ROWS.length)} rows (${(withOut / ROWS.length * 100).toFixed(1)}%) record an outcome; ${nf(pNR)} rows have no pressure recorded.`, Source: 'PSI backbone (computed by FIRNEX from the data)', Limits: 'Blank means not recorded — never zero.', Uncertain: 'Conclusions about conditions without outcomes cannot be drawn.' });
+      card('Most records lack outcomes and pressure', ['UNKNOWN'], { Finding: `${nf(withOut)} of ${nf(ROWS.length)} rows (${(withOut / ROWS.length * 100).toFixed(1)}%) record an outcome; ${nf(pNR)} rows have no pressure recorded.`, Source: 'PSI backbone (computed by FIRENEX from the data)', Limits: 'Blank means not recorded — never zero.', Uncertain: 'Conclusions about conditions without outcomes cannot be drawn.' });
     const rows = [
       ['MEASURED', 'SAME-R detector telemetry — ' + nf(DET.headlines.samer_telemetry_rows) + ' readings, ' + DET.headlines.samer_tests_analysed + ' tests analysed'],
       ['MODELLED', 'PSI-115 smoke grids (9,446,715 values); PSI-117 cool-flame proceedings data; Flame Lab (simplified simulation, not CFD); Safe Predictor'],
@@ -239,7 +239,7 @@
   const UNKNOWNS = [
     [/partial[- ]?gravity|lunar gravity|mars gravity|0\.16 ?g|0\.38 ?g|moon gravity/i, 'No partial-gravity (lunar or Mars g) combustion data exists in the PSI data used here, and the tables have no gravity field.'],
     [/daft/i, 'DAFT / DAFT-2 are not among the 19 investigations in this project’s data.'],
-    [/certif|approved|operational(ly)? safe|is it safe to/i, 'FIRNEX is not a certified spacecraft safety system and gives no safety approvals. It summarises recorded test evidence only.'],
+    [/certif|approved|operational(ly)? safe|is it safe to/i, 'FIRENEX is not a certified spacecraft safety system and gives no safety approvals. It summarises recorded test evidence only.'],
     [/\bcfd\b/i, 'The Flame Lab is a simplified grid simulation for teaching — it is not CFD and not a recording.']
   ];
   function buildDocs() {
@@ -290,7 +290,7 @@
       cmp = ['PSI-69', 'PSI-159']; renderCmp();
       $('#gap-axis').onchange = renderGap; renderGap(); renderEvCards(); initAsk();
     } catch (e) {
-      console.error('FIRNEX data load failed', e);
+      console.error('FIRENEX data load failed', e);
       ['#sec-missions', '#sec-library', '#sec-compare', '#sec-gaps', '#sec-ask'].forEach(s => { const el = $(s); if (el) el.insertAdjacentHTML('beforeend', '<div class="fx-note fx-warn">Data could not be loaded. Serve the site over HTTP (python3 -m http.server) — browsers block data loading on file://.</div>'); });
     }
   }
