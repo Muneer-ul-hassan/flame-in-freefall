@@ -234,7 +234,7 @@
   }
 
   /* ---------------- Ask Flame (retrieval + abstention) ---------------- */
-  const STOP = new Set('the a an of in on at to for is are was were be do does did what which how why can could should would and or with from by about it its this that there any'.split(' '));
+  const STOP = new Set('the a an of in on at to for is are was were be do does did what which how why can could should would and or with from by about it its this that there any percent percentage'.split(' '));
   const tok = s => (String(s).toLowerCase().match(/[a-z0-9₂]+/g) || []).filter(w => w.length > 1 && !STOP.has(w));
   const UNKNOWNS = [
     [/partial[- ]?gravity|lunar gravity|mars gravity|0\.16 ?g|0\.38 ?g|moon gravity/i, 'No partial-gravity (lunar or Mars g) combustion data exists in the PSI data used here, and the tables have no gravity field.'],
